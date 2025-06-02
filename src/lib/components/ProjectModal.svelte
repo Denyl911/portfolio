@@ -33,15 +33,15 @@
 
 {#if showModal && project}
 	<div
-		class="fixed inset-0 z-90 flex items-center justify-center bg-black/40  backdrop-blur-xs"
+		class="fixed inset-0 z-90 flex items-center justify-center bg-black/40 backdrop-blur-xs"
 		transition:fade={{ duration: 150 }}
 	>
 		<div
-			class="relative w-full max-w-5xl rounded-lg border border-[#1E2D3D] bg-[#020618] px-6 py-8 shadow-lg"
-            transition:slide="{{ duration: 300, easing: quintOut }}"
+			class="relative w-full max-w-5xl max-h-full rounded-lg border border-[#1E2D3D] bg-[#020618] px-6 pt-8 pb-6 shadow-lg overflow-auto"
+			transition:slide={{ duration: 300, easing: quintOut }}
 		>
 			<button
-				class="absolute top-3 right-3 z-91 text-white hover:text-gray-400 cursor-pointer"
+				class="absolute top-3 right-3 z-91 cursor-pointer text-white hover:text-gray-400"
 				onclick={onClose}
 				aria-label="Close modal"
 			>
@@ -105,13 +105,13 @@
 							/>
 							{#if project.galleryImages.length > 1}
 								<button
-									class=" hover:bg-black/75 absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
+									class=" absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/75"
 									onclick={() => navigateGallery('prev')}
 								>
 									&#10094;
 								</button>
 								<button
-									class=" hover:bg-black/75 absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
+									class=" absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/75"
 									onclick={() => navigateGallery('next')}
 								>
 									&#10095;
@@ -135,6 +135,15 @@
 						<p class="text-center text-gray-500">No hay imágenes disponibles para este proyecto.</p>
 					{/if}
 				</div>
+			</div>
+			<div class="flex mt-6 justify-center">
+				<button
+					class="cursor-pointer rounded-lg bg-slate-600 px-8 py-2 text-sm text-[#E5E9F0] transition-colors duration-300 hover:bg-[#ffb86a] hover:text-[#01080E]"
+					onclick={onClose}
+					aria-label="Close modal"
+				>
+					close
+				</button>
 			</div>
 		</div>
 	</div>

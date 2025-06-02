@@ -249,7 +249,7 @@
 		</div>
 	</div>
 
-	<div class="flex flex-grow flex-col overflow-hidden lg:flex-row">
+	<div class="flex flex-grow flex-col overflow-auto lg:flex-row">
 		<div
 			class="border-bluegray flex w-full flex-col border-b p-0 lg:flex-grow lg:border-r lg:border-b-0"
 		>

@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+
+@theme {
+	--color-midnight: #607b96;
+	--color-cwhite: #e5e9f0;
+	--color-bluegray: #1e2d3d;
+}
+
+@config "../tailwind.config.js";

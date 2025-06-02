@@ -8,14 +8,20 @@
 	import ChevtonRightIcon from 'lucide-svelte/icons/chevron-right';
 	import CodeSnippetCard from '$lib/components/CodeSnippetCard.svelte';
 	import { SiMarkdown } from '@icons-pack/svelte-simple-icons';
-	import { personalInfoItems, contactItems, codeSnippets } from '$lib/data/personalInfo';
+	import {
+		personalInfoItems,
+		contactItems,
+		codeSnippets,
+		type CodeSnippet
+	} from '$lib/data/personalInfo';
 
 	let activeDesktopTab = $state('my-bio');
 	let openMobileAccordion = $state('personal-info');
 	let personalInfoEducationOpenDesktop = $state(true);
 	let contactsOpenDesktop = $state(true);
+	let shuffledSnippets = $state(shuffle(codeSnippets));
 
-	let PersonalInfoItems = $state(personalInfoItems)
+	let PersonalInfoItems = $state(personalInfoItems);
 
 	let currentContent = $state(PersonalInfoItems.bio.subItems?.myBio.content); // Default content
 
@@ -47,6 +53,14 @@
 
 	function toggleMobileAccordion(section: string) {
 		openMobileAccordion = openMobileAccordion === section ? '' : section;
+	}
+
+	function shuffle(array: CodeSnippet[]) {
+		for (let i = array.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[array[i], array[j]] = [array[j], array[i]];
+		}
+		return array;
 	}
 </script>
 
@@ -249,7 +263,7 @@
 				<article class="prose prose-pinky">{@html marked.parse(currentContent)}</article>
 				<div class="mt-8 lg:hidden">
 					<h3 class="text-cwhite mb-4 text-lg">// Code snippet showcase:</h3>
-					{#each codeSnippets as snippet, i (snippet.code)}
+					{#each shuffledSnippets as snippet, i (snippet.code)}
 						<CodeSnippetCard {...snippet} />
 					{/each}
 				</div>
@@ -258,7 +272,7 @@
 
 		<div class="hidden flex-shrink-0 overflow-y-auto p-4 lg:block lg:w-4/9">
 			<h3 class="text-md text-midnight mb-4">// Code snippet showcase:</h3>
-			{#each codeSnippets as snippet, i (snippet.code)}
+			{#each shuffledSnippets as snippet, i (snippet.code)}
 				<CodeSnippetCard {...snippet} />
 			{/each}
 		</div>

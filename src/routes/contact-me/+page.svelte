@@ -11,11 +11,8 @@
 	import { LinkedinIcon } from 'lucide-svelte';
 	import { supabase } from '$lib/supabase';
 
-	// Reactive states for desktop sidebar
 	let contactsOpenDesktop = $state(true);
 	let findMeAlsoInOpenDesktop = $state(true);
-
-	// Reactive states for mobile accordion
 	let openMobileAccordion: string | null = $state(null);
 
 	// Form data
@@ -37,13 +34,8 @@
     button.addEventListener('click', () => {
         form.send(message);
     });`);
-	// Update simulated code message as form fields change
 
-	// Dummy data for contact and social links
-	const contactItems = [
-		{ type: 'email', value: 'imdenyl@gmail.com' },
-		{ type: 'phone', value: '+522284096902' }
-	];
+	const contactItems = [{ type: 'email', value: 'imdenyl@gmail.com' }];
 
 	const findMeAlsoInItems = [
 		{ name: 'Youtube', link: 'https://www.youtube.com/@denilsondelarosa5649' },

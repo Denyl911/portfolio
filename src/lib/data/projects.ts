@@ -31,12 +31,12 @@ export type Project = {
 	description: string;
 	longDescription?: string;
 	imageUrl: string;
-	icon: 'html' | 'react native' | 'nodejs' | 'react' | 'vue' | 'bunjs' | 'svelte' | 'ionic'; // Extend as needed
+	icon: 'html' | 'react native' | 'nodejs' | 'react' | 'vue' | 'bunjs' | 'svelte' | 'ionic';
 	categories: string[];
 	galleryImages?: string[];
 	technologies: string[];
-	projectLink?: string; // Optional link to the live project
-	githubLink?: string; // Optional link to the GitHub repository
+	projectLink?: string;
+	githubLink?: string;
 };
 
 export const projectsData: Project[] = [

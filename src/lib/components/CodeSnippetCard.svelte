@@ -3,7 +3,9 @@
 	import Prism from 'prismjs';
 	import 'prismjs/themes/prism-okaidia.css';
 	import 'prismjs/components/prism-typescript.js';
-	import myAvatar from '$lib/assets/avatar.png'
+	import 'prismjs/components/prism-sql';
+	import 'prismjs/components/prism-jsx';
+	import myAvatar from '$lib/assets/avatar.png';
 	let {
 		code,
 		description,
@@ -26,7 +28,7 @@
 			<img src={avatarUrl} alt={username} class="mr-3 h-8 w-8 rounded-full" />
 			<div>
 				<p class="text-[#4D5BCE]">{username}</p>
-				<p class="text-xs text-midnight">Created {createdTime}</p>
+				<p class="text-midnight text-xs">Created {createdTime}</p>
 			</div>
 		</div>
 		<!-- <div class="flex items-center text-midnight">
@@ -42,7 +44,7 @@
 
 	{#if description}
 		<div class="flex items-start justify-between">
-			<p class="pr-2 text-xs text-midnight">{description}</p>
+			<p class="text-midnight pr-2 text-xs">{description}</p>
 			<!-- <button class="flex-shrink-0 text-midnight hover:text-[#E5E9F0]">{@html closeIcon}</button> -->
 		</div>
 	{/if}

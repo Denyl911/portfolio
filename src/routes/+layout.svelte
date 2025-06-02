@@ -6,6 +6,11 @@
 	let { children } = $props();
 </script>
 
+<svelte:head>
+	<title>Denilson - Portfolio</title>
+	<meta name="description" content="This is Denilson's Full-Stack web developer portfolio" />
+</svelte:head>
+
 <div class="flex min-h-screen items-center justify-center bg-[#020618]">
 	<div
 		class="flex h-[97vh] w-[97vw] flex-col overflow-y-auto rounded-lg border border-[#1E2D3D] bg-[#011627] font-['Fira_Code',_monospace] text-[#E5E9F0]"

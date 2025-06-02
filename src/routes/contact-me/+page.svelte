@@ -9,6 +9,7 @@
 	import { SiInstagram, SiYoutube, SiGithub } from '@icons-pack/svelte-simple-icons';
 	import XIcon from 'lucide-svelte/icons/x';
 	import { LinkedinIcon } from 'lucide-svelte';
+	import { supabase } from '$lib/supabase';
 
 	// Reactive states for desktop sidebar
 	let contactsOpenDesktop = $state(true);
@@ -22,6 +23,7 @@
 	let email: string = $state('');
 	let message: string = $state('');
 	let formSubmitted: boolean = $state(false);
+	let isLoading: boolean = $state(false);
 
 	// Simulated message content for the code snippet
 	let simulatedCodeMessage = $derived(`
@@ -61,11 +63,21 @@
 		}
 	}
 
-	function handleSubmit() {
-		// Here you would typically send the form data to a backend
-		// For this example, we'll just simulate a submission
-		console.log('Form Submitted:', { name, email, message });
-		formSubmitted = true;
+	async function handleSubmit() {
+		isLoading = true;
+		try {
+			const { error } = await supabase.from('contact').insert([{ name, email, message }]);
+
+			if (error) {
+				throw error;
+			}
+			formSubmitted = true;
+			console.log('Form Submitted:', { name, email, message });
+		} catch (error: any) {
+			console.error('Error al enviar el mensaje:', error.error || error.message);
+		} finally {
+			isLoading = false;
+		}
 	}
 
 	function sendNewMessage() {
@@ -293,10 +305,15 @@
 							></textarea>
 						</div>
 						<button
+							disabled={isLoading}
 							type="submit"
-							class="w-full rounded-lg bg-[#FEA55F] px-6 py-3 text-sm font-semibold text-[#01080E] transition-colors duration-200 hover:bg-[#FFC08A]"
+							class="w-full cursor-pointer rounded-lg bg-[#FEA55F] px-6 py-3 text-sm font-semibold text-[#01080E] transition-colors duration-200 hover:bg-[#FFC08A]"
 						>
-							submit-message
+							{#if isLoading}
+								Sending...
+							{:else}
+								submit-message
+							{/if}
 						</button>
 					</form>
 				{/if}

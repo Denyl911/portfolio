@@ -133,6 +133,6 @@ export const projectsData: Project[] = [
 		technologies: ['Svelte', 'SvelteKit', 'Tailwindcss', 'TypeScript'],
 		galleryImages: [portfolio, port2, port3, port1],
 		githubLink: 'https://github.com/Denyl911/portfolio',
-		projectLink: 'https://portfolio-ten-pi-fy8ulyawlq.vercel.app/'
+		projectLink: 'https://denyl.xyz/'
 	}
 ];

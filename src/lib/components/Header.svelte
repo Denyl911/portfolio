@@ -13,23 +13,27 @@
 <header class="sticky top-0 z-50 border-b border-[#1E2D3D] bg-[#011627]/80 backdrop-blur-md">
 	<div class="flex">
 		<div
-			class="h-full md:border-r pl-4 border-[#1E2D3D] py-2 text-lg font-semibold text-[#E5E9F0] md:px-10 lg:px-16"
+			data-interactive-cursor="text"
+			class="h-full border-[#1E2D3D] py-2 pl-4 text-lg font-semibold text-[#E5E9F0] md:border-r md:px-10 lg:px-16"
 		>
 			denilson-de-la-rosa
 		</div>
 
 		<nav class="hidden md:flex">
 			<a
+				data-interactive-cursor="navitem"
 				href="/"
 				class="hvr-underline-from-center flex h-full items-center border-r border-[#1E2D3D] px-6 py-2 text-[#607B96] transition-colors duration-300 hover:text-[#E5E9F0]"
 				class:active={page.url.pathname === '/'}>_hello</a
 			>
 			<a
+				data-interactive-cursor="navitem"
 				href="/about-me"
 				class="hvr-underline-from-center flex h-full items-center border-r border-[#1E2D3D] px-6 py-2 text-[#607B96] transition-colors duration-300 hover:text-[#E5E9F0]"
 				class:active={page.url.pathname === '/about-me'}>_about-me</a
 			>
 			<a
+				data-interactive-cursor="navitem"
 				href="/projects"
 				class="hvr-underline-from-center flex h-full items-center border-r border-[#1E2D3D] px-6 py-2 text-[#607B96] transition-colors duration-300 hover:text-[#E5E9F0]"
 				class:active={page.url.pathname === '/projects'}>_projects</a
@@ -38,6 +42,7 @@
 
 		<nav class="hidden grow justify-end md:flex">
 			<a
+				data-interactive-cursor="navitem"
 				href="/contact-me"
 				class="hvr-underline-from-center border-l border-[#1E2D3D] px-6 py-2 text-[#607B96] transition-colors duration-300 hover:text-[#E5E9F0]"
 				>_contact-me</a
@@ -62,7 +67,7 @@
 
 {#if mobileMenuOpen}
 	<div
-		class="fixed inset-0 top-[88px] z-40 flex flex-col items-start space-y-6 bg-[#011627] p-6 md:hidden"
+		class="fixed inset-0 top-1 z-40 flex flex-col items-start space-y-6 bg-[#011627] p-6 md:hidden"
 	>
 		<a
 			href="/"

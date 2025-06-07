@@ -5,6 +5,7 @@
       "name": "portfolio",
       "dependencies": {
         "@icons-pack/svelte-simple-icons": "^5.0.0",
+        "@lostisworld/svelte-interactive-cursor": "^0.3.2",
         "@supabase/supabase-js": "^2.49.8",
         "@vercel/analytics": "^1.5.0",
         "lucide-svelte": "^0.511.0",
@@ -94,6 +95,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.0", "", {}, "sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
+
+    "@lostisworld/svelte-interactive-cursor": ["@lostisworld/svelte-interactive-cursor@0.3.2", "", { "peerDependencies": { "svelte": "^5.0.0" } }, "sha512-ckIbtuoTgOyz2vCaJlmOgcQzjirksN6t3ZiofGzCN+1O58X8yYHb8ZjQj5XT633qMf3RRSnVAGC6hWWZd8D2Mg=="],
 
     "@polka/url": ["@polka/url@1.0.0-next.29", "", {}, "sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww=="],
 

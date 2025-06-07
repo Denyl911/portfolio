@@ -137,11 +137,11 @@ Developing cross-platform mobile applications using:
 
 I'm always keen to explore new technologies and apply my skills to exciting challenges. What's your next big project?`
 			},
-			certificates: {
-				name: 'certificates',
-				text: 'certificates',
-				content: 'Graduated from Tech High School.'
-			}
+			// certificates: {
+			// 	name: 'certificates',
+			// 	text: 'certificates',
+			// 	content: 'Graduated from Tech High School.'
+			// }
 		}
 	},
 	interests: {

@@ -2,10 +2,10 @@
 	import { SiX, SiGithub, SiInstagram } from '@icons-pack/svelte-simple-icons';
 </script>
 
-<footer class="sticky bottom-0 z-50 border-t border-bluegray">
+<footer class="border-bluegray sticky bottom-0 z-50 border-t">
 	<div class="container mx-auto flex items-center justify-between md:flex-row">
 		<div class="flex items-center space-x-4 pl-1 md:pl-6 lg:pl-8">
-			<span class="text-midnight">find me in:</span>
+			<span class="text-midnight" data-interactive-cursor="text">find me in:</span>
 			<!-- <a
 				href="#"
 				target="_blank" rel="noopener noreferrer"
@@ -15,18 +15,22 @@
 				<SiX size={20}/>
 			</a> -->
 			<a
+				data-interactive-cursor="navitem"
 				href="https://www.instagram.com/denilson_drs"
-				target="_blank" rel="noopener noreferrer"
+				target="_blank"
+				rel="noopener noreferrer"
 				aria-label="Instagram"
-				class="flex h-10 items-center border-x border-bluegray px-4 text-midnight hover:text-cwhite"
+				class="border-bluegray text-midnight hover:text-cwhite flex h-10 items-center border-x px-4"
 			>
-				<SiInstagram size={20}/>
+				<SiInstagram size={20} />
 			</a>
 			<a
+				data-interactive-cursor="navitem"
 				href="https://www.linkedin.com/in/denilson-de-la-rosa-s%C3%A1nchez-7171281b9"
-				target="_blank" rel="noopener noreferrer"
+				target="_blank"
+				rel="noopener noreferrer"
 				aria-label="LinkedIn"
-				class="flex h-10 items-center border-r border-bluegray pr-4 text-midnight hover:text-cwhite"
+				class="border-bluegray text-midnight hover:text-cwhite flex h-10 items-center border-r pr-4"
 			>
 				<svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"
 					><path
@@ -36,19 +40,22 @@
 			</a>
 			<a
 				href="https://github.com/Denyl911"
-				target="_blank" rel="noopener noreferrer"
+				target="_blank"
+				rel="noopener noreferrer"
 				aria-label="GitHub"
-				class="flex h-10 items-center border-r border-bluegray pr-4 text-midnight hover:text-cwhite md:hidden"
+				class="border-bluegray text-midnight hover:text-cwhite flex h-10 items-center border-r pr-4 md:hidden"
 			>
 				<SiGithub />
 			</a>
 		</div>
-		<div class="hidden border-l border-bluegray px-3 text-sm text-midnight md:block">
+		<div class="border-bluegray text-midnight hidden border-l px-3 text-sm md:block">
 			<a
+			data-interactive-cursor="navitem"
 				href="https://github.com/Denyl911"
-				target="_blank" rel="noopener noreferrer"
+				target="_blank"
+				rel="noopener noreferrer"
 				aria-label="GitHub"
-				class="flex h-10 items-center text-midnight hover:text-cwhite"
+				class="text-midnight hover:text-cwhite flex h-10 items-center"
 			>
 				<span class="mt-1 mr-2">@Denyl911</span>
 				<SiGithub />

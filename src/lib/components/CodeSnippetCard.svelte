@@ -37,7 +37,7 @@
 	</div>
 
 	<div class="mb-3 overflow-x-auto rounded bg-[#010C15] p-3">
-		<pre class="whitespace-pre-wrap"><code class="text-xs"
+		<pre class="whitespace-pre-wrap" data-interactive-cursor="code"><code class="text-xs"
 				>{@html Prism.highlight(code, Prism.languages[lang], lang)}</code
 			></pre>
 	</div>

@@ -238,6 +238,7 @@
 					></canvas>
 					{#if isGameOver || !gameStarted}
 						<button
+						data-interactive-cursor="navitem"
 							class="hvr-bounce-in relative -top-18 left-6 w-3/4 cursor-pointer rounded-lg bg-[#ffb86a] px-4 py-2 text-sm text-[#020618] hover:bg-[#FEA55F] hover:text-[#01080E]"
 							onclick={() => {
 								if (isGameOver || !gameStarted) {

@@ -33,17 +33,19 @@
 
 {#if showModal && project}
 	<div
+		data-interactive-cursor="navitem"
 		class="fixed inset-0 z-90 flex items-center justify-center bg-black/40 backdrop-blur-xs"
 		transition:fade={{ duration: 150 }}
 	>
 		<div
-			class="relative w-full max-w-5xl max-h-full rounded-lg border border-[#1E2D3D] bg-[#020618] px-6 pt-8 pb-6 shadow-lg overflow-auto"
+			class="relative max-h-full w-full max-w-5xl overflow-auto rounded-lg border border-[#1E2D3D] bg-[#020618] px-6 pt-8 pb-6 shadow-lg"
 			transition:slide={{ duration: 300, easing: quintOut }}
 		>
 			<button
 				class="absolute top-3 right-3 z-91 cursor-pointer text-white hover:text-gray-400"
 				onclick={onClose}
 				aria-label="Close modal"
+				data-interactive-cursor="btn"
 			>
 				<XIcon />
 			</button>
@@ -105,12 +107,14 @@
 							/>
 							{#if project.galleryImages.length > 1}
 								<button
+									data-interactive-cursor="prevslide"
 									class=" absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/75"
 									onclick={() => navigateGallery('prev')}
 								>
 									&#10094;
 								</button>
 								<button
+									data-interactive-cursor="nextslide"
 									class=" absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/75"
 									onclick={() => navigateGallery('next')}
 								>
@@ -136,8 +140,9 @@
 					{/if}
 				</div>
 			</div>
-			<div class="flex mt-6 justify-center">
+			<div class="mt-6 flex justify-center">
 				<button
+					data-interactive-cursor="btn"
 					class="cursor-pointer rounded-lg bg-slate-600 px-8 py-2 text-sm text-[#E5E9F0] transition-colors duration-300 hover:bg-[#ffb86a] hover:text-[#01080E]"
 					onclick={onClose}
 					aria-label="Close modal"

@@ -67,28 +67,30 @@
 
 {#if mobileMenuOpen}
 	<div
-		class="fixed inset-0 top-1 z-40 flex flex-col items-start space-y-6 bg-[#011627] p-6 md:hidden"
+		class="fixed h-[97vh] w-[97vw] rounded-lg p-1 border border-[#1E2D3D] z-40 flex flex-col items-start bg-[#011627] pt-6 md:hidden"
 	>
+		<p class="mt-6 p-4 text-xl text-midnight hover:text-[#4D5BCE] border-b border-[#1E2D3D] w-full">
+			# navigate:
+		</p>
 		<a
 			href="/"
 			onclick={() => (mobileMenuOpen = false)}
-			class="text-xl text-[#E5E9F0] hover:text-[#4D5BCE]">_hello</a
+			class="p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE] border-b border-[#1E2D3D] w-full">_hello</a
 		>
 		<a
 			href="/about-me"
 			onclick={() => (mobileMenuOpen = false)}
-			class="text-xl text-[#E5E9F0] hover:text-[#4D5BCE]">_about-me</a
+			class="p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE] border-b border-[#1E2D3D] w-full">_about-me</a
 		>
 		<a
 			href="/projects"
 			onclick={() => (mobileMenuOpen = false)}
-			class="text-xl text-[#E5E9F0] hover:text-[#4D5BCE]">_projects</a
+			class="p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE] border-b border-[#1E2D3D] w-full">_projects</a
 		>
 		<a
 			href="/contact-me"
 			onclick={() => (mobileMenuOpen = false)}
-			class="w-full rounded-lg border border-[#1E2D3D] px-4 py-2 text-center text-xl text-[#E5E9F0] transition-colors duration-300 hover:border-[#4D5BCE] hover:text-[#4D5BCE]"
-			>_contact-me</a
+			class="p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE] border-b border-[#1E2D3D] w-full">_contact-me</a
 		>
 	</div>
 {/if}

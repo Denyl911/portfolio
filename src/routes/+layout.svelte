@@ -79,11 +79,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Denilson - Portfolio</title>
-	<meta name="description" content="This is Denilson's Full-Stack web developer portfolio" />
-</svelte:head>
-
 <div
 	class="flex min-h-screen items-center justify-center bg-[#020618]"
 	data-interactive-cursor-area={isMobile}

@@ -6,7 +6,7 @@
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import Mail from 'lucide-svelte/icons/mail';
 	import Phone from 'lucide-svelte/icons/phone';
-	import { SiInstagram, SiYoutube, SiGithub } from '@icons-pack/svelte-simple-icons';
+	import { SiYoutube, SiGithub, SiMastodon } from '@icons-pack/svelte-simple-icons';
 	import XIcon from 'lucide-svelte/icons/x';
 	import { LinkedinIcon } from 'lucide-svelte';
 	import { supabase } from '$lib/supabase';
@@ -39,7 +39,7 @@
 
 	const findMeAlsoInItems = [
 		{ name: 'Youtube', link: 'https://www.youtube.com/@denilsondelarosa5649' },
-		{ name: 'Instagram', link: 'https://www.instagram.com/denilson_drs' },
+		{ name: 'Mastodon', link: 'https://mastodon.social/@denyl' },
 		{
 			name: 'LinkedIn',
 			link: 'https://www.linkedin.com/in/denilson-de-la-rosa-s%C3%A1nchez-7171281b9'
@@ -143,8 +143,8 @@
 							{#if item.name == 'Youtube'}
 								<SiYoutube size={12} />
 							{/if}
-							{#if item.name == 'Instagram'}
-								<SiInstagram size={12} />
+							{#if item.name == 'Mastodon'}
+								<SiMastodon size={12} />
 							{/if}
 							{#if item.name == 'LinkedIn'}
 								<LinkedinIcon size={12} />
@@ -218,8 +218,8 @@
 							{#if item.name == 'Youtube'}
 								<SiYoutube size={12} />
 							{/if}
-							{#if item.name == 'Instagram'}
-								<SiInstagram size={12} />
+							{#if item.name == 'Mastodon'}
+								<SiMastodon size={12} />
 							{/if}
 							{#if item.name == 'LinkedIn'}
 								<LinkedinIcon size={12} />

@@ -21,7 +21,10 @@
 			<p class="mb-1">// find my profile on Github:</p>
 			<div class="inline-block rounded-md bg-[#011221] p-3" data-interactive-cursor="code">
 				<span class="text-[#4D5BCE]">const</span> <span class="text-[#43D9AD]">githubLink</span>
-				= <span class="text-[#E99287]">"{githubLink}"</span>;
+				=
+				<a href={githubLink} target="_blank" rel="noopener noreferrer" class="text-[#E99287]"
+					>"{githubLink}"</a
+				>;
 			</div>
 		</div>
 	</div>

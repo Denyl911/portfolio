@@ -33,6 +33,7 @@
 		"@lostisworld/svelte-interactive-cursor": "^0.3.2",
 		"@supabase/supabase-js": "^2.49.8",
 		"@vercel/analytics": "^1.5.0",
+		"gsap": "^3.13.0",
 		"lucide-svelte": "^0.511.0",
 		"marked": "^15.0.12",
 		"prismjs": "^1.30.0"

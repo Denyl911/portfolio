@@ -84,11 +84,11 @@
 	data-interactive-cursor-area={isMobile}
 >
 	<div
-		class="flex h-[97vh] w-[97vw] flex-col overflow-y-auto rounded-lg border border-[#1E2D3D] bg-[#011627] font-['Fira_Code',_monospace] text-[#E5E9F0]"
+		class="flex h-[97vh] w-[97vw] flex-col rounded-lg border border-[#1E2D3D] bg-[#011627] font-['Fira_Code'] text-[#E5E9F0]"
 	>
 		<Header />
 		{#key page.url.pathname}
-			<main class="flex flex-grow flex-col overflow-hidden lg:flex-row" in:fade={{duration:500}}>
+			<main class="flex flex-grow flex-col overflow-auto lg:flex-row" in:fade={{ duration: 500 }}>
 				{@render children()}
 			</main>
 		{/key}
@@ -109,6 +109,4 @@
 				?.cursorClass || 'bg-white text-black'}"
 ></InteractiveCursor>
 
-<style>
-	@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
-</style>
+<style></style>

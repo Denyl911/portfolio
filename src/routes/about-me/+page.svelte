@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { blur, crossfade, draw, fade, fly, scale, slide } from 'svelte/transition';
+	import { onDestroy, onMount } from 'svelte';
+	import { gsap } from 'gsap';
+	import { SplitText } from 'gsap/SplitText';
 	import { marked } from 'marked';
 	import XIcon from 'lucide-svelte/icons/x';
 	import FolderIcon from 'lucide-svelte/icons/folder';
@@ -16,34 +18,63 @@
 		type CodeSnippet
 	} from '$lib/data/personalInfo';
 
+	gsap.registerPlugin(SplitText);
+	let animation: gsap.core.Tween;
+	let split: globalThis.SplitText;
+	let anima: Element;
 	let activeDesktopTab = $state('my-bio');
-	let openMobileAccordion = $state('personal-info');
+	let openMobileAccordion = $state('');
 	let personalInfoEducationOpenDesktop = $state(true);
 	let contactsOpenDesktop = $state(true);
 	let shuffledSnippets = $state(shuffle(codeSnippets));
-
 	let PersonalInfoItems = $state(personalInfoItems);
-
-	let showContent = $state(true);
 	let currentContent = $state(PersonalInfoItems.bio.subItems?.myBio.content); // Default content
 
-	function selectContent(itemKey: string, subItemKey: string | null = null) {
+	async function selectContent(itemKey: string, subItemKey: string | null = null) {
 		if (
 			subItemKey &&
 			PersonalInfoItems[itemKey] &&
 			PersonalInfoItems[itemKey].subItems &&
 			PersonalInfoItems[itemKey].subItems[subItemKey]
 		) {
+			split && split.revert();
+			animation && animation.revert();
 			currentContent = PersonalInfoItems[itemKey].subItems[subItemKey].content;
 			activeDesktopTab = PersonalInfoItems[itemKey].subItems[subItemKey].text;
-		} else if (PersonalInfoItems[itemKey] && PersonalInfoItems[itemKey].content) {
-			// Fallback if no subItems or direct item content
-			currentContent = PersonalInfoItems[itemKey].content;
-			activeDesktopTab = PersonalInfoItems[itemKey].text;
+			anima.innerHTML = await marked.parse(currentContent);
+			split = SplitText.create(anima, {
+				type: 'lines',
+				deepSlice: false,
+			});
+			animation = gsap.from(split.lines, {
+				rotationX: -100,
+				transformOrigin: '50% 50% -160px',
+				opacity: 0,
+				duration: 0.7,
+				ease: 'power3',
+				stagger: 0.25
+			});
 		} else if (itemKey === 'contacts') {
 			currentContent = '## Contact \n\n';
 			currentContent += contactItems.map((c) => `- ${c.type}: ${c.value}`).join('\n\n');
 			activeDesktopTab = 'contacts';
+			anima.innerHTML = await marked.parse(currentContent);
+			split = SplitText.create(anima, {
+				type: 'lines',
+				deepSlice: false,
+			});
+			animation = gsap.from(split.lines, {
+				rotationX: -100,
+				transformOrigin: '50% 50% -160px',
+				opacity: 0,
+				duration: 0.7,
+				ease: 'power3',
+				stagger: 0.25
+			});
+		} else if (PersonalInfoItems[itemKey] && PersonalInfoItems[itemKey].content) {
+			// Fallback if no subItems or direct item content
+			currentContent = PersonalInfoItems[itemKey].content;
+			activeDesktopTab = PersonalInfoItems[itemKey].text;
 		}
 		// For mobile, only close the main accordion if a content selection is made from a sub-item
 		if (window.innerWidth < 1024 && subItemKey) {
@@ -64,6 +95,26 @@
 		}
 		return array;
 	}
+
+	onMount(async () => {
+		 anima.innerHTML = await marked.parse(currentContent);
+		split = SplitText.create(anima, {
+			type: 'lines',
+			deepSlice: false,
+		});
+		animation = gsap.from(split.lines, {
+			rotationX: -100,
+			transformOrigin: '50% 50% -160px',
+			opacity: 0,
+			duration: 0.7,
+			ease: 'power3',
+			stagger: 0.25
+		});
+	});
+	onDestroy(() => {
+		animation && animation.revert();
+		split && split.revert();
+	});
 </script>
 
 <div
@@ -272,14 +323,11 @@
 			data-interactive-cursor="content"
 			class="flex-grow overflow-y-auto p-6 text-sm leading-relaxed"
 		>
-			{#key currentContent}
-				<article class="prose prose-pinky" in:scale>
-					{@html marked.parse(currentContent)}
-				</article>
-			{/key}
+			<article bind:this={anima} class="prose prose-pinky anima"></article>
 			<div class="mt-8 lg:hidden">
+				<div class="border-bluegray mb-10 border-t"></div>
 				<h3 class="text-cwhite mb-4 text-lg">// Code snippet showcase:</h3>
-				{#each shuffledSnippets as snippet, i (snippet.code)}
+				{#each shuffledSnippets as snippet (snippet.code)}
 					<CodeSnippetCard {...snippet} />
 				{/each}
 			</div>
@@ -288,7 +336,7 @@
 
 	<div class="hidden flex-shrink-0 overflow-y-auto p-4 lg:block lg:w-4/9">
 		<h3 class="text-md text-midnight mb-4">// Code snippet showcase:</h3>
-		{#each shuffledSnippets as snippet, i (snippet.code)}
+		{#each shuffledSnippets as snippet (snippet.code)}
 			<CodeSnippetCard {...snippet} />
 		{/each}
 	</div>

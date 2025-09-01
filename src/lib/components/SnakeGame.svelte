@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { MoveLeft, MoveRight, MoveUp, MoveDown } from 'lucide-svelte';
-	import bgBlur from '$lib/assets/background-blurs.png';
+	import bgBlur from '$lib/assets/background-blurs.avif';
 	import bolt from '$lib/assets/bolt.png';
 	import snakeFood from '$lib/assets/snake-food.png';
 	import snakeFoodEmpty from '$lib/assets/snake-food-empty.png';

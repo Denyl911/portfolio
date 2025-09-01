@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { gsap } from 'gsap';
-	import { SplitText } from 'gsap/SplitText';
-	gsap.registerPlugin(SplitText);
+	import * as pkg from 'gsap/SplitText';
 	import SnakeGame from '$lib/components/SnakeGame.svelte';
 	import { onDestroy, onMount } from 'svelte';
+
+	const { SplitText } = pkg;
+	gsap.registerPlugin(SplitText);
 
 	const githubLink = 'https://github.com/Denyl911/portfolio';
 

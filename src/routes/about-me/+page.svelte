@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { gsap } from 'gsap';
-	import { SplitText } from 'gsap/SplitText';
+	import * as pkg from 'gsap/SplitText';
 	import { marked } from 'marked';
 	import XIcon from 'lucide-svelte/icons/x';
 	import FolderIcon from 'lucide-svelte/icons/folder';
@@ -18,6 +18,7 @@
 		type CodeSnippet
 	} from '$lib/data/personalInfo';
 
+	const { SplitText } = pkg;
 	gsap.registerPlugin(SplitText);
 	let animation: gsap.core.Tween;
 	let split: globalThis.SplitText;

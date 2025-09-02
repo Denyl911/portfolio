@@ -10,10 +10,8 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 
 	let { children } = $props();
-	let isMobile = $state(false);
 	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
 	let currentCursorState: ActiveDataValue = $state({ activeDataName: '', activeDataElement: null });
@@ -73,15 +71,11 @@
 			cursorClass: 'outline-[#43D9AD] rounded-md outline-dashed outline-1  outline-offset-2'
 		}
 	];
-
-	onMount(() => {
-		isMobile = window.innerWidth < 1024;
-	});
 </script>
 
 <div
 	class="flex min-h-screen items-center justify-center bg-[#020618]"
-	data-interactive-cursor-area={isMobile}
+	data-interactive-cursor-area
 >
 	<div
 		class="flex h-[97vh] w-[97vw] flex-col rounded-lg border border-[#1E2D3D] bg-[#011627] font-['Fira_Code'] text-[#E5E9F0]"

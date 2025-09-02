@@ -2,7 +2,7 @@
 	import { SiX, SiGithub, SiInstagram, SiMastodon } from '@icons-pack/svelte-simple-icons';
 </script>
 
-<footer class="border-bluegray sticky bottom-0 z-50 border-t">
+<footer class="border-bluegray sticky bottom-0 z-50 border-t bg-[#011627]/85">
 	<div class="container mx-auto flex items-center justify-between md:flex-row">
 		<div class="flex items-center space-x-4 pl-1 md:pl-6 lg:pl-8">
 			<span class="text-midnight" data-interactive-cursor="text">find me in:</span>

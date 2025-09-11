@@ -31,11 +31,11 @@ export const personalInfoItems: PersonalInfoItems = {
 				content: `
 ### About Me
 
-Hi there! I'm Denilson De La Rosa, a **full-stack web developer** and a **Computer Systems Engineer**. I was born in 2001, right here in **Xalapa, Veracruz**.
+Hi there! I'm Denilson De La Rosa, a **full-stack web developer** and a **Computer Systems Engineer**. I was born in 2001 in Xalapa, Veracruz.
 
-My passion lies in crafting complete web solutions, from the intricate logic of the backend to the engaging experiences of the frontend. With my engineering background, I bring a comprehensive and structured approach to every project I undertake.
+My passion lies in crafting complete web solutions, from the intricate logic of the **backend** to the engaging experiences of the **frontend**. With my engineering background, I bring a comprehensive and structured approach to every project I undertake.
 
-What kind of web development challenges can I help you with today?`
+What kind of *web development* challenges can I help you with today?`
 			},
 			experience: {
 				name: 'experience',

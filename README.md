@@ -1,6 +1,6 @@
 # My Portfolio
 
-Powered by [`sv`](https://github.com/sveltejs/cli).
+Powered by [`SVELTE`](https://svelte.dev/).
 
 
 ## Developing

@@ -9,7 +9,7 @@
 	import { SiYoutube, SiGithub, SiMastodon } from '@icons-pack/svelte-simple-icons';
 	import XIcon from 'lucide-svelte/icons/x';
 	import { LinkedinIcon } from 'lucide-svelte';
-	import { supabase } from '$lib/supabase';
+	import { ID, tablesDB } from '$lib/appwrite';
 
 	let contactsOpenDesktop = $state(true);
 	let findMeAlsoInOpenDesktop = $state(true);
@@ -58,13 +58,17 @@
 	async function handleSubmit() {
 		isLoading = true;
 		try {
-			const { error } = await supabase.from('contact').insert([{ name, email, message }]);
-
-			if (error) {
-				throw error;
-			}
+			 await tablesDB.createRow({
+				databaseId: '68c2305f0024382ed1b4',
+				tableId: 'contact',
+				rowId: ID.unique(),
+				data: {
+					name,
+					email,
+					message
+				}
+			});
 			formSubmitted = true;
-			console.log('Form Submitted:', { name, email, message });
 		} catch (error: any) {
 			console.error('Error al enviar el mensaje:', error.error || error.message);
 		} finally {
@@ -301,8 +305,8 @@
 							placeholder="your message here ..."
 							rows="6"
 							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none"
-							required
 							data-interactive-cursor="input"
+							maxlength="900"
 						></textarea>
 					</div>
 					<button

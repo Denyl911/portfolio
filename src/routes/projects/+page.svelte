@@ -1,21 +1,23 @@
 <script lang="ts">
+	import {
+		SiBun,
+		SiExpo,
+		SiHtml5,
+		SiNodedotjs,
+		SiReact,
+		SiSvelte,
+		SiVuedotjs
+	} from '@icons-pack/svelte-simple-icons';
+	import CheckSquare from 'lucide-svelte/icons/check-square';
+
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import Square from 'lucide-svelte/icons/square';
-	import CheckSquare from 'lucide-svelte/icons/check-square';
+	import XIcon from 'lucide-svelte/icons/x';
+	import { _, locale } from 'svelte-i18n';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import ProjectModal from '$lib/components/ProjectModal.svelte';
-	import { projectsData, type Project } from '$lib/data/projects';
-	import XIcon from 'lucide-svelte/icons/x';
-	import {
-		SiReact,
-		SiVuedotjs,
-		SiSvelte,
-		SiHtml5,
-		SiNodedotjs,
-		SiBun,
-		SiExpo
-	} from '@icons-pack/svelte-simple-icons';
+	import { loadProjectsTranslations, type Project } from '$lib/data/projects';
 
 	let showProjectModal: boolean = $state(false);
 	let selectedProject: Project | null = $state(null);
@@ -29,6 +31,13 @@
 	// Project filtering logic
 	let selectedCategories: string[] = $state(['HTML', 'React Native', 'BunJs']);
 
+	// Projects data
+	let projects = $state<Project[]>([]);
+
+	async function loadProjects() {
+		projects = await loadProjectsTranslations();
+	}
+
 	function toggleCategory(category: string) {
 		if (selectedCategories.includes(category)) {
 			selectedCategories = selectedCategories.filter((cat) => cat !== category);
@@ -37,7 +46,7 @@
 		}
 	}
 	const filteredProjects = $derived(
-		projectsData.filter((project) => {
+		projects.filter((project) => {
 			if (selectedCategories.length === 0) {
 				return true;
 			}
@@ -64,6 +73,15 @@
 		showProjectModal = false;
 		selectedProject = null; // Clear selected project when closing
 	}
+
+	$effect(() => {
+		const unsubscribe = locale.subscribe(async (lang) => {
+			if (lang) {
+				await loadProjects();
+			}
+		});
+		return unsubscribe;
+	});
 </script>
 
 {#snippet showCategoryIcon(category: string)}
@@ -107,7 +125,7 @@
 				{:else}
 					<ChevronRight class="mr-2 h-3 w-3 fill-current transition-transform duration-200" />
 				{/if}
-				_projects
+				{$_('projects')}
 			</button>
 			{#if personalInfoOpenDesktop}
 				<div class="pt-2 pl-4">
@@ -152,7 +170,7 @@
 					{:else}
 						<ChevronRight class="mr-2 h-4 w-4 transition-transform duration-200" />
 					{/if}
-					_projects
+					{$_('projects')}
 				</span>
 			</button>
 			{#if openMobileAccordion === 'projects'}
@@ -196,7 +214,7 @@
 				</button>
 			</div>
 		{:else}
-			<div class="flex items-center border-r border-[#1E2D3D] px-4 text-white">All Projects</div>
+			<div class="flex items-center border-r border-[#1E2D3D] px-4 text-white">{$_('allProjects')}</div>
 		{/if}
 	</div>
 

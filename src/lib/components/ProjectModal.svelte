@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { type Project } from '$lib/data/projects';
+	import XIcon from 'lucide-svelte/icons/x';
 	import { quintOut } from 'svelte/easing';
 	import { fade, slide } from 'svelte/transition';
-	import XIcon from 'lucide-svelte/icons/x';
+	import { _ } from 'svelte-i18n';
+	import { type Project } from '$lib/data/projects';
 
 	let {
 		project,
@@ -58,7 +59,7 @@
 					</p>
 
 					<div>
-						<h4 class="mb-2 text-lg font-semibold">Technologies:</h4>
+						<h4 class="mb-2 text-lg font-semibold">{$_('technologies')}</h4>
 						<ul class="flex flex-wrap gap-2">
 							{#each project.technologies as tech}
 								<li class="rounded-md bg-slate-700 px-3 py-1 text-sm text-white">
@@ -70,7 +71,7 @@
 
 					{#if project.projectLink || project.githubLink}
 						<div>
-							<h4 class="mb-2 text-lg font-semibold">Links:</h4>
+							<h4 class="mb-2 text-lg font-semibold">{$_('links')}</h4>
 							<div class="flex flex-col space-y-2">
 								{#if project.githubLink}
 									<a
@@ -136,7 +137,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="text-center text-gray-500">No hay imágenes disponibles para este proyecto.</p>
+						<p class="text-center text-gray-500">{$_('noImagesAvailable')}</p>
 					{/if}
 				</div>
 			</div>
@@ -147,7 +148,7 @@
 					onclick={onClose}
 					aria-label="Close modal"
 				>
-					close
+					{$_('close')}
 				</button>
 			</div>
 		</div>

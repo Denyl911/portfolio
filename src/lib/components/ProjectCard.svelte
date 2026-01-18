@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { type Project } from '$lib/data/projects';
 	import {
-		SiReact,
-		SiVuedotjs,
-		SiSvelte,
-		SiHtml5,
-		SiNodedotjs,
 		SiBun,
 		SiExpo,
-		SiIonic
+		SiHtml5,
+		SiIonic,
+		SiNodedotjs,
+		SiReact,
+		SiSvelte,
+		SiVuedotjs
 	} from '@icons-pack/svelte-simple-icons';
+	import { _ } from 'svelte-i18n';
+	import { type Project } from '$lib/data/projects';
 
-	let { project, openModal }: { project: Project; openModal: (project: Project) => void } =
-		$props();
+	let { project, openModal }: { project: Project; openModal: (project: Project) => void } = $props();
 </script>
 
 <div class="overflow-hidden rounded-lg border border-[#1E2D3D] bg-[#020618] hvr-bob">
@@ -53,11 +53,11 @@
 			{project.description}
 		</p>
 		<button
-		data-interactive-cursor="btn"
+		    data-interactive-cursor="btn"
 			class="cursor-pointer rounded-lg bg-slate-600 px-4 py-2 text-sm text-[#E5E9F0] transition-colors duration-300 hover:bg-[#ffb86a] hover:text-[#01080E]"
 			onclick={() => openModal(project)}
 		>
-			view-project
+			{$_('viewProject')}
 		</button>
 	</div>
 </div>

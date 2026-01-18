@@ -1,18 +1,44 @@
 <script lang="ts">
 	import InteractiveCursor, {
-		type ScaleOnActiveElement,
-		type ActiveDataValue
+		type ActiveDataValue,
+		type ScaleOnActiveElement
 	} from '@lostisworld/svelte-interactive-cursor';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { fade } from 'svelte/transition';
 	import { dev } from '$app/environment';
-	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import '../app.css';
+	import { onMount } from 'svelte';
+	import { addMessages, init, locale } from 'svelte-i18n';
+	import { page } from '$app/state';
 	import Footer from '$lib/components/Footer.svelte';
 	import Header from '$lib/components/Header.svelte';
-	import { page } from '$app/state';
+	import en from '$lib/i18n/en.json';
+	import es from '$lib/i18n/es.json';
+	import fr from '$lib/i18n/fr.json';
 
 	let { children } = $props();
 	injectAnalytics({ mode: dev ? 'development' : 'production' });
+
+	addMessages('en', en);
+	addMessages('es', es);
+	addMessages('fr', fr);
+
+	init({
+		fallbackLocale: 'en',
+		initialLocale: 'en'
+	});
+
+	onMount(()=>{
+     	const savedLocale = localStorage.getItem('locale');
+     	console.log('Saved Locale: ',savedLocale)
+     	if (savedLocale) {
+      		locale.set(savedLocale);
+     	}
+     	locale.subscribe(value => {
+      		value && localStorage.setItem('locale', value);
+     	});
+	})
+
 
 	let currentCursorState: ActiveDataValue = $state({ activeDataName: '', activeDataElement: null });
 	const scaleOnActive: ScaleOnActiveElement[] = [
@@ -74,11 +100,11 @@
 </script>
 
 <div
-	class="flex min-h-screen items-center justify-center bg-[#020618]"
+	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#020618] to-[#0a1a2f]"
 	data-interactive-cursor-area
 >
 	<div
-		class="flex h-[97vh] w-[97vw] flex-col rounded-lg border border-[#1E2D3D] bg-[#011627] font-['Fira_Code'] text-[#E5E9F0]"
+		class="flex h-[97vh] w-[97vw] flex-col rounded-lg border border-[#1E2D3D] bg-gradient-to-br from-[#011627] to-[#0a2442] font-['Fira_Code'] text-[#E5E9F0]"
 	>
 		<Header />
 		{#key page.url.pathname}

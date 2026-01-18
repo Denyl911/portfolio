@@ -1,21 +1,23 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { SiMarkdown } from '@icons-pack/svelte-simple-icons';
 	import { gsap } from 'gsap';
 	import { SplitText } from "gsap/dist/SplitText";
-	import { marked } from 'marked';
-	import XIcon from 'lucide-svelte/icons/x';
+	import ChevtonDownIcon from 'lucide-svelte/icons/chevron-down';
+	import ChevtonRightIcon from 'lucide-svelte/icons/chevron-right';
 	import FolderIcon from 'lucide-svelte/icons/folder';
 	import MailIcon from 'lucide-svelte/icons/mail';
 	import PhoneIcon from 'lucide-svelte/icons/phone';
-	import ChevtonDownIcon from 'lucide-svelte/icons/chevron-down';
-	import ChevtonRightIcon from 'lucide-svelte/icons/chevron-right';
+	import XIcon from 'lucide-svelte/icons/x';
+	import { marked } from 'marked';
+	import { onDestroy, onMount } from 'svelte';
+	import { _, locale } from 'svelte-i18n';
 	import CodeSnippetCard from '$lib/components/CodeSnippetCard.svelte';
-	import { SiMarkdown } from '@icons-pack/svelte-simple-icons';
 	import {
-		personalInfoItems,
-		contactItems,
+		type CodeSnippet,
 		codeSnippets,
-		type CodeSnippet
+		contactItems,
+		type PersonalInfoItemsType,
+		personalInfoItems
 	} from '$lib/data/personalInfo';
 
 	gsap.registerPlugin(SplitText);
@@ -27,8 +29,50 @@
 	let personalInfoEducationOpenDesktop = $state(true);
 	let contactsOpenDesktop = $state(true);
 	let shuffledSnippets = $state(shuffle(codeSnippets));
-	let PersonalInfoItems = $state(personalInfoItems);
-	let currentContent = $state(PersonalInfoItems.bio.subItems?.myBio.content); // Default content
+	let PersonalInfoItems = $state({} as PersonalInfoItemsType);
+	let currentContent = $state(''); // Default content
+
+	async function loadTranslations() {
+		let lang = 'en';
+		const unsubscribe = locale.subscribe((value) => {
+			if (value) {
+				lang = value;
+			}
+		});
+		unsubscribe();
+		try {
+			const response = await fetch(`/src/lib/i18n/personalInfo/${lang}.json`);
+			PersonalInfoItems = await response.json();
+			currentContent = PersonalInfoItems.bio.subItems.myBio.content;
+		} catch (error) {
+			console.error('Error loading translations:', error);
+			currentContent = 'Content not available.';
+		}
+	}
+
+	$effect(() => {
+		const unsubscribe = locale.subscribe(async (lang) => {
+			if (lang) {
+				await loadTranslations();
+				anima.innerHTML = await marked.parse(currentContent);
+				split?.revert();
+				animation?.revert();
+				split = SplitText.create(anima, {
+					type: 'lines',
+					deepSlice: false,
+				});
+				animation = gsap.from(split.lines, {
+					rotationX: -100,
+					transformOrigin: '50% 50% -160px',
+					opacity: 0,
+					duration: 0.7,
+					ease: 'power3',
+					stagger: 0.25
+				});
+			}
+		});
+		return unsubscribe;
+	});
 
 	async function selectContent(itemKey: string, subItemKey: string | null = null) {
 		if (
@@ -37,8 +81,8 @@
 			PersonalInfoItems[itemKey].subItems &&
 			PersonalInfoItems[itemKey].subItems[subItemKey]
 		) {
-			split && split.revert();
-			animation && animation.revert();
+			split?.revert();
+			animation?.revert();
 			currentContent = PersonalInfoItems[itemKey].subItems[subItemKey].content;
 			activeDesktopTab = PersonalInfoItems[itemKey].subItems[subItemKey].text;
 			anima.innerHTML = await marked.parse(currentContent);
@@ -71,7 +115,7 @@
 				ease: 'power3',
 				stagger: 0.25
 			});
-		} else if (PersonalInfoItems[itemKey] && PersonalInfoItems[itemKey].content) {
+		} else if (PersonalInfoItems[itemKey]?.content) {
 			// Fallback if no subItems or direct item content
 			currentContent = PersonalInfoItems[itemKey].content;
 			activeDesktopTab = PersonalInfoItems[itemKey].text;
@@ -97,7 +141,8 @@
 	}
 
 	onMount(async () => {
-		 anima.innerHTML = await marked.parse(currentContent);
+		await loadTranslations();
+		anima.innerHTML = await marked.parse(currentContent);
 		split = SplitText.create(anima, {
 			type: 'lines',
 			deepSlice: false,
@@ -112,8 +157,8 @@
 		});
 	});
 	onDestroy(() => {
-		animation && animation.revert();
-		split && split.revert();
+		animation?.revert();
+		split?.revert();
 	});
 </script>
 
@@ -134,7 +179,7 @@
 				{:else}
 					<ChevtonRightIcon class="mr-2 h-3 w-3 fill-current transition-transform duration-200" />
 				{/if}
-				_personal-info
+				{$_('personalInfo')}
 			</button>
 			{#if personalInfoEducationOpenDesktop}
 				<div class="pt-2">
@@ -190,7 +235,7 @@
 				{:else}
 					<ChevtonRightIcon class="mr-2 h-3 w-3 fill-current transition-transform duration-200" />
 				{/if}
-				_contacts
+				{$_('contacts')}
 			</button>
 			{#if contactsOpenDesktop}
 				<div class="pt-2 pl-8">
@@ -219,7 +264,7 @@
 
 	<div class="lg:hidden">
 		<div class="border-bluegray border-b p-4">
-			<h2 class="text-cwhite text-lg">_about-me</h2>
+			<h2 class="text-cwhite text-lg">{$_('aboutMe')}</h2>
 		</div>
 		<div>
 			<button
@@ -232,7 +277,7 @@
 					{:else}
 						<ChevtonRightIcon class="mr-2 h-4 w-4 transition-transform duration-200" />
 					{/if}
-					_personal-info
+					{$_('personalInfo')}
 				</span>
 			</button>
 			{#if openMobileAccordion === 'personal-info'}
@@ -281,7 +326,7 @@
 					{:else}
 						<ChevtonRightIcon class="mr-2 h-4 w-4 transition-transform duration-200" />
 					{/if}
-					_contacts
+					{$_('contacts')}
 				</span>
 			</button>
 			{#if openMobileAccordion === 'contacts'}
@@ -304,7 +349,7 @@
 			{/if}
 		</div>
 	</div>
-</div>
+				</div>
 
 <div class="flex flex-grow flex-col overflow-auto lg:flex-row">
 	<div
@@ -326,7 +371,7 @@
 			<article bind:this={anima} class="prose prose-pinky anima"></article>
 			<div class="mt-8 lg:hidden">
 				<div class="border-bluegray mb-10 border-t"></div>
-				<h3 class="text-cwhite mb-4 text-lg">// Code snippet showcase:</h3>
+				<h3 class="text-cwhite mb-4 text-lg">{$_('codeSnippetShowcase')}</h3>
 				{#each shuffledSnippets as snippet (snippet.code)}
 					<CodeSnippetCard {...snippet} />
 				{/each}
@@ -335,9 +380,9 @@
 	</div>
 
 	<div class="hidden flex-shrink-0 overflow-y-auto p-4 lg:block lg:w-4/9">
-		<h3 class="text-md text-midnight mb-4">// Code snippet showcase:</h3>
+		<h3 class="text-md text-midnight mb-4">{$_('codeSnippetShowcase')}</h3>
 		{#each shuffledSnippets as snippet (snippet.code)}
 			<CodeSnippetCard {...snippet} />
 		{/each}
 	</div>
-</div>
+				</div>

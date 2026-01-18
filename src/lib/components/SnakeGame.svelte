@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { MoveDown, MoveLeft, MoveRight, MoveUp } from 'lucide-svelte';
 	import { onDestroy } from 'svelte';
-	import { MoveLeft, MoveRight, MoveUp, MoveDown } from 'lucide-svelte';
+	import { _ } from 'svelte-i18n';
 	import bgBlur from '$lib/assets/background-blurs.avif';
 	import bolt from '$lib/assets/bolt.png';
 	import snakeFood from '$lib/assets/snake-food.png';
@@ -107,7 +108,7 @@
 		if (head.x === food.x && head.y === food.y) {
 			score++;
 
-			if (score == 9) {
+			if (score === 9) {
 				isWin = true;
 				gameStarted = false;
 				stopGameLoop();
@@ -194,13 +195,13 @@
 		if (gameOver) {
 			ctx.fillStyle = 'white';
 			ctx.font = '50px Arial';
-			ctx.fillText('Game Over', canvas.width / 2 - 120, canvas.height / 2);
+			ctx.fillText($_('gameOver'), canvas.width / 2 - 120, canvas.height / 2);
 		}
 
 		if (isWin) {
 			ctx.fillStyle = 'white';
 			ctx.font = '50px Arial';
-			ctx.fillText("You've won", canvas.width / 2 - 120, canvas.height / 2);
+			ctx.fillText($_('youWin'), canvas.width / 2 - 120, canvas.height / 2);
 		}
 	}
 
@@ -246,7 +247,7 @@
 								startGame();
 							}}
 						>
-							{gameOver ? 'restart-game' : 'start-game'}
+							{gameOver ? $_('restartGame') : $_('startGame')}
 						</button>
 					{/if}
 				</div>
@@ -254,8 +255,8 @@
 				<div class="flex h-[90%] flex-col justify-between text-xs text-slate-50">
 					<div>
 						<div class="rounded-md bg-[#1d293d] p-4">
-							<p class="mb-2">// use keyboard</p>
-							<p class="mb-4">// arrows to play</p>
+							<p class="mb-2">{$_('useKeyboard')}</p>
+							<p class="mb-4">{$_('arrowsToPlay')}</p>
 							<div class="mx-auto grid w-[70px] grid-cols-3 gap-x-3 gap-y-0">
 								<div></div>
 								<button
@@ -287,7 +288,7 @@
 						</div>
 
 						<div class="mt-5 p-3">
-							<p class="mb-2">// food left</p>
+							<p class="mb-2">{$_('foodLeft')}</p>
 							<div class="grid grid-cols-5 gap-1">
 								{#each Array(10) as _, i}
 									{#if i <= score}
@@ -304,7 +305,7 @@
 						href="/about-me"
 						class="mr-1 mb-3 self-end rounded border border-[#607B96] p-2 text-xs text-[#607B96] hover:border-[#E5E9F0] hover:text-[#E5E9F0]"
 					>
-						skip
+						{$_('skip')}
 					</a>
 				</div>
 			</div>

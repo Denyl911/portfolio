@@ -1,0 +1,46 @@
+{
+	"projects": [
+		{
+			"id": 1,
+			"title": "trust-generator",
+			"description": "Policyholder management system.",
+			"longDescription": "TrustGenerator is an insured management system whose front-end is developed in Vue.js and the back-end in nodejs with Express."
+		},
+		{
+			"id": 2,
+			"title": "scanteate",
+			"description": "Mobile app to support the socio-emotional development of children with autism.",
+			"longDescription": "SCANTEATE is a mobile app to support the socio-emotional development of children with autism. Its main strength is its versatility and combination of tools, as it has a live emotional detection system; just click a button and the emotion will be present."
+		},
+		{
+			"id": 3,
+			"title": "la-excelencia-joyeria",
+			"description": "Point of sale system.",
+			"longDescription": "A point of sale that is responsible for recording sales, managing inventory, processing payments, generating reports, and much more."
+		},
+		{
+			"id": 4,
+			"title": "kidcash",
+			"description": "Mobile app to promote good financial health in children.",
+			"longDescription": "Mobile app to promote good financial health in children. It has activities, reminders and a user-friendly interface."
+		},
+		{
+			"id": 5,
+			"title": "cloud-storage",
+			"description": "Cloud File Management API.",
+			"longDescription": "Drive-style cloud file management API developed with innovative technologies."
+		},
+		{
+			"id": 6,
+			"title": "crm-api",
+			"description": "Customer Relationship Management API",
+			"longDescription": "Customer Relationship Management API with contact management, project management, analytics and reporting, etc."
+		},
+		{
+			"id": 7,
+			"title": "portfolio",
+			"description": "This portfolio.",
+			"longDescription": "This portfolio features a distinct design concept, developed in Svelte"
+		}
+	]
+}

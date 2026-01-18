@@ -1,14 +1,15 @@
 <script lang="ts">
-	// @ts-ignore
+	// @ts-expect-error
 	import Prism from 'prismjs';
+	import { _ } from 'svelte-i18n';
 	import 'prismjs/themes/prism-okaidia.css';
+	import { SiGithub, SiMastodon, SiYoutube } from '@icons-pack/svelte-simple-icons';
+	import { LinkedinIcon } from 'lucide-svelte';
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import Mail from 'lucide-svelte/icons/mail';
 	import Phone from 'lucide-svelte/icons/phone';
-	import { SiYoutube, SiGithub, SiMastodon } from '@icons-pack/svelte-simple-icons';
 	import XIcon from 'lucide-svelte/icons/x';
-	import { LinkedinIcon } from 'lucide-svelte';
 	import { ID, tablesDB } from '$lib/appwrite';
 
 	let contactsOpenDesktop = $state(true);
@@ -101,7 +102,7 @@
 				{:else}
 					<ChevronRight class="mr-2 h-3 w-3 fill-current transition-transform duration-200" />
 				{/if}
-				_contacts
+				{$_('contacts')}
 			</button>
 			{#if contactsOpenDesktop}
 				<div class="pt-2 pl-8">
@@ -132,7 +133,7 @@
 				{:else}
 					<ChevronRight class="mr-2 h-3 w-3 fill-current transition-transform duration-200" />
 				{/if}
-				_find-me-also-in
+				{$_('findMeAlsoIn')}
 			</button>
 			{#if findMeAlsoInOpenDesktop}
 				<div class="pt-2 pl-8">
@@ -166,7 +167,7 @@
 
 	<div class="lg:hidden">
 		<div class="border-b border-[#1E2D3D] p-4">
-			<h2 class="text-lg text-white">_contact-me</h2>
+			<h2 class="text-lg text-white">{$_('contactMe')}</h2>
 		</div>
 		<div>
 			<button
@@ -179,7 +180,7 @@
 					{:else}
 						<ChevronRight class="mr-2 h-4 w-4 transition-transform duration-200" />
 					{/if}
-					_contacts
+					{$_('contacts')}
 				</span>
 			</button>
 			{#if openMobileAccordion === 'contacts'}
@@ -207,7 +208,7 @@
 					{:else}
 						<ChevronRight class="mr-2 h-4 w-4 transition-transform duration-200" />
 					{/if}
-					_find-me-also-in
+					{$_('findMeAlsoIn')}
 				</span>
 			</button>
 			{#if openMobileAccordion === 'find-me-also-in'}
@@ -249,7 +250,7 @@
 				data-interactive-cursor="text"
 				class="flex items-center border-r border-[#1E2D3D] px-4 text-white"
 			>
-				_contact-me
+				{$_('contactMe')}
 				<XIcon class="ml-2 h-3 w-3 text-[#E5E9F0] hover:text-[#C5C5C5]" />
 			</div>
 		</div>
@@ -258,51 +259,51 @@
 		>
 			{#if formSubmitted}
 				<div class="text-center">
-					<h2 class="mb-4 text-3xl text-white" data-interactive-cursor="code">Thank you! 👋</h2>
+					<h2 class="mb-4 text-3xl text-white" data-interactive-cursor="code">{$_('thankYou')}</h2>
 					<p class="mb-8 text-[#607B96]" data-interactive-cursor="text">
-						Your message has been accepted.<br />
-						You will receive answer soon!
+						{$_('messageAccepted')} <br />
+						{$_('willReceiveAnswer')}
 					</p>
 					<button
 						data-interactive-cursor="btn"
 						onclick={sendNewMessage}
 						class="rounded-lg bg-[#FEA55F] px-6 py-3 text-sm font-semibold text-[#01080E] transition-colors duration-200 hover:bg-[#FFC08A]"
 					>
-						send-new-message
+						{$_('sendNewMessage')}
 					</button>
 				</div>
 			{:else}
 				<form onsubmit={handleSubmit} class="mx-auto w-full max-w-lg space-y-6">
 					<div>
-						<label for="name" class="mb-2 block text-sm text-[#607B96]">_name:</label>
+						<label for="name" class="mb-2 block text-sm text-[#607B96]">{$_('name')}</label>
 						<input
 							type="text"
 							id="name"
 							bind:value={name}
-							placeholder="your name here"
+							placeholder={$_('namePlaceholder')}
 							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none"
 							required
 							data-interactive-cursor="input"
 						/>
 					</div>
 					<div>
-						<label for="email" class="mb-2 block text-sm text-[#607B96]">_email:</label>
+						<label for="email" class="mb-2 block text-sm text-[#607B96]">{$_('email')}</label>
 						<input
 							type="email"
 							id="email"
 							bind:value={email}
-							placeholder="yor email here"
+							placeholder={$_('emailPlaceholder')}
 							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none"
 							required
 							data-interactive-cursor="input"
 						/>
 					</div>
 					<div>
-						<label for="message" class="mb-2 block text-sm text-[#607B96]">_message:</label>
+						<label for="message" class="mb-2 block text-sm text-[#607B96]">{$_('message')}</label>
 						<textarea
 							id="message"
 							bind:value={message}
-							placeholder="your message here ..."
+							placeholder={$_('messagePlaceholder')}
 							rows="6"
 							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none"
 							data-interactive-cursor="input"
@@ -316,9 +317,9 @@
 						class="w-full cursor-pointer rounded-lg bg-[#FEA55F] px-6 py-3 text-sm font-semibold text-[#01080E] transition-colors duration-200 hover:bg-[#FFC08A]"
 					>
 						{#if isLoading}
-							Sending...
+							{$_('sending')}
 						{:else}
-							submit-message
+							{$_('submitMessage')}
 						{/if}
 					</button>
 				</form>
@@ -327,7 +328,7 @@
 	</div>
 
 	<div class="hidden flex-shrink-0 overflow-y-auto p-4 lg:block lg:w-1/2">
-		<h3 class="text-md mb-4 text-[#607B96]">// Code snippet:</h3>
+		<h3 class="text-md mb-4 text-[#607B96]">{$_('codeSnippet')}</h3>
 		<div
 			class="rounded-lg border border-[#1E2D3D] bg-[#011627] p-4 font-mono text-sm whitespace-pre-wrap"
 		>

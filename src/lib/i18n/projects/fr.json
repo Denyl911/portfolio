@@ -1,0 +1,46 @@
+{
+	"projects": [
+		{
+			"id": 1,
+			"title": "trust-generator",
+			"description": "Système de gestion des assurés.",
+			"longDescription": "TrustGenerator est un système de gestion des assurés dont le front-end est développé en Vue.js et le back-end en Node.js avec Express."
+		},
+		{
+			"id": 2,
+			"title": "scanteate",
+			"description": "Application mobile pour soutenir le développement socio-émotionnel des enfants atteints d'autisme.",
+			"longDescription": "SCANTEATE est une application mobile pour soutenir le développement socio-émotionnel des enfants atteints d'autisme. Sa principale force réside dans sa polyvalence et sa combinaison d'outils, car elle dispose d'un système de détection émotionnelle en direct ; il suffit de cliquer sur un bouton et l'émotion sera présente."
+		},
+		{
+			"id": 3,
+			"title": "la-excelencia-joyeria",
+			"description": "Système de point de vente.",
+			"longDescription": "Un point de vente qui est responsable de l'enregistrement des ventes, de la gestion des stocks, du traitement des paiements, de la génération de rapports, et bien plus encore."
+		},
+		{
+			"id": 4,
+			"title": "kidcash",
+			"description": "Application mobile pour promouvoir une bonne santé financière chez les enfants.",
+			"longDescription": "Application mobile pour promouvoir une bonne santé financière chez les enfants. Elle propose des activités, des rappels et une interface conviviale."
+		},
+		{
+			"id": 5,
+			"title": "cloud-storage",
+			"description": "API de gestion de fichiers dans le cloud.",
+			"longDescription": "API de gestion de fichiers dans le cloud de style Drive développée avec des technologies innovantes."
+		},
+		{
+			"id": 6,
+			"title": "crm-api",
+			"description": "API de gestion de la relation client",
+			"longDescription": "API de gestion de la relation client avec gestion des contacts, gestion de projets, analytique et reporting, etc."
+		},
+		{
+			"id": 7,
+			"title": "portfolio",
+			"description": "Ce portfolio.",
+			"longDescription": "Ce portfolio présente un concept de design distinctif, développé en Svelte"
+		}
+	]
+}

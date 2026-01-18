@@ -1,0 +1,56 @@
+{
+	"bio": {
+		"name": "biographie",
+		"iconColor": "text-red-500",
+		"text": "biographie",
+		"isOpen": true,
+		"subItems": {
+			"myBio": {
+				"name": "ma-biographie",
+				"text": "ma-biographie",
+				"content": "### À propos de moi\n\nSalut ! Je m'appelle Denilson De La Rosa, **développeur web full-stack** et **Ingénieur en Systèmes Informatiques**. Je suis né en 2001 à Xalapa, Veracruz.\n\nMa passion réside dans la création de solutions web complètes, de la logique complexe du **backend** aux expériences captivantes du **frontend**. Grâce à ma formation d'ingénieur, j'apporte une approche globale et structurée à chaque projet que j'entreprends.\n\nAvec quel type de défis de *développement web* puis-je vous aider aujourd'hui ?"
+			},
+			"experience": {
+				"name": "expérience",
+				"text": "expérience",
+				"content": "### Mon parcours freelance et expertise en développement\n\nDepuis deux ans, je suis immergé dans le monde dynamique du **développement web freelance**, en réalisant divers projets à petite échelle. Mon orientation principale a été le **développement backend avec Node.js**, en construisant des solutions serveurs robustes et évolutives. Je maîtrise également le travail avec diverses **bases de données SQL et NoSQL** pour garantir une gestion efficace des données.\n\nCependant, mes compétences ne se limitent pas au backend. J'ai également une solide **expérience en développement frontend**, allant des bases du **HTML et CSS** au travail avec des **frameworks et méta-frameworks** modernes. Je maîtrise **Vue (avec Nuxt.js)**, **Svelte (avec SvelteKit)** et **React**, ce qui me permet de concevoir des interfaces utilisateur attrayantes et réactives.\n\nMa boîte à outils technique s'étend au **développement d'applications mobiles**, où j'ai acquis une expérience pratique avec **React Native** via divers projets académiques. Je suis également à l'aise dans les environnements **Linux**, et j'ai de l'expérience avec **Docker** pour la conteneurisation et **Nginx** pour le service web et le reverse proxy, assurant un déploiement et une infrastructure solides. De plus, je sais travailler avec des **systèmes de gestion de contenu (CMS) comme WordPress**, offrant des solutions polyvalentes pour les sites axés sur le contenu.\n\nJe suis toujours prêt à relever de nouveaux défis et à contribuer à des projets innovants. Quels défis de développement rencontrez-vous actuellement ?"
+			}
+		}
+	},
+	"education": {
+		"name": "éducation",
+		"iconColor": "text-blue-500",
+		"text": "éducation",
+		"isOpen": true,
+		"subItems": {
+			"university": {
+				"name": "université",
+				"text": "université",
+				"content": "### Éducation & Innovation\n\nJe suis titulaire d'un diplôme d'**Ingénieur en Systèmes Informatiques avec une spécialisation en Logiciels** de l'**Instituto Tecnológico Superior de Xalapa**.\n\nAu cours de mes études, j'ai eu le privilège d'avoir une **participation distinguée à InnovaTecNM**, un événement national dédié à la promotion de la recherche, du développement technologique, de l'innovation et de l'entrepreneuriat. Mon projet, **SCANTEATE**, a franchi les phases régionales et nationales, démontrant mon engagement envers des solutions technologiques à fort impact. Vous pouvez en savoir plus sur [scanteate.com](https://scanteate.com).\n\nQuels types de projets innovants vous passionnent ?"
+			},
+			"skills": {
+				"name": "compétences",
+				"text": "compétences",
+				"content": "### Compétences techniques\n\nMon expertise couvre un large éventail de technologies modernes, me permettant de fournir des solutions complètes et robustes.\n\n**Langages de programmation :**\n* **JavaScript**\n* **TypeScript**\n* **Python**\n* **Go**\n\n**Langages Web de base :**\n* **HTML**\n* **CSS**\n\n**Langage de requête de base de données :**\n* **SQL**\n\n---\n\n### Développement Backend & Infrastructure\n\nJe construis des applications côté serveur puissantes et efficaces en utilisant :\n* **Node.js (Express)**\n* **Bun.js (Elysia)**\n\nAu-delà de la logique applicative, je maîtrise la gestion des environnements de déploiement via :\n* **Linux**\n* **Docker** pour la conteneurisation\n* **Nginx** pour le service web et le reverse proxy\n\n**Bases de données & ORM :**\nMaîtrise de la gestion et de l'interaction avec divers systèmes de bases de données :\n* **SQL (MySQL, PostgreSQL)**\n* **NoSQL (MongoDB)**\n* Utilisation de **Sequelize** et **Drizzle** pour un mapping objet-relationnel efficace.\n\n---\n\n### Développement Frontend\n\nCréation d'interfaces utilisateur intuitives et dynamiques avec :\n* **Vue (Nuxt.js)**\n* **Svelte (SvelteKit)**\n* **React**\n\n**Frameworks CSS :**\nPour un stylisage rapide et réactif, j'utilise :\n* **Tailwind CSS**\n* **Bulma**\n* **Bootstrap**\n\n---\n\n### Développement Mobile\n\nDéveloppement d'applications mobiles multiplateformes avec :\n* **React Native (Expo)**\n\n---\n\nJe suis toujours curieux d'explorer de nouvelles technologies et d'appliquer mes compétences à des défis passionnants. Quel est votre prochain grand projet ?"
+			}
+		}
+	},
+	"interests": {
+		"name": "intérêts",
+		"iconColor": "text-green-500",
+		"text": "intérêts",
+		"isOpen": false,
+		"subItems": {
+			"hobbies": {
+				"name": "loisirs",
+				"text": "loisirs",
+				"content": "### Mes passions & activités\n\nQuand je ne suis pas plongé dans le travail quotidien, vous pouvez me trouver en train de pratiquer diverses activités qui nourrissent mon esprit, mon corps et mon âme.\n\nRien ne vaut l'excitation du **volleyball**, que je sois sur le terrain pour faire des passes, des réceptions ou des smashs. C'est un excellent moyen de rester actif et de créer des liens.\n\nLorsque j'ai besoin d'air pur et de paysages, j'adore parcourir les sentiers avec mon **vélo**. Il y a un sentiment de liberté unique à pédaler, surtout en explorant de nouveaux chemins. Et pour un vrai défi, j'apprécie la **randonnée en montagne**. L'ascension est toujours gratifiante, offrant des panoramas à couper le souffle et un profond sentiment d'accomplissement au sommet.\n\nAu-delà de l'activité physique, je trouve une immense joie dans le plaisir simple d'**écouter de la musique**. Qu'il s'agisse de créer une ambiance pour une soirée calme ou de servir de bande sonore à un entraînement intense, la musique est une compagne constante. Pour me recentrer et trouver le calme intérieur, je consacre du temps à la **méditation**, une pratique qui m'aide à garder les pieds sur terre et à rester concentré. Et bien sûr, un bon livre n'est jamais loin. La **lecture** me permet d'explorer de nouveaux mondes, d'acquérir de nouvelles perspectives et d'apprendre continuellement.\n\nQuelles sont vos façons préférées de vous détendre et de recharger vos batteries ?"
+			},
+			"music": {
+				"name": "musique",
+				"text": "musique",
+				"content": "### Ma palette musicale\n\nMes goûts musicaux sont incroyablement variés et j'apprécie presque tous les genres. Des rythmes énergiques du **rap, trap, house et musique électronique** aux rythmes du **reggaeton, de la salsa et de la banda**, j'aime tout. J'apprécie également la **pop, le rock et la musique classique**.\n\nConsultez **[Mon profil Spotify](https://open.spotify.com/user/31kh5r7bqtijcxty53zicctkosua?si=e1e2023c86bd4917)** pour découvrir ce que j'écoute !"
+			}
+		}
+	}
+}

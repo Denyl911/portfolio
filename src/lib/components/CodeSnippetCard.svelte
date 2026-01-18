@@ -1,11 +1,12 @@
 <script>
-	// @ts-ignore
+	// @ts-expect-error
 	import Prism from 'prismjs';
 	import 'prismjs/themes/prism-okaidia.css';
 	import 'prismjs/components/prism-typescript.js';
 	import 'prismjs/components/prism-sql';
 	import 'prismjs/components/prism-jsx';
 	import myAvatar from '$lib/assets/avatar.png';
+
 	let {
 		code,
 		description,

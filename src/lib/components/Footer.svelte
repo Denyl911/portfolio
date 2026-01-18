@@ -1,11 +1,17 @@
 <script>
-	import { SiX, SiGithub, SiInstagram, SiMastodon } from '@icons-pack/svelte-simple-icons';
+import {
+	SiGithub,
+	SiInstagram,
+	SiMastodon,
+	SiX,
+} from '@icons-pack/svelte-simple-icons';
+import { _ } from 'svelte-i18n';
 </script>
 
-<footer class="border-bluegray sticky bottom-0 z-50 border-t bg-[#011627]/85">
+<footer class="border-bluegray sticky bottom-0 z-50 border-t bg-gradient-to-r from-[#011627]/85 to-[#0a2442]/85">
 	<div class="container mx-auto flex items-center justify-between md:flex-row">
 		<div class="flex items-center space-x-4 pl-1 md:pl-6 lg:pl-8">
-			<span class="text-midnight" data-interactive-cursor="text">find me in:</span>
+			<span class="text-midnight" data-interactive-cursor="text">{$_('findMeIn')}</span>
 			<!-- <a
 				href="#"
 				target="_blank" rel="noopener noreferrer"

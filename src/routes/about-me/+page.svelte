@@ -41,7 +41,7 @@
 		});
 		unsubscribe();
 		try {
-			const response = await fetch(`/src/lib/i18n/personalInfo/${lang}.json`);
+			const response = await fetch(`i18n/personalInfo/${lang}.json`);
 			PersonalInfoItems = await response.json();
 			currentContent = PersonalInfoItems.bio.subItems.myBio.content;
 		} catch (error) {

@@ -130,7 +130,7 @@ export async function loadProjectsTranslations() {
 	unsubscribe();
 
 	try {
-		const response = await fetch(`/src/lib/i18n/projects/${lang}.json`);
+		const response = await fetch(`i18n/projects/${lang}.json`);
 		const data = await response.json();
 
 		// Merge the translated data with the static data

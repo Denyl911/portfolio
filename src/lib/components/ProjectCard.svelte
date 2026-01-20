@@ -12,119 +12,63 @@
 	import { _ } from 'svelte-i18n';
 	import { type Project } from '$lib/data/projects';
 
-	let { project, openModal }: { project: Project; openModal: (project: Project) => void } = $props();
+	let { project, openModal }: { project: Project; openModal: (project: Project) => void } =
+		$props();
 </script>
 
-<div class="overflow-hidden rounded-lg border border-[#1E2D3D] bg-[#020618] hvr-bob">
-	<div class="relative h-48 bg-gray-700">
-		<img src={project.imageUrl} alt={project.title} class="h-full w-full object-cover" />
-		<div class="absolute top-2 right-2 rounded-md border border-[#1E2D3D] bg-[#011627] p-1">
+<div
+	class="group hover:shadow-3xl flex h-full flex-col overflow-hidden rounded-xl border border-white/20 bg-black/20 shadow-2xl backdrop-blur-lg transition-all duration-300 hover:scale-105"
+>
+	<div class="relative h-48 overflow-hidden">
+		<picture>
+			<source srcset={project.imageUrl} type="image/webp" />
+			<img
+				src={project.imageUrl.replace('.webp', '.png')}
+				alt={project.title}
+				class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+				loading="lazy"
+			/>
+		</picture>
+		<div
+			class="absolute top-3 right-3 rounded-lg border border-white/20 bg-black/50 p-2 backdrop-blur-sm"
+		>
 			{#if project.icon == 'html'}
-				<SiHtml5 color="#bf5e2a" size={16} />
-			{/if}
-			{#if project.icon == 'react'}
-				<SiReact color="#53c1de" size={16} />
-			{/if}
-			{#if project.icon == 'vue'}
-				<SiVuedotjs color="#81c784" size={16} />
-			{/if}
-			{#if project.icon == 'svelte'}
-				<SiSvelte color="#fe3d00" size={16} />
-			{/if}
-			{#if project.icon == 'react native'}
-				<SiExpo color="#ffffff" size={16} />
-			{/if}
-			{#if project.icon == 'nodejs'}
-				<SiNodedotjs color="#268e45" size={16} />
-			{/if}
-			{#if project.icon == 'bunjs'}
-				<SiBun color="#dbd0be" size={16} />
-			{/if}
-			{#if project.icon == 'ionic'}
-				<SiIonic color="#4e8ff6" size={16} />
+				<SiHtml5 color="#bf5e2a" size={20} />
+			{:else if project.icon == 'react'}
+				<SiReact color="#53c1de" size={20} />
+			{:else if project.icon == 'vue'}
+				<SiVuedotjs color="#81c784" size={20} />
+			{:else if project.icon == 'svelte'}
+				<SiSvelte color="#fe3d00" size={20} />
+			{:else if project.icon == 'react native'}
+				<SiExpo color="#ffffff" size={20} />
+			{:else if project.icon == 'nodejs'}
+				<SiNodedotjs color="#268e45" size={20} />
+			{:else if project.icon == 'bunjs'}
+				<SiBun color="#dbd0be" size={20} />
+			{:else if project.icon == 'ionic'}
+				<SiIonic color="#4e8ff6" size={20} />
 			{/if}
 		</div>
+		<div
+			class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+		></div>
 	</div>
-	<div class="p-4" data-interactive-cursor="navitem">
-		<h3 class="mb-2 text-lg text-white">
-			<span class="font-bold text-indigo-500">Project {project.id}</span> // _{project.title}
+	<div class="p-6" data-interactive-cursor="navitem">
+		<h3 class="text-cwhite mb-3 text-xl font-semibold transition-colors">
+			<span class="font-bold text-[#615fff]">Project {project.id}</span>
+			<span class="text-white transition-colors group-hover:text-[#607B96]">// {project.title}</span
+			>
 		</h3>
-		<p class="mb-4 text-sm text-[#607B96]">
+		<p class="mb-6 text-sm leading-relaxed text-gray-300">
 			{project.description}
 		</p>
 		<button
-		    data-interactive-cursor="btn"
-			class="cursor-pointer rounded-lg bg-slate-600 px-4 py-2 text-sm text-[#E5E9F0] transition-colors duration-300 hover:bg-[#ffb86a] hover:text-[#01080E]"
+			data-interactive-cursor="btn"
+			class="w-full cursor-pointer rounded-lg bg-gradient-to-r from-[#45556c] to-[#3a4658] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:from-[#ffb86a] hover:to-[#FEA55F] hover:shadow-lg focus:outline focus:outline-2 focus:outline-[#ffb86a]"
 			onclick={() => openModal(project)}
 		>
 			{$_('viewProject')}
 		</button>
 	</div>
 </div>
-
-<style>
-	@-webkit-keyframes hvr-bob {
-  0% {
-    -webkit-transform: translateY(-8px);
-    transform: translateY(-8px);
-  }
-  50% {
-    -webkit-transform: translateY(-4px);
-    transform: translateY(-4px);
-  }
-  100% {
-    -webkit-transform: translateY(-8px);
-    transform: translateY(-8px);
-  }
-}
-@keyframes hvr-bob {
-  0% {
-    -webkit-transform: translateY(-8px);
-    transform: translateY(-8px);
-  }
-  50% {
-    -webkit-transform: translateY(-4px);
-    transform: translateY(-4px);
-  }
-  100% {
-    -webkit-transform: translateY(-8px);
-    transform: translateY(-8px);
-  }
-}
-@-webkit-keyframes hvr-bob-float {
-  100% {
-    -webkit-transform: translateY(-8px);
-    transform: translateY(-8px);
-  }
-}
-@keyframes hvr-bob-float {
-  100% {
-    -webkit-transform: translateY(-8px);
-    transform: translateY(-8px);
-  }
-}
-.hvr-bob {
-  display: inline-block;
-  vertical-align: middle;
-  -webkit-transform: perspective(1px) translateZ(0);
-  transform: perspective(1px) translateZ(0);
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-}
-.hvr-bob:hover, .hvr-bob:focus, .hvr-bob:active {
-  -webkit-animation-name: hvr-bob-float, hvr-bob;
-  animation-name: hvr-bob-float, hvr-bob;
-  -webkit-animation-duration: .3s, 1.5s;
-  animation-duration: .3s, 1.5s;
-  -webkit-animation-delay: 0s, .3s;
-  animation-delay: 0s, .3s;
-  -webkit-animation-timing-function: ease-out, ease-in-out;
-  animation-timing-function: ease-out, ease-in-out;
-  -webkit-animation-iteration-count: 1, infinite;
-  animation-iteration-count: 1, infinite;
-  -webkit-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
-  -webkit-animation-direction: normal, alternate;
-  animation-direction: normal, alternate;
-}
-
-</style>

@@ -3,9 +3,9 @@
 	import { onDestroy } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import bgBlur from '$lib/assets/background-blurs.avif';
-	import bolt from '$lib/assets/bolt.png';
-	import snakeFood from '$lib/assets/snake-food.png';
-	import snakeFoodEmpty from '$lib/assets/snake-food-empty.png';
+	import bolt from '$lib/assets/bolt.webp';
+	import snakeFood from '$lib/assets/snake-food.webp';
+	import snakeFoodEmpty from '$lib/assets/snake-food-empty.webp';
 
 	type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 

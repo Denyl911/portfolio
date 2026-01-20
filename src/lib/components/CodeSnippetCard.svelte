@@ -5,7 +5,7 @@
 	import 'prismjs/components/prism-typescript.js';
 	import 'prismjs/components/prism-sql';
 	import 'prismjs/components/prism-jsx';
-	import myAvatar from '$lib/assets/avatar.png';
+	import myAvatar from '$lib/assets/avatar.webp';
 
 	let {
 		code,
@@ -26,7 +26,10 @@
 <div class="mb-6 rounded-lg border border-[#1E2D3D] bg-[#011221] p-4 text-sm">
 	<div class="mb-3 flex items-center justify-between">
 		<div class="flex items-center">
-			<img src={avatarUrl} alt={username} class="mr-3 h-8 w-8 rounded-full" />
+			<picture>
+				<source srcset={avatarUrl} type="image/webp" />
+				<img src={avatarUrl.replace('.webp', '.png')} alt={username} class="mr-3 h-8 w-8 rounded-full" loading="lazy" />
+			</picture>
 			<div>
 				<p class="text-[#4D5BCE]">{username}</p>
 				<p class="text-midnight text-xs">Created {createdTime}</p>

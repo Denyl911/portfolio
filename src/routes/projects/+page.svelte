@@ -8,12 +8,13 @@
 		SiSvelte,
 		SiVuedotjs
 	} from '@icons-pack/svelte-simple-icons';
+	import { gsap } from 'gsap';
 	import CheckSquare from 'lucide-svelte/icons/check-square';
-
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import Square from 'lucide-svelte/icons/square';
 	import XIcon from 'lucide-svelte/icons/x';
+	import { onMount } from 'svelte';
 	import { _, locale } from 'svelte-i18n';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import ProjectModal from '$lib/components/ProjectModal.svelte';
@@ -24,6 +25,18 @@
 
 	// Reactive state for desktop sidebar
 	let personalInfoOpenDesktop: boolean = $state(true);
+
+	let cards: HTMLElement[] = [];
+
+	onMount(() => {
+		gsap.from(cards, {
+			y: 30,
+			opacity: 0,
+			duration: 0.8,
+			stagger: 0.1,
+			ease: 'power2.out'
+		});
+	});
 
 	// Reactive state for mobile sidebar
 	let openMobileAccordion: string | null = $state('');
@@ -108,9 +121,23 @@
 	{/if}
 {/snippet}
 
-<div
-	class="flex-shrink-0 border-b border-[#1E2D3D] text-sm text-[#E5E9F0] lg:w-1/5 lg:border-r lg:border-b-0"
->
+<div class="text-cwhite relative flex-grow bg-gradient-to-br from-[#011627] to-[#0a2442]">
+	<!-- Particles background -->
+	<div class="absolute inset-0 z-0">
+		<div class="particles-container">
+			{#each Array(40) as _, i}
+				<div
+					class="particle"
+					style="left: {Math.random() * 100}%; top: {Math.random() * 100}%; animation-delay: {Math.random() * 10}s;"
+				></div>
+			{/each}
+		</div>
+	</div>
+
+	<div class="flex h-screen relative z-10">
+		<div
+			class="flex-shrink-0 border-b border-white/20 text-sm text-[#E5E9F0] lg:w-1/5 lg:border-r lg:border-b-0 bg-black/20 backdrop-blur-lg"
+		>
 	<div class="hidden h-full overflow-y-auto lg:block">
 		<div class="mb-4">
 			<button
@@ -143,7 +170,7 @@
 								onchange={() => toggleCategory(category)}
 							/>
 							{#if selectedCategories.includes(category)}
-								<CheckSquare class="mr-2 h-4 w-4 text-[#43D9AD]" />
+								<CheckSquare class="mr-2 h-4 w-4 text-[#41d5aa]" />
 							{:else}
 								<Square class="mr-2 h-4 w-4" />
 							{/if}
@@ -184,7 +211,7 @@
 								onchange={() => toggleCategory(category)}
 							/>
 							{#if selectedCategories.includes(category)}
-								<CheckSquare class="mr-2 h-4 w-4 text-[#43D9AD]" />
+								<CheckSquare class="mr-2 h-4 w-4 text-[#41d5aa]" />
 							{:else}
 								<Square class="mr-2 h-4 w-4" />
 							{/if}
@@ -218,15 +245,19 @@
 		{/if}
 	</div>
 
-	<div class="flex-grow overflow-y-auto p-4 lg:p-6">
-		<div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-			{#each filteredProjects as project (project.id)}
-				<ProjectCard {project} openModal={openProjectModal} />
-			{/each}
+		<div class="flex-grow overflow-y-auto p-4 lg:p-6">
+			<div class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+				{#each filteredProjects as project, i (project.id)}
+					<div bind:this={cards[i]}>
+						<ProjectCard {project} openModal={openProjectModal} />
+					</div>
+				{/each}
+			</div>
 		</div>
 	</div>
+	<ProjectModal project={selectedProject} showModal={showProjectModal} onClose={closeProjectModal} />
+	</div>
 </div>
-<ProjectModal project={selectedProject} showModal={showProjectModal} onClose={closeProjectModal} />
 
 <style>
 	input[type='checkbox'] {
@@ -234,5 +265,28 @@
 		opacity: 0;
 		width: 0;
 		height: 0;
+	}
+
+	.particles-container {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+
+	.particle {
+		position: absolute;
+		width: 2px;
+		height: 2px;
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: 50%;
+		animation: float 12s infinite linear;
+	}
+
+	@keyframes float {
+		0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+		10% { opacity: 0.5; }
+		90% { opacity: 0.5; }
+		100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
 	}
 </style>

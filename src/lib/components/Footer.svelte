@@ -8,7 +8,7 @@ import {
 import { _ } from 'svelte-i18n';
 </script>
 
-<footer class="border-bluegray sticky bottom-0 z-50 border-t bg-gradient-to-r from-[#011627]/85 to-[#0a2442]/85">
+<footer class="border-white/20 sticky bottom-0 z-50 border-t bg-black/20 backdrop-blur-lg">
 	<div class="container mx-auto flex items-center justify-between md:flex-row">
 		<div class="flex items-center space-x-4 pl-1 md:pl-6 lg:pl-8">
 			<span class="text-midnight" data-interactive-cursor="text">{$_('findMeIn')}</span>
@@ -36,7 +36,7 @@ import { _ } from 'svelte-i18n';
 				target="_blank"
 				rel="noopener noreferrer"
 				aria-label="LinkedIn"
-				class="border-bluegray text-midnight hover:text-cwhite flex h-10 items-center border-x px-4"
+				class="border-white/20 text-midnight hover:text-cwhite flex h-10 items-center border-x px-4"
 			>
 				<svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"
 					><path
@@ -49,7 +49,7 @@ import { _ } from 'svelte-i18n';
 				href="https://x.com/imnotdenyl"
 				target="_blank"
 				aria-label="Twitter"
-				class="border-bluegray text-midnight hover:text-cwhite flex h-10 items-center border-r pr-4"
+				class="border-white/20 text-midnight hover:text-cwhite flex h-10 items-center border-r pr-4"
 			>
 				<SiX />
 			</a>
@@ -58,12 +58,12 @@ import { _ } from 'svelte-i18n';
 				target="_blank"
 				rel="noopener noreferrer"
 				aria-label="GitHub"
-				class="border-bluegray text-midnight hover:text-cwhite flex h-10 items-center border-r pr-4 md:hidden"
+				class="border-white/20 text-midnight hover:text-cwhite flex h-10 items-center border-r pr-4 md:hidden"
 			>
 				<SiGithub />
 			</a>
 		</div>
-		<div class="border-bluegray text-midnight hidden border-l px-3 text-sm md:block">
+		<div class="border-white/20 text-midnight hidden border-l px-3 text-sm md:flex md:space-x-4">
 			<a
 				data-interactive-cursor="navitem"
 				href="https://github.com/Denyl911"

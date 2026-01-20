@@ -10,25 +10,40 @@
 	import Mail from 'lucide-svelte/icons/mail';
 	import Phone from 'lucide-svelte/icons/phone';
 	import XIcon from 'lucide-svelte/icons/x';
+	import { tick } from 'svelte';
 	import { ID, tablesDB } from '$lib/appwrite';
+	import { type ContactFormStore, contactFormStore } from '$lib/stores/contactForm';
 
 	let contactsOpenDesktop = $state(true);
 	let findMeAlsoInOpenDesktop = $state(true);
 	let openMobileAccordion: string | null = $state(null);
 
-	// Form data
-	let name: string = $state('');
-	let email: string = $state('');
-	let message: string = $state('');
-	let formSubmitted: boolean = $state(false);
-	let isLoading: boolean = $state(false);
+	// Form state from store
+	let formData = $derived($contactFormStore.formData);
+	let errors = $derived($contactFormStore.errors);
+	let isSubmitting = $derived($contactFormStore.isSubmitting);
+	let formSubmitted = $derived($contactFormStore.formSubmitted);
+	let successMessage = $derived($contactFormStore.successMessage);
+	let errorMessage = $derived($contactFormStore.errorMessage);
+
+	// Local form state for binding
+	let name = $state('');
+	let email = $state('');
+	let message = $state('');
+
+	// Sync local state with store
+	$effect(() => {
+		name = formData.name;
+		email = formData.email;
+		message = formData.message;
+	});
 
 	// Simulated message content for the code snippet
 	let simulatedCodeMessage = $derived(`
     const message = {
-        name: "${name || ''}",
-        email: "${email || ''}",
-        message: \`${message || ''}\`,
+        name: "${formData.name || ''}",
+        email: "${formData.email || ''}",
+        message: \`${formData.message || ''}\`,
         date: "${new Date().toDateString()}"
     };
 
@@ -56,33 +71,29 @@
 		}
 	}
 
-	async function handleSubmit() {
-		isLoading = true;
-		try {
-			 await tablesDB.createRow({
+	async function handleSubmit(event: Event) {
+		event.preventDefault();
+		await contactFormStore.submitForm(async (data) => {
+			await tablesDB.createRow({
 				databaseId: '68c2305f0024382ed1b4',
 				tableId: 'contact',
 				rowId: ID.unique(),
-				data: {
-					name,
-					email,
-					message
-				}
+				data: data
 			});
-			formSubmitted = true;
-		} catch (error: any) {
-			console.error('Error al enviar el mensaje:', error.error || error.message);
-		} finally {
-			isLoading = false;
-		}
+		});
 	}
 
 	function sendNewMessage() {
-		formSubmitted = false;
-		name = '';
-		email = '';
-		message = '';
+		contactFormStore.resetForm();
 	}
+
+	// Focus management
+	let successButton: HTMLButtonElement | undefined = $state();
+	$effect(() => {
+		if (formSubmitted) {
+			tick().then(() => successButton?.focus());
+		}
+	});
 </script>
 
 <div
@@ -257,66 +268,94 @@
 		<div
 			class="flex flex-grow items-center justify-center overflow-y-auto p-6 text-sm leading-relaxed"
 		>
-			{#if formSubmitted}
-				<div class="text-center">
-					<h2 class="mb-4 text-3xl text-white" data-interactive-cursor="code">{$_('thankYou')}</h2>
-					<p class="mb-8 text-[#607B96]" data-interactive-cursor="text">
-						{$_('messageAccepted')} <br />
-						{$_('willReceiveAnswer')}
-					</p>
-					<button
-						data-interactive-cursor="btn"
-						onclick={sendNewMessage}
-						class="rounded-lg bg-[#FEA55F] px-6 py-3 text-sm font-semibold text-[#01080E] transition-colors duration-200 hover:bg-[#FFC08A]"
-					>
-						{$_('sendNewMessage')}
-					</button>
-				</div>
-			{:else}
-				<form onsubmit={handleSubmit} class="mx-auto w-full max-w-lg space-y-6">
+				{#if errorMessage}
+					<div class="mb-4 rounded-lg border border-red-500/30 bg-red-900/20 p-3 text-red-300 error-banner">
+						<p class="text-sm">{errorMessage}</p>
+					</div>
+				{/if}
+
+				{#if formSubmitted}
+					<div class="text-center">
+						<h2 class="mb-4 text-3xl text-white" data-interactive-cursor="code">{$_('thankYou')}</h2>
+						<p class="mb-8 text-[#607B96]" data-interactive-cursor="text">
+							{$_('messageAccepted')} <br />
+							{$_('willReceiveAnswer')}
+						</p>
+						<button
+							bind:this={successButton}
+							data-interactive-cursor="btn"
+							onclick={sendNewMessage}
+							class="rounded-lg bg-[#FEA55F] px-6 py-3 text-sm font-semibold text-[#01080E] transition-colors duration-200 hover:bg-[#FFC08A]"
+						>
+							{$_('sendNewMessage')}
+						</button>
+					</div>
+				{:else}
+					<form onsubmit={handleSubmit} class="mx-auto w-full max-w-lg space-y-6">
 					<div>
 						<label for="name" class="mb-2 block text-sm text-[#607B96]">{$_('name')}</label>
 						<input
 							type="text"
 							id="name"
-							bind:value={name}
+							value={name}
+							oninput={(e: Event) =>
+								(contactFormStore as any).updateField('name', (e.target as HTMLInputElement).value)}
 							placeholder={$_('namePlaceholder')}
-							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none"
+							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none {errors.name ? 'border-red-500' : ''}"
 							required
 							data-interactive-cursor="input"
 						/>
+						{#if errors.name}
+							<p class="mt-1 text-sm text-red-400 error-message">{errors.name}</p>
+						{/if}
 					</div>
 					<div>
 						<label for="email" class="mb-2 block text-sm text-[#607B96]">{$_('email')}</label>
 						<input
 							type="email"
 							id="email"
-							bind:value={email}
+							value={email}
+							oninput={(e: Event) =>
+								(contactFormStore as any).updateField(
+									'email',
+									(e.target as HTMLInputElement).value
+								)}
 							placeholder={$_('emailPlaceholder')}
-							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none"
+							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none {errors.email ? 'border-red-500' : ''}"
 							required
 							data-interactive-cursor="input"
 						/>
+						{#if errors.email}
+							<p class="mt-1 text-sm text-red-400 error-message">{errors.email}</p>
+						{/if}
 					</div>
 					<div>
 						<label for="message" class="mb-2 block text-sm text-[#607B96]">{$_('message')}</label>
 						<textarea
 							id="message"
-							bind:value={message}
+							value={message}
+							oninput={(e: Event) =>
+								(contactFormStore as any).updateField(
+									'message',
+									(e.target as HTMLTextAreaElement).value
+								)}
 							placeholder={$_('messagePlaceholder')}
 							rows="6"
-							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none"
+							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none {errors.message ? 'border-red-500' : ''}"
 							data-interactive-cursor="input"
 							maxlength="900"
 						></textarea>
+						{#if errors.message}
+							<p class="mt-1 text-sm text-red-400 error-message">{errors.message}</p>
+						{/if}
 					</div>
 					<button
 						data-interactive-cursor="btn"
-						disabled={isLoading}
+						disabled={isSubmitting}
 						type="submit"
 						class="w-full cursor-pointer rounded-lg bg-[#FEA55F] px-6 py-3 text-sm font-semibold text-[#01080E] transition-colors duration-200 hover:bg-[#FFC08A]"
 					>
-						{#if isLoading}
+						{#if isSubmitting}
 							{$_('sending')}
 						{:else}
 							{$_('submitMessage')}

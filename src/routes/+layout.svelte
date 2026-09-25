@@ -10,6 +10,7 @@
 	import { onMount } from 'svelte';
 	import { addMessages, init, locale } from 'svelte-i18n';
 	import { page } from '$app/state';
+	import ClickSpark from '$lib/components/bits/ClickSpark.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import en from '$lib/i18n/en.json';
@@ -28,19 +29,20 @@
 		initialLocale: 'en'
 	});
 
-	onMount(()=>{
-     	const savedLocale = localStorage.getItem('locale');
-     	console.log('Saved Locale: ',savedLocale)
-     	if (savedLocale) {
-      		locale.set(savedLocale);
-     	}
-     	locale.subscribe(value => {
-      		value && localStorage.setItem('locale', value);
-     	});
-	})
-
+	onMount(() => {
+		reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+		const savedLocale = localStorage.getItem('locale');
+		console.log('Saved Locale: ', savedLocale);
+		if (savedLocale) {
+			locale.set(savedLocale);
+		}
+		locale.subscribe((value) => {
+			value && localStorage.setItem('locale', value);
+		});
+	});
 
 	let currentCursorState: ActiveDataValue = $state({ activeDataName: '', activeDataElement: null });
+	let reducedMotion = $state(false);
 	const scaleOnActive: ScaleOnActiveElement[] = [
 		{ element: 'link', scaleMultiplicator: 1.2 },
 		{ element: 'mixblend', scaleMultiplicator: 3 },
@@ -100,7 +102,7 @@
 </script>
 
 <div
-	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#020618] to-[#0a1a2f]"
+	class="flex min-h-screen items-center justify-center bg-[#0b0f19]"
 	data-interactive-cursor-area
 >
 	<div
@@ -109,7 +111,19 @@
 		<Header />
 		{#key page.url.pathname}
 			<main class="flex flex-grow flex-col overflow-auto lg:flex-row" in:fade={{ duration: 500 }}>
-				{@render children()}
+				{#if reducedMotion}
+					{@render children()}
+				{:else}
+					<ClickSpark
+						sparkColor="#ffb86a"
+						sparkCount={8}
+						sparkRadius={22}
+						duration={400}
+						class="flex flex-grow flex-col lg:flex-row"
+					>
+						{@render children()}
+					</ClickSpark>
+				{/if}
 			</main>
 		{/key}
 

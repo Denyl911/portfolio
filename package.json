@@ -1,16 +1,14 @@
 {
 	"name": "portfolio",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"devDependencies": {
-		"@biomejs/biome": "2.3.11",
+		"@biomejs/biome": "2.5.14",
 		"@sveltejs/adapter-auto": "^6.0.0",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/typography": "^0.5.16",
 		"@tailwindcss/vite": "^4.0.0",
-		"prettier": "^3.4.2",
-		"prettier-plugin-svelte": "^3.3.3",
-		"prettier-plugin-tailwindcss": "^0.6.11",
+		"jsrepo": "^3.8.1",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"tailwindcss": "^4.0.0",
@@ -25,19 +23,24 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"format": "prettier --write .",
-		"lint": "prettier --check ."
+		"format": "biome format --write src/",
+		"lint": "biome lint --fix src/",
+		"check:biome": "biome check --fix src/"
 	},
 	"type": "module",
 	"dependencies": {
 		"@icons-pack/svelte-simple-icons": "^5.0.0",
 		"@lostisworld/svelte-interactive-cursor": "^0.3.2",
+		"@types/prismjs": "^1.26.6",
 		"@vercel/analytics": "^1.5.0",
 		"appwrite": "^20.0.0",
-		"gsap": "^3.13.0",
+		"gsap": "^3.15.0",
 		"lucide-svelte": "^0.511.0",
 		"marked": "^15.0.12",
+		"motion": "^12.38.0",
+		"ogl": "^1.0.11",
 		"prismjs": "^1.30.0",
-		"svelte-i18n": "^4.0.1"
+		"svelte-i18n": "^4.0.1",
+		"three": "^0.186.0"
 	}
 }

@@ -1,48 +1,52 @@
 <script lang="ts">
-	import XIcon from 'lucide-svelte/icons/x';
-	import { quintOut } from 'svelte/easing';
-	import { fade, slide } from 'svelte/transition';
-	import { _ } from 'svelte-i18n';
-	import { type Project } from '$lib/data/projects';
+import XIcon from 'lucide-svelte/icons/x';
+import { _ } from 'svelte-i18n';
+import FadeContent from '$lib/components/bits/FadeContent.svelte';
+import type { Project } from '$lib/data/projects';
 
-	let {
-		project,
-		showModal,
-		onClose
-	}: { project: Project | null; showModal: boolean; onClose: () => void } = $props();
+let {
+	project,
+	showModal,
+	onClose,
+}: { project: Project | null; showModal: boolean; onClose: () => void } =
+	$props();
 
-	let currentImageIndex: number = $state(0);
+let currentImageIndex: number = $state(0);
 
-	function navigateGallery(direction: 'next' | 'prev') {
-		if (!project || !project.galleryImages || project.galleryImages.length === 0) return;
+function navigateGallery(direction: 'next' | 'prev') {
+	if (!project || !project.galleryImages || project.galleryImages.length === 0)
+		return;
 
-		if (direction === 'next') {
-			currentImageIndex = (currentImageIndex + 1) % project.galleryImages.length;
-		} else {
-			currentImageIndex =
-				(currentImageIndex - 1 + project.galleryImages.length) % project.galleryImages.length;
-		}
+	if (direction === 'next') {
+		currentImageIndex = (currentImageIndex + 1) % project.galleryImages.length;
+	} else {
+		currentImageIndex =
+			(currentImageIndex - 1 + project.galleryImages.length) %
+			project.galleryImages.length;
 	}
+}
 
-	// Reset image index when project changes or modal opens/closes
-	$effect(() => {
-		if (showModal) {
-			currentImageIndex = 0;
-		}
-	});
+// Reset image index when project changes or modal opens/closes
+$effect(() => {
+	if (showModal) {
+		currentImageIndex = 0;
+	}
+});
 </script>
 
 {#if showModal && project}
 	<div
 		data-interactive-cursor="navitem"
 		class="fixed inset-0 z-90 flex items-center justify-center bg-black/40 backdrop-blur-xs"
-		transition:fade={{ duration: 150 }}
 	>
-		<div
+		<FadeContent
+			blur={false}
+			duration={300}
+			threshold={0.5}
 			class="relative max-h-full w-full max-w-5xl overflow-auto rounded-lg border border-[#1E2D3D] bg-[#020618] px-6 pt-8 pb-6 shadow-lg"
-			transition:slide={{ duration: 300, easing: quintOut }}
 		>
 			<button
+				type="button"
 				class="absolute top-3 right-3 z-91 cursor-pointer text-white hover:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-500"
 				onclick={onClose}
 				aria-label="Close modal"
@@ -62,7 +66,9 @@
 						<h4 class="mb-2 text-lg font-semibold">{$_('technologies')}</h4>
 						<ul class="flex flex-wrap gap-2">
 							{#each project.technologies as tech}
-								<li class="rounded-md bg-slate-700 px-3 py-1 text-sm text-white">
+								<li
+									class="rounded-md bg-slate-700 px-3 py-1 text-sm text-white"
+								>
 									{tech}
 								</li>
 							{/each}
@@ -100,18 +106,24 @@
 
 				<div class="flex flex-col items-center md:w-2/3">
 					{#if project.galleryImages && project.galleryImages.length > 0}
-						<div class="relative mb-4 h-80 w-full overflow-hidden rounded-md bg-gray-800/50">
+						<div
+							class="relative mb-4 h-80 w-full overflow-hidden rounded-md bg-gray-800/50"
+						>
 							<picture>
-								<source srcset={project.galleryImages[currentImageIndex]} type="image/webp" />
+								<source
+									srcset={project.galleryImages[currentImageIndex]}
+									type="image/webp"
+								>
 								<img
 									src={project.galleryImages[currentImageIndex].replace('.webp', '.png')}
 									alt="Screenshot {currentImageIndex + 1} of {project.title}"
 									class="h-full w-full object-contain"
 									loading="lazy"
-								/>
+								>
 							</picture>
 							{#if project.galleryImages.length > 1}
 								<button
+									type="button"
 									data-interactive-cursor="prevslide"
 									class=" absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/75 focus:outline focus:outline-2 focus:outline-indigo-500"
 									onclick={() => navigateGallery('prev')}
@@ -120,6 +132,7 @@
 									&#10094;
 								</button>
 								<button
+									type="button"
 									data-interactive-cursor="nextslide"
 									class=" absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/75 focus:outline focus:outline-2 focus:outline-indigo-500"
 									onclick={() => navigateGallery('next')}
@@ -132,21 +145,19 @@
 						<div class="flex flex-wrap justify-center gap-2">
 							{#each project.galleryImages as image, i}
 								<button
+									type="button"
 									class="focus:outline focus:outline-2 focus:outline-indigo-500 rounded-sm"
 									onclick={() => (currentImageIndex = i)}
 									aria-label="View image {i + 1} of {project.title}"
 								>
 									<picture>
-										<source srcset={image} type="image/webp" />
+										<source srcset={image} type="image/webp">
 										<img
 											src={image.replace('.webp', '.png')}
 											alt="Thumbnail {i + 1} of {project.title}"
-											class="h-16 w-20 cursor-pointer rounded-sm object-cover ring-2 ring-transparent transition-all duration-200 hover:ring-indigo-500 {i ===
-											currentImageIndex
-												? 'ring-indigo-500'
-												: ''}"
+											class="h-16 w-20 cursor-pointer rounded-sm object-cover ring-2 ring-transparent transition-all duration-200 hover:ring-indigo-500 {i === currentImageIndex ? 'ring-indigo-500' : ''}"
 											loading="lazy"
-										/>
+										>
 									</picture>
 								</button>
 							{/each}
@@ -158,6 +169,7 @@
 			</div>
 			<div class="mt-6 flex justify-center">
 				<button
+					type="button"
 					data-interactive-cursor="btn"
 					class="cursor-pointer rounded-lg bg-slate-600 px-8 py-2 text-sm text-[#E5E9F0] transition-colors duration-300 hover:bg-[#ffb86a] hover:text-[#01080E] focus:outline focus:outline-2 focus:outline-indigo-500"
 					onclick={onClose}
@@ -166,6 +178,6 @@
 					{$_('close')}
 				</button>
 			</div>
-		</div>
+		</FadeContent>
 	</div>
 {/if}

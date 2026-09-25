@@ -1,45 +1,40 @@
 <script lang="ts">
-	// @ts-expect-error
-	import Prism from 'prismjs';
-	import { _ } from 'svelte-i18n';
-	import 'prismjs/themes/prism-okaidia.css';
-	import { SiGithub, SiMastodon, SiYoutube } from '@icons-pack/svelte-simple-icons';
-	import { LinkedinIcon } from 'lucide-svelte';
-	import ChevronDown from 'lucide-svelte/icons/chevron-down';
-	import ChevronRight from 'lucide-svelte/icons/chevron-right';
-	import Mail from 'lucide-svelte/icons/mail';
-	import Phone from 'lucide-svelte/icons/phone';
-	import XIcon from 'lucide-svelte/icons/x';
-	import { tick } from 'svelte';
-	import { ID, tablesDB } from '$lib/appwrite';
-	import { type ContactFormStore, contactFormStore } from '$lib/stores/contactForm';
+import Prism from 'prismjs';
+// biome-ignore lint/correctness/noUnusedImports: translations
+import { _ } from 'svelte-i18n';
+import 'prismjs/themes/prism-okaidia.css';
+import {
+	SiGithub,
+	SiMastodon,
+	SiYoutube,
+} from '@icons-pack/svelte-simple-icons';
+import { LinkedinIcon } from 'lucide-svelte';
+import ChevronDown from 'lucide-svelte/icons/chevron-down';
+import ChevronRight from 'lucide-svelte/icons/chevron-right';
+import Mail from 'lucide-svelte/icons/mail';
+import Phone from 'lucide-svelte/icons/phone';
+import XIcon from 'lucide-svelte/icons/x';
+import { tick } from 'svelte';
+import { ID, tablesDB } from '$lib/appwrite';
+import ElectricBorder from '$lib/components/bits/ElectricBorder.svelte';
+import FadeContent from '$lib/components/bits/FadeContent.svelte';
+import { contactFormStore } from '$lib/stores/contactForm';
 
-	let contactsOpenDesktop = $state(true);
-	let findMeAlsoInOpenDesktop = $state(true);
-	let openMobileAccordion: string | null = $state(null);
+let contactsOpenDesktop = $state(true);
+let findMeAlsoInOpenDesktop = $state(true);
+let openMobileAccordion: string | null = $state(null);
 
-	// Form state from store
-	let formData = $derived($contactFormStore.formData);
-	let errors = $derived($contactFormStore.errors);
-	let isSubmitting = $derived($contactFormStore.isSubmitting);
-	let formSubmitted = $derived($contactFormStore.formSubmitted);
-	let successMessage = $derived($contactFormStore.successMessage);
-	let errorMessage = $derived($contactFormStore.errorMessage);
+// Form state from store
+let formData = $derived($contactFormStore.formData);
+let errors = $derived($contactFormStore.errors);
+let isSubmitting = $derived($contactFormStore.isSubmitting);
+let formSubmitted = $derived($contactFormStore.formSubmitted);
+let errorMessage = $derived($contactFormStore.errorMessage);
 
-	// Local form state for binding
-	let name = $state('');
-	let email = $state('');
-	let message = $state('');
+// Form state is read directly from the store (no mirror state to avoid sync loops).
 
-	// Sync local state with store
-	$effect(() => {
-		name = formData.name;
-		email = formData.email;
-		message = formData.message;
-	});
-
-	// Simulated message content for the code snippet
-	let simulatedCodeMessage = $derived(`
+// Simulated message content for the code snippet
+let simulatedCodeMessage = $derived(`
     const message = {
         name: "${formData.name || ''}",
         email: "${formData.email || ''}",
@@ -51,49 +46,49 @@
         form.send(message);
     });`);
 
-	const contactItems = [{ type: 'email', value: 'imdenyl@gmail.com' }];
+const contactItems = [{ type: 'email', value: 'imdenyl@gmail.com' }];
 
-	const findMeAlsoInItems = [
-		{ name: 'Youtube', link: 'https://www.youtube.com/@denilsondelarosa5649' },
-		{ name: 'Mastodon', link: 'https://mastodon.social/@denyl' },
-		{
-			name: 'LinkedIn',
-			link: 'https://www.linkedin.com/in/denilson-de-la-rosa-s%C3%A1nchez-7171281b9'
-		},
-		{ name: 'Github', link: 'https://github.com/Denyl911' }
-	];
+const findMeAlsoInItems = [
+	{ name: 'Youtube', link: 'https://www.youtube.com/@denilsondelarosa5649' },
+	{ name: 'Mastodon', link: 'https://mastodon.social/@denyl' },
+	{
+		name: 'LinkedIn',
+		link: 'https://www.linkedin.com/in/denilson-de-la-rosa-s%C3%A1nchez-7171281b9',
+	},
+	{ name: 'Github', link: 'https://github.com/Denyl911' },
+];
 
-	function toggleMobileAccordion(section: string) {
-		if (openMobileAccordion === section) {
-			openMobileAccordion = null;
-		} else {
-			openMobileAccordion = section;
-		}
+function toggleMobileAccordion(section: string) {
+	if (openMobileAccordion === section) {
+		openMobileAccordion = null;
+	} else {
+		openMobileAccordion = section;
 	}
+}
 
-	async function handleSubmit(event: Event) {
-		event.preventDefault();
-		await contactFormStore.submitForm(async (data) => {
-			await tablesDB.createRow({
-				databaseId: '68c2305f0024382ed1b4',
-				tableId: 'contact',
-				rowId: ID.unique(),
-				data: data
-			});
+async function handleSubmit(event: Event) {
+	event.preventDefault();
+	await contactFormStore.submitForm(async (data) => {
+		await tablesDB.createRow({
+			databaseId: '68c2305f0024382ed1b4',
+			tableId: 'contact',
+			rowId: ID.unique(),
+			data: data,
 		});
-	}
-
-	function sendNewMessage() {
-		contactFormStore.resetForm();
-	}
-
-	// Focus management
-	let successButton: HTMLButtonElement | undefined = $state();
-	$effect(() => {
-		if (formSubmitted) {
-			tick().then(() => successButton?.focus());
-		}
 	});
+}
+
+function sendNewMessage() {
+	contactFormStore.resetForm();
+}
+
+// Focus management
+let successButton: HTMLButtonElement | undefined = $state();
+$effect(() => {
+	if (formSubmitted) {
+		tick().then(() => successButton?.focus());
+	}
+});
 </script>
 
 <div
@@ -102,6 +97,7 @@
 	<div class="hidden h-full overflow-y-auto lg:block">
 		<div class="mb-4">
 			<button
+				type="button"
 				data-interactive-cursor="dropdown"
 				onclick={() => (contactsOpenDesktop = !contactsOpenDesktop)}
 				class="flex h-[42px] w-full items-center pl-4 hover:text-[#C5C5C5] {contactsOpenDesktop
@@ -109,16 +105,23 @@
 					: ''} border-b border-[#1E2D3D]"
 			>
 				{#if contactsOpenDesktop}
-					<ChevronDown class="mr-2 h-3 w-3 fill-current transition-transform duration-200" />
+					<ChevronDown
+						class="mr-2 h-3 w-3 fill-current transition-transform duration-200"
+					/>
 				{:else}
-					<ChevronRight class="mr-2 h-3 w-3 fill-current transition-transform duration-200" />
+					<ChevronRight
+						class="mr-2 h-3 w-3 fill-current transition-transform duration-200"
+					/>
 				{/if}
 				{$_('contacts')}
 			</button>
 			{#if contactsOpenDesktop}
 				<div class="pt-2 pl-8">
 					{#each contactItems as contact (contact.value)}
-						<div data-interactive-cursor="navitem" class="flex items-center pt-1 text-xs">
+						<div
+							data-interactive-cursor="navitem"
+							class="flex items-center pt-1 text-xs"
+						>
 							{#if contact.type === 'email'}
 								<Mail class="mr-2 h-3 w-3" />
 							{:else if contact.type === 'phone'}
@@ -133,6 +136,7 @@
 
 		<div>
 			<button
+				type="button"
 				data-interactive-cursor="dropdown"
 				onclick={() => (findMeAlsoInOpenDesktop = !findMeAlsoInOpenDesktop)}
 				class="flex h-[42px] w-full items-center pl-4 hover:text-[#C5C5C5] {findMeAlsoInOpenDesktop
@@ -140,9 +144,13 @@
 					: ''} border-y border-[#1E2D3D]"
 			>
 				{#if findMeAlsoInOpenDesktop}
-					<ChevronDown class="mr-2 h-3 w-3 fill-current transition-transform duration-200" />
+					<ChevronDown
+						class="mr-2 h-3 w-3 fill-current transition-transform duration-200"
+					/>
 				{:else}
-					<ChevronRight class="mr-2 h-3 w-3 fill-current transition-transform duration-200" />
+					<ChevronRight
+						class="mr-2 h-3 w-3 fill-current transition-transform duration-200"
+					/>
 				{/if}
 				{$_('findMeAlsoIn')}
 			</button>
@@ -156,16 +164,16 @@
 							class="flex items-center pt-1 text-xs hover:text-[#C5C5C5]"
 							data-interactive-cursor="navitem"
 						>
-							{#if item.name == 'Youtube'}
+							{#if item.name === 'Youtube'}
 								<SiYoutube size={12} />
 							{/if}
-							{#if item.name == 'Mastodon'}
+							{#if item.name === 'Mastodon'}
 								<SiMastodon size={12} />
 							{/if}
-							{#if item.name == 'LinkedIn'}
+							{#if item.name === 'LinkedIn'}
 								<LinkedinIcon size={12} />
 							{/if}
-							{#if item.name == 'Github'}
+							{#if item.name === 'Github'}
 								<SiGithub size={12} />
 							{/if}
 							<span class="ml-1">{item.name}</span>
@@ -182,14 +190,19 @@
 		</div>
 		<div>
 			<button
+				type="button"
 				onclick={() => toggleMobileAccordion('contacts')}
 				class="flex w-full items-center justify-between border-b border-[#1E2D3D] p-4 hover:bg-[#1E2D3D]/30"
 			>
 				<span class="flex items-center text-white">
 					{#if openMobileAccordion === 'contacts'}
-						<ChevronDown class="mr-2 h-4 w-4 transition-transform duration-200" />
+						<ChevronDown
+							class="mr-2 h-4 w-4 transition-transform duration-200"
+						/>
 					{:else}
-						<ChevronRight class="mr-2 h-4 w-4 transition-transform duration-200" />
+						<ChevronRight
+							class="mr-2 h-4 w-4 transition-transform duration-200"
+						/>
 					{/if}
 					{$_('contacts')}
 				</span>
@@ -197,7 +210,9 @@
 			{#if openMobileAccordion === 'contacts'}
 				<div class="bg-[#011221] pl-6 text-sm">
 					{#each contactItems as contact (contact.value)}
-						<div class="flex items-center border-b border-[#1E2D3D]/50 p-3 text-left">
+						<div
+							class="flex items-center border-b border-[#1E2D3D]/50 p-3 text-left"
+						>
 							{#if contact.type === 'email'}
 								<Mail class="mr-2 h-4 w-4" />
 							{:else if contact.type === 'phone'}
@@ -210,14 +225,19 @@
 			{/if}
 
 			<button
+				type="button"
 				onclick={() => toggleMobileAccordion('find-me-also-in')}
 				class="flex w-full items-center justify-between border-b border-[#1E2D3D] p-4 hover:bg-[#1E2D3D]/30"
 			>
 				<span class="flex items-center text-white">
 					{#if openMobileAccordion === 'find-me-also-in'}
-						<ChevronDown class="mr-2 h-4 w-4 transition-transform duration-200" />
+						<ChevronDown
+							class="mr-2 h-4 w-4 transition-transform duration-200"
+						/>
 					{:else}
-						<ChevronRight class="mr-2 h-4 w-4 transition-transform duration-200" />
+						<ChevronRight
+							class="mr-2 h-4 w-4 transition-transform duration-200"
+						/>
 					{/if}
 					{$_('findMeAlsoIn')}
 				</span>
@@ -231,16 +251,16 @@
 							rel="noopener noreferrer"
 							class="flex items-center border-b border-[#1E2D3D]/50 p-3 text-left"
 						>
-							{#if item.name == 'Youtube'}
+							{#if item.name === 'Youtube'}
 								<SiYoutube size={12} />
 							{/if}
-							{#if item.name == 'Mastodon'}
+							{#if item.name === 'Mastodon'}
 								<SiMastodon size={12} />
 							{/if}
-							{#if item.name == 'LinkedIn'}
+							{#if item.name === 'LinkedIn'}
 								<LinkedinIcon size={12} />
 							{/if}
-							{#if item.name == 'Github'}
+							{#if item.name === 'Github'}
 								<SiGithub size={12} />
 							{/if}
 							<span class="ml-1">{item.name}</span>
@@ -256,7 +276,9 @@
 	<div
 		class="flex w-full flex-col border-b border-[#1E2D3D] p-0 lg:flex-grow lg:border-r lg:border-b-0"
 	>
-		<div class="hidden h-[42px] flex-shrink-0 border-b border-[#1E2D3D] lg:flex">
+		<div
+			class="hidden h-[42px] flex-shrink-0 border-b border-[#1E2D3D] lg:flex"
+		>
 			<div
 				data-interactive-cursor="text"
 				class="flex items-center border-r border-[#1E2D3D] px-4 text-white"
@@ -266,22 +288,28 @@
 			</div>
 		</div>
 		<div
-			class="flex flex-grow items-center justify-center overflow-y-auto p-6 text-sm leading-relaxed"
+			class="flex w-full flex-grow items-center justify-center overflow-y-auto p-6 text-sm leading-relaxed"
 		>
-				{#if errorMessage}
-					<div class="mb-4 rounded-lg border border-red-500/30 bg-red-900/20 p-3 text-red-300 error-banner">
-						<p class="text-sm">{errorMessage}</p>
-					</div>
-				{/if}
+			{#if errorMessage}
+				<div
+					class="mb-4 rounded-lg border border-red-500/30 bg-red-900/20 p-3 text-red-300 error-banner"
+				>
+					<p class="text-sm">{errorMessage}</p>
+				</div>
+			{/if}
 
-				{#if formSubmitted}
+			{#if formSubmitted}
+				<FadeContent blur duration={500} threshold={0.3} class="w-full">
 					<div class="text-center">
-						<h2 class="mb-4 text-3xl text-white" data-interactive-cursor="code">{$_('thankYou')}</h2>
+						<h2 class="mb-4 text-3xl text-white" data-interactive-cursor="code">
+							{$_('thankYou')}
+						</h2>
 						<p class="mb-8 text-[#607B96]" data-interactive-cursor="text">
-							{$_('messageAccepted')} <br />
+							{$_('messageAccepted')} <br>
 							{$_('willReceiveAnswer')}
 						</p>
 						<button
+							type="button"
 							bind:this={successButton}
 							data-interactive-cursor="btn"
 							onclick={sendNewMessage}
@@ -290,33 +318,40 @@
 							{$_('sendNewMessage')}
 						</button>
 					</div>
-				{:else}
-					<form onsubmit={handleSubmit} class="mx-auto w-full max-w-lg space-y-6">
+				</FadeContent>
+			{:else}
+				<form onsubmit={handleSubmit} class="mx-auto w-full max-w-lg space-y-6">
 					<div>
-						<label for="name" class="mb-2 block text-sm text-[#607B96]">{$_('name')}</label>
+						<label for="name" class="mb-2 block text-sm text-[#607B96]"
+							>{$_('name')}</label
+						>
 						<input
 							type="text"
 							id="name"
-							value={name}
+							value={formData.name}
 							oninput={(e: Event) =>
-								(contactFormStore as any).updateField('name', (e.target as HTMLInputElement).value)}
+								contactFormStore.updateField('name', (e.target as HTMLInputElement).value)}
 							placeholder={$_('namePlaceholder')}
 							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none {errors.name ? 'border-red-500' : ''}"
 							required
 							data-interactive-cursor="input"
-						/>
+						>
 						{#if errors.name}
-							<p class="mt-1 text-sm text-red-400 error-message">{errors.name}</p>
+							<p class="mt-1 text-sm text-red-400 error-message">
+								{errors.name}
+							</p>
 						{/if}
 					</div>
 					<div>
-						<label for="email" class="mb-2 block text-sm text-[#607B96]">{$_('email')}</label>
+						<label for="email" class="mb-2 block text-sm text-[#607B96]"
+							>{$_('email')}</label
+						>
 						<input
 							type="email"
 							id="email"
-							value={email}
+							value={formData.email}
 							oninput={(e: Event) =>
-								(contactFormStore as any).updateField(
+								contactFormStore.updateField(
 									'email',
 									(e.target as HTMLInputElement).value
 								)}
@@ -324,18 +359,22 @@
 							class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] px-4 py-3 text-white focus:border-[#43D9AD] focus:outline-none {errors.email ? 'border-red-500' : ''}"
 							required
 							data-interactive-cursor="input"
-						/>
+						>
 						{#if errors.email}
-							<p class="mt-1 text-sm text-red-400 error-message">{errors.email}</p>
+							<p class="mt-1 text-sm text-red-400 error-message">
+								{errors.email}
+							</p>
 						{/if}
 					</div>
 					<div>
-						<label for="message" class="mb-2 block text-sm text-[#607B96]">{$_('message')}</label>
+						<label for="message" class="mb-2 block text-sm text-[#607B96]"
+							>{$_('message')}</label
+						>
 						<textarea
 							id="message"
-							value={message}
+							value={formData.message}
 							oninput={(e: Event) =>
-								(contactFormStore as any).updateField(
+								contactFormStore.updateField(
 									'message',
 									(e.target as HTMLTextAreaElement).value
 								)}
@@ -346,21 +385,31 @@
 							maxlength="900"
 						></textarea>
 						{#if errors.message}
-							<p class="mt-1 text-sm text-red-400 error-message">{errors.message}</p>
+							<p class="mt-1 text-sm text-red-400 error-message">
+								{errors.message}
+							</p>
 						{/if}
 					</div>
-					<button
-						data-interactive-cursor="btn"
-						disabled={isSubmitting}
-						type="submit"
-						class="w-full cursor-pointer rounded-lg bg-[#FEA55F] px-6 py-3 text-sm font-semibold text-[#01080E] transition-colors duration-200 hover:bg-[#FFC08A]"
+					<ElectricBorder
+						color="#43D9AD"
+						borderRadius={8}
+						speed={0.6}
+						chaos={0.08}
+						class="block w-full"
 					>
-						{#if isSubmitting}
-							{$_('sending')}
-						{:else}
-							{$_('submitMessage')}
-						{/if}
-					</button>
+						<button
+							data-interactive-cursor="btn"
+							disabled={isSubmitting}
+							type="submit"
+							class="w-full cursor-pointer rounded-lg bg-[#FEA55F] px-6 py-3 text-sm font-semibold text-[#01080E] transition-colors duration-200 hover:bg-[#FFC08A] disabled:cursor-not-allowed disabled:opacity-60"
+						>
+							{#if isSubmitting}
+								{$_('sending')}
+							{:else}
+								{$_('submitMessage')}
+							{/if}
+						</button>
+					</ElectricBorder>
 				</form>
 			{/if}
 		</div>
@@ -371,15 +420,13 @@
 		<div
 			class="rounded-lg border border-[#1E2D3D] bg-[#011627] p-4 font-mono text-sm whitespace-pre-wrap"
 		>
-			<pre data-interactive-cursor="code">
-                    <code
+			<pre data-interactive-cursor="code"><code
 					>{@html Prism.highlight(
 						simulatedCodeMessage,
 						Prism.languages.javascript,
 						'javascript'
 					)}</code
-				>
-                    </pre>
+				></pre>
 		</div>
 	</div>
 </div>

@@ -6,6 +6,7 @@ import {
 	SiIonic,
 	SiNodedotjs,
 	SiReact,
+	SiSolid,
 	SiSvelte,
 	SiVuedotjs,
 } from '@icons-pack/svelte-simple-icons';
@@ -34,7 +35,14 @@ let {
 		transitionDuration={650}
 		class="!border-0"
 	>
-		<div
+		<a
+			href="#"
+			onclick={() => openModal(project)}
+			onkeypress={(e) => {
+				if (e.key === 'Enter') {
+					openModal(project);
+				}
+			}}
 			class="group flex h-full flex-col overflow-hidden rounded-xl transition-all duration-300 hover:scale-[1.02]"
 		>
 			<div class="relative h-48 overflow-hidden">
@@ -58,6 +66,8 @@ let {
 						<SiVuedotjs color="#81c784" size={20} />
 					{:else if project.icon === 'svelte'}
 						<SiSvelte color="#fe3d00" size={20} />
+					{:else if project.icon === 'solid'}
+						<SiSolid color="#2c4f7c" size={20} />
 					{:else if project.icon === 'react native'}
 						<SiExpo color="#ffffff" size={20} />
 					{:else if project.icon === 'nodejs'}
@@ -84,13 +94,12 @@ let {
 				</p>
 				<button
 					type="button"
-					data-interactive-cursor="btn"
+					data-interactive-cursor="navitem"
 					class="w-full cursor-pointer rounded-lg bg-gradient-to-r from-[#45556c] to-[#3a4658] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:from-[#ffb86a] hover:to-[#FEA55F] hover:shadow-lg focus:outline focus:outline-2 focus:outline-[#ffb86a]"
-					onclick={() => openModal(project)}
 				>
 					{$_('viewProject')}
 				</button>
 			</div>
-		</div>
+		</a>
 	</GlareHover>
 </SpotlightCard>

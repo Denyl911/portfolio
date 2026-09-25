@@ -41,6 +41,54 @@
 			"title": "portfolio",
 			"description": "Ce portfolio.",
 			"longDescription": "Ce portfolio présente un concept de design distinctif, développé en Svelte"
+		},
+		{
+			"id": 8,
+			"title": "stripe-copy-products-to-sandbox",
+			"description": "Script CLI pour copier produits et prix Stripe de Live vers Sandbox.",
+			"longDescription": "Script Bun qui pagine tous les produits Live, recrée les manquants en Test avec même id, nom et métadonnées, puis copie chaque prix en préservant devise, montant, récurrence et taxes. Idempotent via le flag original_live_id, configuré avec STRIPE_LIVE_KEY et STRIPE_TEST_KEY."
+		},
+		{
+			"id": 9,
+			"title": "news-scrapper",
+			"description": "API d'ingestion auto de news avec édition IA et publication WordPress.",
+			"longDescription": "API Elysia + Bun avec recherche SearXNG, scraping Crawl4AI, pipeline embeddings et édition LLM, bot Telegram, crons autopilot, rate limiting et docs OpenAPI. Modules : ingestion, édition, utilisateurs et publication WordPress."
+		},
+		{
+			"id": 10,
+			"title": "hazmas-api",
+			"description": "API de gestion d'équipe commerciale pour HazMasPatrimonial (KPIs, objectifs, ranking).",
+			"longDescription": "Backend Elysia + Drizzle + Postgres pour la plateforme HazMasPatrimonial : groupes, collaborateurs, leadership, KPIs, objectifs, métriques de prospection, médaillier et ranking, feed public et détail des rendez-vous. Auth JWT, Firebase Admin et Nodemailer."
+		},
+		{
+			"id": 11,
+			"title": "solid-audio-recorder",
+			"description": "Enregistreur audio navigateur avec visualisation d'onde en direct.",
+			"longDescription": "Exemple SolidStart avec MediaRecorder et Web Audio API : accès micro, oscilloscope temps réel via AnalyserNode, enregistrement start/stop en audio/ogg et liste de lecture."
+		},
+		{
+			"id": 12,
+			"title": "educash",
+			"description": "Première version React Native de KidCash : enveloppes d'épargne pour enfants.",
+			"longDescription": "App Expo + expo-router, prédécesseure de KidCash. Gère les apartados (enveloppes d'épargne), revenus et dépenses et totaux quotidiens persistés avec AsyncStorage, avec parcours home, apartados, registre et bienvenue. Axée sur l'éducation financière."
+		},
+		{
+			"id": 13,
+			"title": "danonino-api",
+			"description": "Backend promo ludique avec jeu, scores, collections et rapports.",
+			"longDescription": "API Elysia + Drizzle + Postgres pour un jeu style Danonino : utilisateurs, sessions, scores, collections et rapports, plus crons CSV-vers-Salesforce et refresh tokens, uploads S3 avec Sharp, React Email + Nodemailer, intégration Google GenAI/OpenAI, auth JWT, rate limiting et docs OpenAPI."
+		},
+		{
+			"id": 14,
+			"title": "pagos-react",
+			"description": "Plateforme de paiement Stripe et landings de services pour *********.",
+			"longDescription": "Plateforme TanStack Start + React 19 + Stripe : API checkout-session, endpoints uploads et utilisateurs, persistance Drizzle + MySQL, notifications Nodemailer et pages de services (audit digital, campagnes pub, consulting, stratégie digitale, leads LinkedIn, réseaux sociaux). Tailwindcss + shadcn UI, Vitest et Biome."
+		},
+		{
+			"id": 15,
+			"title": "haz-mas-web-app",
+			"description": "App desktop de métriques pour ********* (Svelte + Tauri).",
+			"longDescription": "Frontend desktop Svelte 5 + SvelteKit + Tauri 2 consommant hazmas-api : filtrage avancé des métriques, compteurs KPI animés et progression des objectifs, métriques par collaborateur, vues paginées, export PDF avec jsPDF et Excel avec xlsx, notifications natives et tableaux TanStack Table et LayerChart. UI Tailwindcss + shadcn-svelte, testé avec Vitest."
 		}
 	]
 }

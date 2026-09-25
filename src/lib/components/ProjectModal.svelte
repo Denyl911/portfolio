@@ -14,7 +14,7 @@ let {
 let currentImageIndex: number = $state(0);
 
 function navigateGallery(direction: 'next' | 'prev') {
-	if (!project || !project.galleryImages || project.galleryImages.length === 0)
+	if (!project?.galleryImages || project.galleryImages.length === 0)
 		return;
 
 	if (direction === 'next') {

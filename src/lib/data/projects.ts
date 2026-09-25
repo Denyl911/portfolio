@@ -5,6 +5,7 @@ import ex1 from '$lib/assets/ex1.webp';
 import ex2 from '$lib/assets/ex2.webp';
 import ex3 from '$lib/assets/ex3.webp';
 import excelencia from '$lib/assets/excelencia-login.webp';
+import gosth from '$lib/assets/gosth.webp';
 import kid1 from '$lib/assets/kid1.webp';
 import kid2 from '$lib/assets/kid2.webp';
 import kid3 from '$lib/assets/kid3.webp';
@@ -40,6 +41,7 @@ export type Project = {
 		| 'vue'
 		| 'bunjs'
 		| 'svelte'
+		| 'solid'
 		| 'ionic';
 	categories: string[];
 	galleryImages?: string[];
@@ -53,7 +55,7 @@ export const projectsData: Project[] = [
 		id: 1,
 		imageUrl: trust,
 		icon: 'vue',
-		categories: ['HTML', 'Vue'],
+		categories: ['Vue', 'NodeJs'],
 		technologies: ['Vue.js', 'Nuxt', 'Bulma', 'Node.js', 'Express'],
 		galleryImages: [trust, trust1, trust2, trust3],
 	},
@@ -61,7 +63,7 @@ export const projectsData: Project[] = [
 		id: 2,
 		imageUrl: scanteate,
 		icon: 'react',
-		categories: ['React', 'React Native', 'HTML'],
+		categories: ['React', 'React Native', 'BunJs', 'AI'],
 		technologies: [
 			'React',
 			'React Native',
@@ -117,6 +119,118 @@ export const projectsData: Project[] = [
 		galleryImages: [portfolio, port2, port3, port1],
 		githubLink: 'https://github.com/Denyl911/portfolio',
 		projectLink: 'https://denyl.xyz/',
+	},
+	{
+		id: 8,
+		imageUrl: gosth,
+		icon: 'bunjs',
+		categories: ['BunJs', 'Stripe'],
+		technologies: ['Bun.js', 'Stripe API', 'TypeScript'],
+		githubLink: 'https://github.com/Denyl911/stripe-copy-products-to-sandbox',
+		galleryImages: [gosth],
+	},
+	{
+		id: 9,
+		imageUrl: gosth,
+		icon: 'bunjs',
+		categories: ['BunJs', 'AI'],
+		technologies: [
+			'Bun.js',
+			'Elysia',
+			'Drizzle',
+			'Postgres',
+			'OpenAI',
+			'Telegram Bot',
+			'WordPress API',
+			'Crawl4AI',
+			'SearXNG',
+		],
+		galleryImages: [gosth],
+	},
+	{
+		id: 10,
+		imageUrl: gosth,
+		icon: 'bunjs',
+		categories: ['BunJs'],
+		technologies: [
+			'Bun.js',
+			'Elysia',
+			'Drizzle',
+			'Postgres',
+			'Firebase Admin',
+			'Nodemailer',
+		],
+		galleryImages: [gosth],
+	},
+	{
+		id: 11,
+		imageUrl: gosth,
+		icon: 'solid',
+		categories: ['Solid'],
+		technologies: ['SolidJS', 'SolidStart', 'Web Audio API', 'TypeScript'],
+		githubLink: 'https://github.com/Denyl911/solid-audio-recorder',
+		galleryImages: [gosth],
+	},
+	{
+		id: 12,
+		imageUrl: gosth,
+		icon: 'react native',
+		categories: ['React Native'],
+		technologies: ['Expo', 'React Native', 'NativeWind', 'AsyncStorage'],
+		githubLink: 'https://github.com/Denyl911/educash',
+		galleryImages: [gosth],
+	},
+	{
+		id: 13,
+		imageUrl: gosth,
+		icon: 'bunjs',
+		categories: ['BunJs', 'AI'],
+		technologies: [
+			'Bun.js',
+			'Elysia',
+			'Drizzle',
+			'Postgres',
+			'AWS S3',
+			'Salesforce',
+			'React Email',
+			'Google GenAI',
+		],
+		galleryImages: [gosth],
+	},
+	{
+		id: 14,
+		imageUrl: gosth,
+		icon: 'react',
+		categories: ['React', 'Stripe'],
+		technologies: [
+			'React 19',
+			'TanStack Start',
+			'TanStack Router',
+			'Stripe',
+			'Drizzle',
+			'MySQL',
+			'Tailwindcss',
+		],
+		galleryImages: [gosth],
+	},
+	{
+		id: 15,
+		imageUrl: gosth,
+		icon: 'svelte',
+		categories: ['Svelte', 'Tauri'],
+		technologies: [
+			'Svelte 5',
+			'SvelteKit',
+			'Tauri 2',
+			'Tailwindcss',
+			'shadcn-svelte',
+			'LayerChart',
+			'TanStack Table',
+			'jsPDF',
+			'TypeScript',
+		],
+		projectLink: 'https://github.com/romanmartinezmonge/HazMasPat-webApp',
+		galleryImages: [gosth],
 	},
 ];
 

@@ -1,18 +1,32 @@
 <script lang="ts">
 import {
+	SiAmazons3,
+	SiAnthropic,
+	SiBun,
 	SiCss3,
 	SiDocker,
+	SiDrizzle,
+	SiExpo,
 	SiFigma,
+	SiFirebase,
 	SiGit,
 	SiHtml5,
 	SiJavascript,
 	SiMarkdown,
+	SiMysql,
 	SiNodedotjs,
+	SiOpenai,
+	SiPostgresql,
 	SiPython,
 	SiReact,
+	SiSolid,
+	SiStripe,
 	SiSvelte,
 	SiTailwindcss,
+	SiTauri,
+	SiTelegram,
 	SiTypescript,
+	SiWordpress,
 } from '@icons-pack/svelte-simple-icons';
 import ChevtonDownIcon from 'lucide-svelte/icons/chevron-down';
 import ChevtonRightIcon from 'lucide-svelte/icons/chevron-right';
@@ -437,6 +451,62 @@ onMount(async () => {
 											{:else if skill.icon === 'SiNodedotjs'}
 												<span class="mr-2 text-green-500"
 													><SiNodedotjs size={24} /></span
+												>
+											{:else if skill.icon === 'SiBun'}
+												<span class="mr-2 text-[#fbf0df]"
+													><SiBun size={24} /></span
+												>
+											{:else if skill.icon === 'SiFirebase'}
+												<span class="mr-2 text-orange-500"
+													><SiFirebase size={24} /></span
+												>
+											{:else if skill.icon === 'SiPostgresql'}
+												<span class="mr-2 text-blue-500"
+													><SiPostgresql size={24} /></span
+												>
+											{:else if skill.icon === 'SiMysql'}
+												<span class="mr-2 text-[#4479a1]"
+													><SiMysql size={24} /></span
+												>
+											{:else if skill.icon === 'SiDrizzle'}
+												<span class="mr-2 text-[#c5f74f]"
+													><SiDrizzle size={24} /></span
+												>
+											{:else if skill.icon === 'SiExpo'}
+												<span class="mr-2 text-white"
+													><SiExpo size={24} /></span
+												>
+											{:else if skill.icon === 'SiTauri'}
+												<span class="mr-2 text-cyan-300"
+													><SiTauri size={24} /></span
+												>
+											{:else if skill.icon === 'SiSolid'}
+												<span class="mr-2 text-blue-400"
+													><SiSolid size={24} /></span
+												>
+											{:else if skill.icon === 'SiStripe'}
+												<span class="mr-2 text-[#635bff]"
+													><SiStripe size={24} /></span
+												>
+											{:else if skill.icon === 'SiTelegram'}
+												<span class="mr-2 text-sky-400"
+													><SiTelegram size={24} /></span
+												>
+											{:else if skill.icon === 'SiOpenai'}
+												<span class="mr-2 text-gray-200"
+													><SiOpenai size={24} /></span
+												>
+											{:else if skill.icon === 'SiAnthropic'}
+												<span class="mr-2 text-[#d97757]"
+													><SiAnthropic size={24} /></span
+												>
+											{:else if skill.icon === 'SiWordpress'}
+												<span class="mr-2 text-sky-500"
+													><SiWordpress size={24} /></span
+												>
+											{:else if skill.icon === 'SiAmazons3'}
+												<span class="mr-2 text-green-500"
+													><SiAmazons3 size={24} /></span
 												>
 											{:else if skill.icon === 'SiHtml5'}
 												<span class="mr-2 text-orange-500"

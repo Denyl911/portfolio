@@ -5,17 +5,20 @@ import {
 	SiHtml5,
 	SiNodedotjs,
 	SiReact,
+	SiSolid,
+	SiStripe,
 	SiSvelte,
+	SiTauri,
 	SiVuedotjs,
 } from '@icons-pack/svelte-simple-icons';
 import CheckSquare from 'lucide-svelte/icons/check-square';
 import ChevronDown from 'lucide-svelte/icons/chevron-down';
 import ChevronRight from 'lucide-svelte/icons/chevron-right';
+import SparklesIcon from 'lucide-svelte/icons/sparkles';
 import Square from 'lucide-svelte/icons/square';
 import XIcon from 'lucide-svelte/icons/x';
 // biome-ignore lint/correctness/noUnusedImports: translation
 import { _, locale } from 'svelte-i18n';
-import FadeContent from '$lib/components/bits/FadeContent.svelte';
 import Particles from '$lib/components/Particles.svelte';
 import ProjectCard from '$lib/components/ProjectCard.svelte';
 import ProjectModal from '$lib/components/ProjectModal.svelte';
@@ -30,8 +33,23 @@ let personalInfoOpenDesktop: boolean = $state(true);
 // Reactive state for mobile sidebar
 let openMobileAccordion: string | null = $state('');
 
-// Project filtering logic
-let selectedCategories: string[] = $state(['HTML', 'React Native', 'BunJs']);
+const categories = [
+	'Svelte',
+	'React',
+	'Vue',
+	'Solid',
+	'React Native',
+	'Tauri',
+	'NodeJs',
+	'BunJs',
+	'AI',
+	'Stripe',
+	'HTML',
+];
+
+// Project filtering logic: start with everything visible so no project
+// is hidden on first load. Empty selection also means "show all".
+let selectedCategories: string[] = $state([...categories]);
 
 // Projects data
 let projects = $state<Project[]>([]);
@@ -58,15 +76,25 @@ const filteredProjects = $derived(
 	}),
 );
 
-const categories = [
-	'HTML',
-	'React',
-	'Vue',
-	'Svelte',
-	'React Native',
-	'NodeJs',
-	'BunJs',
-];
+// Stable key for the grid: re-animate only when the visible set changes,
+// not when the selection order changes.
+const filteredKey = $derived(filteredProjects.map((p) => p.id).join(','));
+
+// Per-category counts (0 until translations load).
+const categoryCounts = $derived(
+	Object.fromEntries(
+		categories.map((category) => [
+			category,
+			projects.filter((p) => p.categories.includes(category)).length,
+		]),
+	) as Record<string, number>,
+);
+
+const allSelected = $derived(selectedCategories.length === categories.length);
+
+function toggleAll() {
+	selectedCategories = allSelected ? [] : [...categories];
+}
 
 function toggleMobileAccordion(section: string) {
 	if (openMobileAccordion === section) {
@@ -118,6 +146,18 @@ $effect(() => {
 	{#if category === 'BunJs'}
 		<SiBun size={16} />
 	{/if}
+	{#if category === 'Solid'}
+		<SiSolid size={16} />
+	{/if}
+	{#if category === 'Tauri'}
+		<SiTauri size={16} />
+	{/if}
+	{#if category === 'Stripe'}
+		<SiStripe size={16} />
+	{/if}
+	{#if category === 'AI'}
+		<SparklesIcon size={16} />
+	{/if}
 {/snippet}
 
 <div
@@ -153,7 +193,7 @@ $effect(() => {
 								class="mr-2 h-3 w-3 fill-current transition-transform duration-200"
 							/>
 						{/if}
-						{$_('projects')}
+						{$_('_technologies')}
 					</button>
 					{#if personalInfoOpenDesktop}
 						<div class="pt-2 pl-4">
@@ -177,8 +217,19 @@ $effect(() => {
 									{/if}
 									{@render showCategoryIcon(category)}
 									<span class="ml-1">{category}</span>
+									<span class="ml-auto pr-4 text-xs text-[#607B96]"
+										>{categoryCounts[category] ?? 0}</span
+									>
 								</label>
 							{/each}
+							<button
+								type="button"
+								data-interactive-cursor="btn"
+								onclick={toggleAll}
+								class="mt-2 cursor-pointer pr-4 text-xs text-[#607B96] hover:text-cwhite"
+							>
+								{allSelected ? $_('clearAll') : $_('selectAll')}
+							</button>
 						</div>
 					{/if}
 				</div>
@@ -186,7 +237,7 @@ $effect(() => {
 
 			<div class="lg:hidden">
 				<div class="border-b border-[#1E2D3D] p-4">
-					<h2 class="text-lg text-white">_projects</h2>
+					<h2 class="text-lg text-white">_categories</h2>
 				</div>
 				<div>
 					<button
@@ -224,9 +275,20 @@ $effect(() => {
 									{:else}
 										<Square class="mr-2 h-4 w-4" />
 									{/if}
-									{category}
+									{@render showCategoryIcon(category)}
+									<span class="ml-1">{category}</span>
+									<span class="ml-auto pr-4 text-xs text-[#607B96]"
+										>{categoryCounts[category] ?? 0}</span
+									>
 								</label>
 							{/each}
+							<button
+								type="button"
+								onclick={toggleAll}
+								class="w-full py-2 pr-4 text-left text-xs text-[#607B96] hover:text-[#C5C5C5]"
+							>
+								{allSelected ? $_('clearAll') : $_('selectAll')}
+							</button>
 						</div>
 					{/if}
 				</div>
@@ -237,7 +299,7 @@ $effect(() => {
 			<div
 				class="hidden h-[42px] flex-shrink-0 border-b border-[#1E2D3D] lg:flex"
 			>
-				{#if selectedCategories.length > 0}
+				{#if selectedCategories.length > 0 && !allSelected}
 					<div
 						data-interactive-cursor="text"
 						class="flex items-center border-r border-[#1E2D3D] px-4 text-white"
@@ -262,21 +324,25 @@ $effect(() => {
 			</div>
 
 			<div class="flex-grow overflow-y-auto p-4 lg:p-6">
-				{#key selectedCategories.join(',')}
-					<div
-						class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
-					>
-						{#each filteredProjects as project, i (project.id)}
-							<FadeContent
-								blur
-								duration={600}
-								delay={Math.min(i, 8) * 0.05}
-								threshold={0.05}
-							>
-								<ProjectCard {project} openModal={openProjectModal} />
-							</FadeContent>
-						{/each}
-					</div>
+				{#key filteredKey}
+					{#if filteredProjects.length === 0}
+						<p class="text-center text-sm text-[#607B96]">
+							{$_('noProjects')}
+						</p>
+					{:else}
+						<div
+							class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+						>
+							{#each filteredProjects as project, i (project.id)}
+								<div
+									class="card-enter h-full"
+									style="animation-delay: {Math.min(i, 8) * 50}ms"
+								>
+									<ProjectCard {project} openModal={openProjectModal} />
+								</div>
+							{/each}
+						</div>
+					{/if}
 				{/key}
 			</div>
 		</div>
@@ -294,5 +360,27 @@ input[type="checkbox"] {
 	opacity: 0;
 	width: 0;
 	height: 0;
+}
+
+.card-enter {
+	animation: card-enter 0.6s ease both;
+	will-change: opacity, transform;
+}
+
+@keyframes card-enter {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.card-enter {
+		animation: none;
+	}
 }
 </style>

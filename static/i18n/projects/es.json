@@ -41,6 +41,54 @@
 			"title": "portfolio",
 			"description": "Este portafolio.",
 			"longDescription": "Este portafolio presenta un concepto de diseño distintivo, desarrollado en Svelte"
+		},
+		{
+			"id": 8,
+			"title": "stripe-copy-products-to-sandbox",
+			"description": "Script CLI para copiar productos y precios de Stripe de Live a Sandbox.",
+			"longDescription": "Script en Bun que pagina todos los productos de Live, recrea en Test los faltantes con mismo id, nombre y metadatos, y copia cada precio preservando moneda, monto, facturación recurrente e impuestos. Idempotente con el flag original_live_id, configurado con STRIPE_LIVE_KEY y STRIPE_TEST_KEY."
+		},
+		{
+			"id": 9,
+			"title": "news-scrapper",
+			"description": "API de ingesta automatizada de noticias con edición IA y publicación en WordPress.",
+			"longDescription": "API en Elysia + Bun con búsqueda SearXNG, scraping Crawl4AI, pipeline de embeddings y edición con LLM, bot de Telegram para ingesta, crons de autopilot, rate limiting y docs OpenAPI. Módulos: ingesta, edición, usuarios y publicación en WordPress."
+		},
+		{
+			"id": 10,
+			"title": "hazmas-api",
+			"description": "API de gestión de equipo comercial para HazMasPatrimonial (KPIs, metas, ranking).",
+			"longDescription": "Backend en Elysia + Drizzle + Postgres para la plataforma de asesores HazMasPatrimonial: grupos, colaboradores, liderazgo, KPIs, metas, métricas de prospección, medallero y ranking, feed público y detalle de citas. Auth JWT, Firebase Admin y Nodemailer."
+		},
+		{
+			"id": 11,
+			"title": "solid-audio-recorder",
+			"description": "Grabadora de audio en navegador con visualización de onda en vivo.",
+			"longDescription": "Ejemplo en SolidStart con MediaRecorder y Web Audio API: pide acceso al micrófono, dibuja un osciloscopio en tiempo real con AnalyserNode, graba clips start/stop en audio/ogg y los lista para reproducir."
+		},
+		{
+			"id": 12,
+			"title": "educash",
+			"description": "Primera versión de KidCash en React Native: sobres de ahorro para niños.",
+			"longDescription": "App en Expo + expo-router, predecesora de KidCash. Gestiona apartados (sobres de ahorro), movimientos de ingresos y egresos y totales diarios persistidos con AsyncStorage, con flujos de home, apartados, registro y bienvenida. Enfocada en educación financiera."
+		},
+		{
+			"id": 13,
+			"title": "gamified-api",
+			"description": "Backend de promo gamificada con juego, puntajes, colecciones y reportes.",
+			"longDescription": "API en Elysia + Drizzle + Postgres para un juego estilo Danonino: usuarios, sesiones de juego, puntajes, colecciones y reportes, más crons de CSV-a-Salesforce y refresco de tokens, subidas a S3 con Sharp, React Email + Nodemailer, integración Google GenAI/OpenAI, auth JWT, rate limiting y docs OpenAPI."
+		},
+		{
+			"id": 14,
+			"title": "pagos-react",
+			"description": "Plataforma de pagos con Stripe y landings de servicios para *********.",
+			"longDescription": "Plataforma en TanStack Start + React 19 + Stripe: API de checkout-session, endpoints de subidas y usuarios, persistencia Drizzle + MySQL, notificaciones Nodemailer y páginas de servicios (auditoría digital, campañas publicitarias, consultoría, estrategia digital, LinkedIn leads, redes sociales). Tailwindcss + shadcn UI, Vitest y Biome."
+		},
+		{
+			"id": 15,
+			"title": "haz-mas-web-app",
+			"description": "App de escritorio de métricas para ******* (Svelte + Tauri).",
+			"longDescription": "Frontend de escritorio en Svelte 5 + SvelteKit + Tauri 2 que consume hazmas-api: filtrado avanzado de métricas, contadores KPI animados y progreso de metas, métricas por colaborador, vistas paginadas, exportación a PDF con jsPDF y a Excel con xlsx, notificaciones nativas y tablas con TanStack Table y LayerChart. UI Tailwindcss + shadcn-svelte, probado con Vitest."
 		}
 	]
 }

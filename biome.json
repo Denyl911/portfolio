@@ -16,9 +16,10 @@
 		"enabled": true,
 		"rules": {
 			"preset": "recommended",
-   "a11y": {
-        "useAnchorContent": "off"
-      }
+			"a11y": {
+				"useAnchorContent": "off",
+				"useValidAnchor": "info"
+			}
 		}
 	},
 	"javascript": {

@@ -43,7 +43,7 @@ let {
 					openModal(project);
 				}
 			}}
-			class="group flex h-full flex-col overflow-hidden rounded-xl transition-all duration-300 hover:scale-[1.02]"
+			class="group flex h-full flex-col overflow-hidden rounded-xl transition-all duration-300 sm:hover:scale-[1.02]"
 		>
 			<div class="relative h-48 overflow-hidden">
 				<picture>
@@ -82,7 +82,7 @@ let {
 					class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
 				></div>
 			</div>
-			<div class="p-6" data-interactive-cursor="navitem">
+			<div class="p-4 sm:p-6" data-interactive-cursor="navitem">
 				<h3 class="text-cwhite mb-3 text-xl font-semibold transition-colors">
 					<span class="font-bold text-[#615fff]">Project {project.id}</span>
 					<span class="text-white transition-colors group-hover:text-[#607B96]"
@@ -95,7 +95,7 @@ let {
 				<button
 					type="button"
 					data-interactive-cursor="navitem"
-					class="w-full cursor-pointer rounded-lg bg-gradient-to-r from-[#45556c] to-[#3a4658] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:from-[#ffb86a] hover:to-[#FEA55F] hover:shadow-lg focus:outline focus:outline-2 focus:outline-[#ffb86a]"
+					class="min-h-[44px] w-full cursor-pointer rounded-lg bg-gradient-to-r from-[#45556c] to-[#3a4658] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:from-[#ffb86a] hover:to-[#FEA55F] hover:shadow-lg focus:outline focus:outline-2 focus:outline-[#ffb86a]"
 				>
 					{$_('viewProject')}
 				</button>

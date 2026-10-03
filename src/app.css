@@ -17,3 +17,66 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* ---- Mobile hardening ---- */
+html,
+body {
+	overflow-x: hidden;
+	overscroll-behavior-y: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+body {
+	text-rendering: optimizeLegibility;
+	-webkit-text-size-adjust: 100%;
+}
+
+img,
+video,
+pre {
+	max-width: 100%;
+}
+
+/* Prevent iOS auto-zoom on form fields */
+input,
+textarea,
+select {
+	font-size: 16px;
+}
+@media (min-width: 1024px) {
+	input,
+	textarea,
+	select {
+		font-size: inherit;
+	}
+}
+
+/* Touch targets */
+button,
+a,
+label,
+[role='button'] {
+	touch-action: manipulation;
+}
+
+/* Hide custom-cursor / mouse-only effects on touch */
+@media (pointer: coarse) {
+	[data-interactive-cursor-area] {
+		cursor: auto;
+	}
+}
+
+/* Trim heavy animations on small screens + reduced motion */
+@media (max-width: 768px) {
+	.marquee-track {
+		animation-duration: 32s;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}

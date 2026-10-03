@@ -17,6 +17,7 @@ import ChevronRight from 'lucide-svelte/icons/chevron-right';
 import SparklesIcon from 'lucide-svelte/icons/sparkles';
 import Square from 'lucide-svelte/icons/square';
 import XIcon from 'lucide-svelte/icons/x';
+import { onMount } from 'svelte';
 // biome-ignore lint/correctness/noUnusedImports: translation
 import { _, locale } from 'svelte-i18n';
 import Particles from '$lib/components/Particles.svelte';
@@ -53,6 +54,7 @@ let selectedCategories: string[] = $state([...categories]);
 
 // Projects data
 let projects = $state<Project[]>([]);
+let isMobile = $state(false);
 
 async function loadProjects() {
 	projects = await loadProjectsTranslations();
@@ -114,6 +116,12 @@ function closeProjectModal() {
 	selectedProject = null; // Clear selected project when closing
 }
 
+onMount(() => {
+	isMobile =
+		window.matchMedia?.('(pointer: coarse), (max-width: 1023px)').matches ??
+		false;
+});
+
 $effect(() => {
 	const unsubscribe = locale.subscribe(async (lang) => {
 		if (lang) {
@@ -161,20 +169,22 @@ $effect(() => {
 {/snippet}
 
 <div
-	class="text-cwhite relative flex-grow bg-gradient-to-br from-[#011627] to-[#0a2442]"
+	class="text-cwhite relative flex h-full min-h-0 flex-col bg-gradient-to-br from-[#011627] to-[#0a2442] overflow-hidden"
 >
-	<div
-		class="pointer-events-none absolute inset-0 z-0 overflow-hidden"
-		aria-hidden="true"
-	>
-		<Particles />
-	</div>
-
-	<div class="flex h-screen relative z-10">
+	{#if !isMobile}
 		<div
-			class="flex-shrink-0 border-b border-white/20 text-sm text-[#E5E9F0] lg:w-1/7 lg:border-r lg:border-b-0 bg-black/20 backdrop-blur-lg"
+			class="pointer-events-none absolute inset-0 z-0 hidden sm:block"
+			aria-hidden="true"
 		>
-			<div class="hidden h-full overflow-y-auto lg:block">
+			<Particles />
+		</div>
+	{/if}
+
+	<div class="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
+		<div
+			class="max-h-[45%] w-full flex-shrink-0 overflow-y-auto overscroll-contain border-b border-white/20 bg-black/20 text-sm text-[#E5E9F0] backdrop-blur-lg lg:max-h-none lg:w-1/7 lg:border-r lg:border-b-0"
+		>
+			<div class="hidden h-full lg:block">
 				<div class="mb-4">
 					<button
 						type="button"
@@ -236,9 +246,6 @@ $effect(() => {
 			</div>
 
 			<div class="lg:hidden">
-				<div class="border-b border-[#1E2D3D] p-4">
-					<h2 class="text-lg text-white">_categories</h2>
-				</div>
 				<div>
 					<button
 						type="button"
@@ -255,14 +262,14 @@ $effect(() => {
 									class="mr-2 h-4 w-4 transition-transform duration-200"
 								/>
 							{/if}
-							{$_('projects')}
+							{$_('_technologies')}
 						</span>
 					</button>
 					{#if openMobileAccordion === 'projects'}
 						<div class="bg-[#011221] pl-4 text-sm">
 							{#each categories as category (category)}
 								<label
-									class="flex cursor-pointer items-center py-2 hover:text-[#C5C5C5]"
+									class="flex min-h-[44px] cursor-pointer items-center py-2 hover:text-[#C5C5C5]"
 								>
 									<input
 										type="checkbox"
@@ -295,7 +302,7 @@ $effect(() => {
 			</div>
 		</div>
 
-		<div class="flex flex-grow flex-col overflow-hidden">
+		<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
 			<div
 				class="hidden h-[42px] flex-shrink-0 border-b border-[#1E2D3D] lg:flex"
 			>
@@ -323,7 +330,9 @@ $effect(() => {
 				{/if}
 			</div>
 
-			<div class="flex-grow overflow-y-auto p-4 lg:p-6">
+			<div
+				class="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 lg:p-6"
+			>
 				{#key filteredKey}
 					{#if filteredProjects.length === 0}
 						<p class="text-center text-sm text-[#607B96]">
@@ -331,7 +340,7 @@ $effect(() => {
 						</p>
 					{:else}
 						<div
-							class="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+							class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3"
 						>
 							{#each filteredProjects as project, i (project.id)}
 								<div

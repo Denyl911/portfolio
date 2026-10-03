@@ -30,6 +30,9 @@
 	});
 
 	onMount(() => {
+		const coarse = window.matchMedia?.('(pointer: coarse)').matches ?? false;
+		const smallScreen = window.matchMedia?.('(max-width: 1023px)').matches ?? false;
+		isCoarsePointer = coarse || smallScreen;
 		reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 		const savedLocale = localStorage.getItem('locale');
 		console.log('Saved Locale: ', savedLocale);
@@ -43,6 +46,7 @@
 
 	let currentCursorState: ActiveDataValue = $state({ activeDataName: '', activeDataElement: null });
 	let reducedMotion = $state(false);
+	let isCoarsePointer = $state(false);
 	const scaleOnActive: ScaleOnActiveElement[] = [
 		{ element: 'link', scaleMultiplicator: 1.2 },
 		{ element: 'mixblend', scaleMultiplicator: 3 },
@@ -102,16 +106,16 @@
 </script>
 
 <div
-	class="flex min-h-screen items-center justify-center bg-[#0b0f19]"
+	class="flex min-h-dvh w-full items-center justify-center bg-[#0b0f19] p-0 sm:p-2"
 	data-interactive-cursor-area
 >
 	<div
-		class="flex h-[97vh] w-[97vw] flex-col rounded-lg border border-[#1E2D3D] bg-gradient-to-br from-[#011627] to-[#0a2442] font-['Fira_Code'] text-[#E5E9F0]"
+		class="flex h-dvh w-full flex-col overflow-hidden border-[#1E2D3D] bg-gradient-to-br from-[#011627] to-[#0a2442] font-['Fira_Code'] text-[#E5E9F0] sm:rounded-lg sm:border lg:h-[97vh] lg:w-[97vw]"
 	>
 		<Header />
 		{#key page.url.pathname}
-			<main class="flex flex-grow flex-col overflow-auto lg:flex-row" in:fade={{ duration: 500 }}>
-				{#if reducedMotion}
+			<main class="flex min-h-0 flex-grow flex-col overflow-x-hidden overflow-y-auto lg:flex-row" in:fade={{ duration: 500 }}>
+				{#if reducedMotion || isCoarsePointer}
 					{@render children()}
 				{:else}
 					<ClickSpark
@@ -131,6 +135,9 @@
 	</div>
 </div>
 
+{#if isCoarsePointer}
+	<!-- No custom cursor on touch devices -->
+{:else}
 <InteractiveCursor
 	bind:activeDataValue={currentCursorState}
 	useDataElementRect={['input', 'btn']}
@@ -142,5 +149,6 @@
 		: customCursorProps.find((state) => state.data === currentCursorState.activeDataName)
 				?.cursorClass || 'bg-white text-black'}"
 ></InteractiveCursor>
+{/if}
 
 <style></style>

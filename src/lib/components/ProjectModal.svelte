@@ -11,7 +11,24 @@ let {
 }: { project: Project | null; showModal: boolean; onClose: () => void } =
 	$props();
 
+import { onMount } from 'svelte';
+
 let currentImageIndex: number = $state(0);
+
+$effect(() => {
+	if (typeof document === 'undefined') return;
+	if (showModal) {
+		document.body.style.overflow = 'hidden';
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') onClose();
+		};
+		window.addEventListener('keydown', onKey);
+		return () => {
+			document.body.style.overflow = '';
+			window.removeEventListener('keydown', onKey);
+		};
+	}
+});
 
 function navigateGallery(direction: 'next' | 'prev') {
 	if (!project?.galleryImages || project.galleryImages.length === 0)
@@ -37,17 +54,17 @@ $effect(() => {
 {#if showModal && project}
 	<div
 		data-interactive-cursor="navitem"
-		class="fixed inset-0 z-90 flex items-center justify-center bg-black/40 backdrop-blur-xs"
+		class="fixed inset-0 z-90 flex items-end justify-center bg-black/60 p-0 backdrop-blur-xs sm:items-center sm:p-4"
 	>
 		<FadeContent
 			blur={false}
 			duration={300}
 			threshold={0.5}
-			class="relative max-h-full w-full max-w-5xl overflow-auto rounded-lg border border-[#1E2D3D] bg-[#020618] px-6 pt-8 pb-6 shadow-lg"
+			class="relative max-h-[92dvh] w-full max-w-5xl overflow-y-auto overscroll-contain rounded-t-xl border border-[#1E2D3D] bg-[#020618] px-4 pt-10 pb-6 shadow-lg sm:rounded-lg sm:px-6 sm:pt-8"
 		>
 			<button
 				type="button"
-				class="absolute top-3 right-3 z-91 cursor-pointer text-white hover:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-500"
+				class="absolute top-3 right-3 z-91 flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center text-white hover:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-500"
 				onclick={onClose}
 				aria-label="Close modal"
 				data-interactive-cursor="btn"
@@ -107,7 +124,7 @@ $effect(() => {
 				<div class="flex flex-col items-center md:w-2/3">
 					{#if project.galleryImages && project.galleryImages.length > 0}
 						<div
-							class="relative mb-4 h-80 w-full overflow-hidden rounded-md bg-gray-800/50"
+							class="relative mb-4 h-56 w-full overflow-hidden rounded-md bg-gray-800/50 sm:h-80"
 						>
 							<picture>
 								<source
@@ -125,7 +142,7 @@ $effect(() => {
 								<button
 									type="button"
 									data-interactive-cursor="prevslide"
-									class=" absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/75 focus:outline focus:outline-2 focus:outline-indigo-500"
+									class="absolute top-1/2 left-2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-full bg-black/50 p-2 text-white hover:bg-black/75 focus:outline focus:outline-2 focus:outline-indigo-500"
 									onclick={() => navigateGallery('prev')}
 									aria-label="Previous image"
 								>
@@ -134,7 +151,7 @@ $effect(() => {
 								<button
 									type="button"
 									data-interactive-cursor="nextslide"
-									class=" absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/75 focus:outline focus:outline-2 focus:outline-indigo-500"
+									class="absolute top-1/2 right-2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-full bg-black/50 p-2 text-white hover:bg-black/75 focus:outline focus:outline-2 focus:outline-indigo-500"
 									onclick={() => navigateGallery('next')}
 									aria-label="Next image"
 								>
@@ -171,7 +188,7 @@ $effect(() => {
 				<button
 					type="button"
 					data-interactive-cursor="btn"
-					class="cursor-pointer rounded-lg bg-slate-600 px-8 py-2 text-sm text-[#E5E9F0] transition-colors duration-300 hover:bg-[#ffb86a] hover:text-[#01080E] focus:outline focus:outline-2 focus:outline-indigo-500"
+					class="min-h-[44px] cursor-pointer rounded-lg bg-slate-600 px-8 py-3 text-sm text-[#E5E9F0] transition-colors duration-300 hover:bg-[#ffb86a] hover:text-[#01080E] focus:outline focus:outline-2 focus:outline-indigo-500"
 					onclick={onClose}
 					aria-label="Close modal"
 				>

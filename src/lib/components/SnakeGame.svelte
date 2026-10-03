@@ -139,6 +139,31 @@ function handleKeyPress(e: KeyboardEvent) {
 	changeDirection(e.key);
 }
 
+let touchStartX = 0;
+let touchStartY = 0;
+
+function handleTouchStart(e: TouchEvent) {
+	const t = e.touches[0];
+	touchStartX = t.clientX;
+	touchStartY = t.clientY;
+}
+
+function handleTouchEnd(e: TouchEvent) {
+	if (!gameStarted) {
+		startGame();
+		return;
+	}
+	const t = e.changedTouches[0];
+	const dx = t.clientX - touchStartX;
+	const dy = t.clientY - touchStartY;
+	if (Math.abs(dx) < 24 && Math.abs(dy) < 24) return;
+	if (Math.abs(dx) > Math.abs(dy)) {
+		changeDirection(dx > 0 ? 'ArrowRight' : 'ArrowLeft');
+	} else {
+		changeDirection(dy > 0 ? 'ArrowDown' : 'ArrowUp');
+	}
+}
+
 function changeDirection(key: string) {
 	// Solo permitir cambiar de dirección si no es en sentido contrario inmediato
 	switch (key) {
@@ -240,21 +265,21 @@ $effect(() => {
 		</div>
 
 		<div
-			class="flex h-160 w-90 md:h-190 md:w-150 lg:h-160 lg:w-120 flex-col justify-between rounded-md px-6"
+			class="flex w-full h-110 max-w-[340px] flex-col justify-between rounded-md px-4 sm:max-w-[420px] sm:px-6 md:w-150 lg:w-120"
 		>
 			<div class="flex flex-grow items-center justify-between space-x-4">
-				<div class="h-[90%] md:w-[70%] w-[80%]">
+				<div class="h-[90%]" ontouchstart={handleTouchStart} ontouchend={handleTouchEnd}>
 					<canvas
 						width="420"
 						height="800"
 						bind:this={canvas}
-						class="h-full w-full rounded-md border border-[#1d293d] bg-[#1d293d]"
+						class="aspect-[420/800] h-full w-full touch-none rounded-md border border-[#1d293d] bg-[#1d293d]"
 					></canvas>
 					{#if !gameStarted}
 						<button
 							type="button"
 							data-interactive-cursor="btn"
-							class="hvr-bounce-in relative -top-18 left-6 w-3/4 cursor-pointer rounded-lg bg-[#ffb86a] px-4 py-2 text-sm text-[#020618] hover:bg-[#FEA55F] hover:text-[#01080E]"
+							class="hvr-bounce-in relative -top-18 left-6 min-h-[44px] w-3/4 cursor-pointer rounded-lg bg-[#ffb86a] px-4 py-3 text-sm font-semibold text-[#020618] hover:bg-[#FEA55F] hover:text-[#01080E]"
 							onclick={() => {
 								startGame();
 							}}
@@ -271,12 +296,12 @@ $effect(() => {
 						<div class="rounded-md bg-[#1d293d] p-4">
 							<p class="mb-2">{$_('useKeyboard')}</p>
 							<p class="mb-4">{$_('arrowsToPlay')}</p>
-							<div class="mx-auto grid w-[70px] grid-cols-3 gap-x-3 gap-y-0">
+							<div class="mx-auto grid w-[148px] grid-cols-3 place-items-center gap-1">
 								<div></div>
 								<button
 									type="button"
 									onclick={() => changeDirection('ArrowUp')}
-									class="flex h-7 w-7 items-center justify-center rounded-sm border border-[#1A293A] bg-[#010C15] text-[#E5E9F0]"
+									class="flex h-11 w-11 items-center justify-center rounded-sm border border-[#1A293A] bg-[#010C15] text-[#E5E9F0] active:bg-[#1d293d]"
 								>
 									<MoveUp size={18} />
 								</button>
@@ -284,21 +309,21 @@ $effect(() => {
 								<button
 									type="button"
 									onclick={() => changeDirection('ArrowLeft')}
-									class="flex h-7 w-7 items-center justify-center rounded-sm border border-[#1A293A] bg-[#010C15] text-sm text-[#E5E9F0]"
+									class="flex h-11 w-11 items-center justify-center rounded-sm border border-[#1A293A] bg-[#010C15] text-sm text-[#E5E9F0] active:bg-[#1d293d]"
 								>
 									<MoveLeft size={18} />
 								</button>
 								<button
 									type="button"
 									onclick={() => changeDirection('ArrowDown')}
-									class="flex h-7 w-7 items-center justify-center rounded-sm border border-[#1A293A] bg-[#010C15] text-[#E5E9F0]"
+									class="flex h-11 w-11 items-center justify-center rounded-sm border border-[#1A293A] bg-[#010C15] text-[#E5E9F0] active:bg-[#1d293d]"
 								>
 									<MoveDown size={18} />
 								</button>
 								<button
 									type="button"
 									onclick={() => changeDirection('ArrowRight')}
-									class="flex h-7 w-7 items-center justify-center rounded-sm border border-[#1A293A] bg-[#010C15] text-[#E5E9F0]"
+									class="flex h-11 w-11 items-center justify-center rounded-sm border border-[#1A293A] bg-[#010C15] text-[#E5E9F0] active:bg-[#1d293d]"
 								>
 									<MoveRight size={18} />
 								</button>

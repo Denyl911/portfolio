@@ -52,40 +52,45 @@ const techs = [
 	},
 ];
 
+let isMobile = $state(false);
+
 onMount(() => {
-	gsap.from('#game', {
-		opacity: 0,
-		scale: 0.8,
-		duration: 1,
-		ease: 'back.out(1.7)',
-	});
+	isMobile = window.matchMedia?.('(pointer: coarse), (max-width: 1023px)').matches ?? false;
+	if (!isMobile) {
+		gsap.from('#game', {
+			opacity: 0,
+			scale: 0.8,
+			duration: 1,
+			ease: 'back.out(1.7)',
+		});
+	}
 });
 </script>
 
 <div
-	class="relative flex w-full flex-grow flex-col overflow-hidden bg-gradient-to-br from-[#012133] to-[#001526]"
+	class="relative flex w-full flex-grow flex-col md:overflow-hidden bg-gradient-to-br from-[#012133] to-[#001526]"
 >
 	<div class="absolute inset-0 z-0">
 		<FaultyTerminal
-			scale={2}
-			digitSize={1.2}
-			timeScale={0.5}
+			scale={isMobile ? 1.2 : 2}
+			digitSize={isMobile ? 0.9 : 1.2}
+			timeScale={isMobile ? 0.25 : 0.5}
 			scanlineIntensity={0.3}
 			curvature={0.3}
 			tint="#1a5fb4"
-			mouseReact={true}
+			mouseReact={!isMobile}
 			mouseStrength={0.5}
-			pageLoadAnimation={true}
+			pageLoadAnimation={!isMobile}
 			noiseAmp={1}
 			brightness={0.6}
 		/>
 	</div>
 	<!-- <Particles class="absolute inset-0 z-0" /> -->
 	<div
-		class="relative z-10 mx-auto flex w-full max-w-5/6 flex-grow flex-col items-center justify-center  lg:flex-row lg:justify-between"
+		class="relative z-10 mx-auto flex w-full max-w-full flex-grow flex-col items-center justify-center gap-8 px-4 py-10 sm:px-6 lg:max-w-5/6 lg:flex-row lg:justify-between lg:py-0"
 	>
 		<div
-			class="py-40 text-center lg:w-1/2 lg:py-0 lg:text-left"
+			class="w-full py-6 text-center sm:py-10 lg:w-1/2 lg:py-0 lg:text-left"
 			data-interactive-cursor="text"
 		>
 			<p class="text-c-white text-lg">{$_('hello')}. {$_('iAm')}</p>
@@ -94,10 +99,10 @@ onMount(() => {
 					text="Denilson De La Rosa"
 					delay={100}
 					animateBy="words"
-					class="my-2 justify-center text-5xl font-bold text-[#fea55f] md:text-5xl lg:justify-start"
+					class="my-2 justify-center text-4xl font-bold break-words text-[#fea55f] sm:text-5xl lg:justify-start"
 				/>
 			</div>
-			<div class="mt-1 lg:mx-0 text-2xl font-medium text-[#43d9ad]">
+			<div class="mt-1 min-h-[2.5rem] text-xl font-medium break-words text-[#43d9ad] sm:text-2xl lg:mx-0">
 				<span data-interactive-cursor="code"> &gt; </span>
 				<TextType
 					text={[$_('fullStackDeveloper'), $_('degree'), $_('phrase')]}
@@ -131,12 +136,12 @@ onMount(() => {
 			</div>
 
 			<div
-				class="text-midnight mt-10 rounded-md bg-[#011221] p-3 text-left text-sm"
+				class="text-midnight mt-8 w-full max-w-full rounded-md bg-[#011221] p-3 text-left text-xs sm:text-sm lg:mt-10"
 			>
 				<p class="mb-1">{$_('completeTheGame')}</p>
 				<p class="mb-1">{$_('findOnGithub')}</p>
 				<div
-					class="inline-block rounded-md bg-[#011221] p-3"
+					class="block max-w-full overflow-x-auto rounded-md bg-[#011221] p-3 break-all"
 					data-interactive-cursor="code"
 				>
 					<span class="text-[#4D5BCE]">const</span>
@@ -156,11 +161,11 @@ onMount(() => {
 					>;
 				</div>
 			</div>
-			<div class="mt-10 inline-block">
+			<div class="mt-8 inline-block lg:mt-10">
 				<ElectricBorder color="#ffb86a" borderRadius={8} speed={0.6}>
 					<a
 						href="/projects"
-						class="block rounded-md bg-gradient-to-r from-[#ffb86a] to-[#FEA55F] px-6 py-3 text-[#020618] transition-all duration-300 hover:from-[#FEA55F] hover:to-[#ffb86a]"
+						class="block min-h-[48px] rounded-md bg-gradient-to-r from-[#ffb86a] to-[#FEA55F] px-8 py-3.5 text-center text-[#020618] transition-all duration-300 hover:from-[#FEA55F] hover:to-[#ffb86a]"
 						data-interactive-cursor="navitem"
 					>
 						{$_('viewProjects')}
@@ -169,7 +174,7 @@ onMount(() => {
 			</div>
 		</div>
 
-		<div id="game" class="relative z-10">
+		<div id="game" class="relative z-10 flex w-full justify-center lg:w-auto">
 			<SnakeGame />
 		</div>
 	</div>

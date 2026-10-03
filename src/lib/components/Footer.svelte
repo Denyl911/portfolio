@@ -7,9 +7,9 @@ import GlareHover from '$lib/components/bits/GlareHover.svelte';
 <footer
 	class="border-white/20 sticky bottom-0 z-50 border-t bg-black/20 backdrop-blur-lg"
 >
-	<div class="container mx-auto flex items-center justify-between md:flex-row">
-		<div class="flex items-center space-x-4 pl-1 md:pl-6 lg:pl-8">
-			<span class="text-midnight" data-interactive-cursor="text"
+	<div class="mx-auto flex w-full max-w-full items-center justify-between gap-2 px-2 md:flex-row">
+		<div class="flex min-w-0 items-center gap-1 sm:gap-2 sm:space-x-4 sm:pl-1 md:pl-6 lg:pl-8">
+			<span class="text-midnight hidden truncate min-[400px]:inline" data-interactive-cursor="text"
 				>{$_('findMeIn')}</span
 			>
 			<a
@@ -18,7 +18,7 @@ import GlareHover from '$lib/components/bits/GlareHover.svelte';
 				target="_blank"
 				rel="noopener noreferrer"
 				aria-label="LinkedIn"
-				class="border-white/20 text-midnight hover:text-cwhite flex h-10 items-center border-x px-4"
+				class="border-white/20 text-midnight hover:text-cwhite flex h-11 min-w-[44px] items-center justify-center border-x px-2 sm:px-4"
 			>
 				<GlareHover
 					width="32px"
@@ -41,7 +41,7 @@ import GlareHover from '$lib/components/bits/GlareHover.svelte';
 				href="https://x.com/imnotdenyl"
 				target="_blank"
 				aria-label="Twitter"
-				class="border-white/20 text-midnight hover:text-cwhite flex h-10 items-center border-r pr-4"
+				class="border-white/20 text-midnight hover:text-cwhite flex h-11 min-w-[44px] items-center justify-center border-r px-2 sm:pr-4"
 			>
 				<GlareHover
 					width="32px"
@@ -59,7 +59,7 @@ import GlareHover from '$lib/components/bits/GlareHover.svelte';
 				target="_blank"
 				rel="noopener noreferrer"
 				aria-label="GitHub"
-				class="border-white/20 text-midnight hover:text-cwhite flex h-10 items-center border-r pr-4 md:hidden"
+				class="border-white/20 text-midnight hover:text-cwhite flex h-11 min-w-[44px] items-center justify-center border-r px-2 sm:pr-4 md:hidden"
 			>
 				<GlareHover
 					width="32px"

@@ -11,6 +11,19 @@ function changeLanguage() {
 	locale.set(selectedLang);
 }
 
+$effect(() => {
+	void page.url.pathname;
+	mobileMenuOpen = false;
+});
+
+$effect(() => {
+	if (typeof document === 'undefined') return;
+	document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+	return () => {
+		document.body.style.overflow = '';
+	};
+});
+
 onMount(() => {
 	selectedLang = localStorage.getItem('locale') || 'en';
 });
@@ -110,8 +123,8 @@ function toggleMobileMenu() {
 			<button
 				type="button"
 				onclick={toggleMobileMenu}
-				aria-label="Open menu"
-				class="text-[#607B96] focus:outline focus:outline-2 focus:outline-indigo-500"
+				aria-label="Toggle menu" aria-expanded={mobileMenuOpen}
+				class="flex min-h-[44px] min-w-[44px] items-center justify-center text-[#607B96] focus:outline focus:outline-2 focus:outline-indigo-500"
 			>
 				{#if mobileMenuOpen}
 					<XIcon />
@@ -125,7 +138,8 @@ function toggleMobileMenu() {
 
 {#if mobileMenuOpen}
 	<div
-		class="fixed z-40 flex h-[97vh] w-[97vw] flex-col items-start rounded-lg border border-white/20 bg-black/20 p-1 pt-6 backdrop-blur-lg md:hidden"
+		class="fixed inset-0 z-40 flex flex-col items-start overflow-y-auto bg-[#011627]/95 p-1 pt-20 backdrop-blur-lg md:hidden"
+		role="dialog" aria-modal="true" aria-label="Menu"
 	>
 		<p
 			class="text-midnight mt-6 w-full border-b border-[#1E2D3D] p-4 text-xl hover:text-[#4D5BCE]"
@@ -135,31 +149,31 @@ function toggleMobileMenu() {
 		<a
 			href="/"
 			onclick={() => (mobileMenuOpen = false)}
-			class="w-full border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
+			class="flex min-h-[52px] w-full items-center border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
 			>{$_('home')}</a
 		>
 		<a
 			href="/about-me"
 			onclick={() => (mobileMenuOpen = false)}
-			class="w-full border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
+			class="flex min-h-[52px] w-full items-center border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
 			>{$_('about')}</a
 		>
 		<a
 			href="/projects"
 			onclick={() => (mobileMenuOpen = false)}
-			class="w-full border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
+			class="flex min-h-[52px] w-full items-center border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
 			>{$_('projects')}</a
 		>
 		<!-- <a
 			href="/blog"
 			onclick={() => (mobileMenuOpen = false)}
-			class="w-full border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
+			class="flex min-h-[52px] w-full items-center border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
 			>_blog</a
 		> -->
 		<a
 			href="/contact-me"
 			onclick={() => (mobileMenuOpen = false)}
-			class="w-full border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
+			class="flex min-h-[52px] w-full items-center border-b border-[#1E2D3D] p-4 text-xl text-[#E5E9F0] hover:text-[#4D5BCE]"
 			>{$_('contact')}</a
 		>
 	</div>

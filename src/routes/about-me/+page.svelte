@@ -127,10 +127,8 @@ async function selectContent(
 		activeDesktopTab = PersonalInfoItems[itemKey].text;
 		await renderBio();
 	}
-	// For mobile, only close the main accordion if a content selection is made from a sub-item
-	if (window.innerWidth < 1024 && subItemKey) {
-		openMobileAccordion = '';
-	} else if (window.innerWidth < 1024 && itemKey === 'contacts') {
+	// Close mobile accordion after a selection (desktop ignores this state)
+	if (subItemKey || itemKey === 'contacts') {
 		openMobileAccordion = '';
 	}
 }
@@ -153,8 +151,9 @@ onMount(async () => {
 });
 </script>
 
+<div class="flex h-full min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
 <div
-	class="border-bluegray text-midnight flex-shrink-0 border-b text-sm lg:w-1/6 lg:border-r lg:border-b-0"
+	class="border-bluegray text-midnight flex-shrink-0 text-sm lg:w-1/6 lg:border-r"
 >
 	<div class="hidden h-full overflow-y-auto lg:block">
 		<div class="mb-4">
@@ -272,118 +271,96 @@ onMount(async () => {
 		</div>
 	</div>
 
-	<div class="lg:hidden">
-		<div class="border-bluegray border-b p-4">
-			<h2 class="text-cwhite text-lg">{$_('aboutMe')}</h2>
-		</div>
-		<div>
+	<div class="relative flex-shrink-0 lg:hidden">
+		<div class="border-bluegray flex h-11 border-b text-sm">
 			<button
 				type="button"
 				onclick={() => toggleMobileAccordion('personal-info')}
-				class="border-bluegray hover:bg-bluegray/30 flex w-full items-center justify-between border-b p-4"
+				aria-expanded={openMobileAccordion === 'personal-info'}
+				class="border-bluegray flex min-h-[44px] flex-1 items-center justify-center gap-1.5 border-r px-2 {openMobileAccordion === 'personal-info' ? 'text-cwhite' : ''}"
 			>
-				<span class="text-cwhite flex items-center">
-					{#if openMobileAccordion === 'personal-info'}
-						<ChevtonDownIcon
-							class="mr-2 h-4 w-4 transition-transform duration-200"
-						/>
-					{:else}
-						<ChevtonRightIcon
-							class="mr-2 h-4 w-4 transition-transform duration-200"
-						/>
-					{/if}
-					{$_('personalInfo')}
-				</span>
+				{#if openMobileAccordion === 'personal-info'}
+					<ChevtonDownIcon class="h-4 w-4 shrink-0 transition-transform duration-200" />
+				{:else}
+					<ChevtonRightIcon class="h-4 w-4 shrink-0 transition-transform duration-200" />
+				{/if}
+				<span class="truncate">{$_('personalInfo')}</span>
 			</button>
-			{#if openMobileAccordion === 'personal-info'}
-				<div class="bg-[#011221] text-sm">
-					{#each Object.entries(PersonalInfoItems) as [key, item] (key)}
-						{#if item.subItems}
-							<button
-								type="button"
-								onclick={() => (item.isOpen = !item.isOpen)}
-								class="border-bluegray/50 hover:bg-bluegray/20 flex w-full items-center justify-between border-b p-3 pl-6"
-							>
-								<span class="flex items-center">
-									{#if item.isOpen}
-										<ChevtonDownIcon
-											class="mr-1 h-3 w-3 transition-transform duration-200"
-										/>
-									{:else}
-										<ChevtonRightIcon
-											class="mr-1 h-3 w-3 transition-transform duration-200"
-										/>
-									{/if}
-									<FolderIcon
-										class="mr-2 h-4 w-4 fill-current {item.iconColor}"
-									/>
-									{item.text}
-								</span>
-							</button>
-							{#if item.isOpen}
-								<div class="pl-8">
-									{#each Object.entries(item.subItems) as [subKey, subItem] (subKey)}
-										<button
-											type="button"
-											onclick={() => selectContent(key, subKey)}
-											class="border-bluegray/30 hover:bg-bluegray/20 flex w-full items-center border-b p-3 pl-5 text-left"
-										>
-											<SiMarkdown size={14} />
-											<span class="ml-2">{subItem.text}</span>
-										</button>
-									{/each}
-								</div>
-							{/if}
-						{/if}
-					{/each}
-				</div>
-			{/if}
-
 			<button
 				type="button"
 				onclick={() => toggleMobileAccordion('contacts')}
-				class="border-bluegray hover:bg-bluegray/30 flex w-full items-center justify-between border-b p-4"
+				aria-expanded={openMobileAccordion === 'contacts'}
+				class="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 px-2 {openMobileAccordion === 'contacts' ? 'text-cwhite' : ''}"
 			>
-				<span class="text-cwhite flex items-center">
-					{#if openMobileAccordion === 'contacts'}
-						<ChevtonDownIcon
-							class="mr-2 h-4 w-4 transition-transform duration-200"
-						/>
-					{:else}
-						<ChevtonRightIcon
-							class="mr-2 h-4 w-4 transition-transform duration-200"
-						/>
-					{/if}
-					{$_('contacts')}
-				</span>
+				{#if openMobileAccordion === 'contacts'}
+					<ChevtonDownIcon class="h-4 w-4 shrink-0 transition-transform duration-200" />
+				{:else}
+					<ChevtonRightIcon class="h-4 w-4 shrink-0 transition-transform duration-200" />
+				{/if}
+				<span class="truncate">{$_('contacts')}</span>
 			</button>
-			{#if openMobileAccordion === 'contacts'}
-				<div class="bg-[#011221] text-sm">
-					{#each contactItems as contact (contact.value)}
+		</div>
+		{#if openMobileAccordion === 'personal-info'}
+			<div class="border-bluegray absolute inset-x-0 top-full z-20 max-h-[50dvh] overflow-y-auto overscroll-contain border-b bg-[#011221]/95 shadow-xl backdrop-blur-lg">
+				{#each Object.entries(PersonalInfoItems) as [key, item] (key)}
+					{#if item.subItems}
 						<button
 							type="button"
-							onclick={() => selectContent('contacts')}
-							class="border-bluegray/50 hover:bg-bluegray/20 flex w-full items-center border-b p-3 pl-6 text-left"
+							onclick={() => (item.isOpen = !item.isOpen)}
+							class="border-bluegray/50 hover:bg-bluegray/20 flex min-h-[44px] w-full items-center px-3 py-2.5 text-left"
 						>
-							{#if contact.type === 'email'}
-								<MailIcon class="mr-2 h-4 w-4" />
+							{#if item.isOpen}
+								<ChevtonDownIcon class="mr-1.5 h-3.5 w-3.5 shrink-0 transition-transform duration-200" />
+							{:else}
+								<ChevtonRightIcon class="mr-1.5 h-3.5 w-3.5 shrink-0 transition-transform duration-200" />
 							{/if}
-							{#if contact.type === 'phone'}
-								<PhoneIcon class="mr-2 h-4 w-4" />
-							{/if}
-							{contact.value}
+							<FolderIcon class="mr-2 h-4 w-4 shrink-0 fill-current {item.iconColor}" />
+							<span class="truncate">{item.text}</span>
 						</button>
-					{/each}
-				</div>
-			{/if}
-		</div>
+						{#if item.isOpen}
+							{#each Object.entries(item.subItems) as [subKey, subItem] (subKey)}
+								<button
+									type="button"
+									onclick={() => selectContent(key, subKey)}
+									class="border-bluegray/30 hover:bg-bluegray/20 flex min-h-[44px] w-full items-center px-3 py-2.5 pl-9 text-left {activeDesktopTab === subItem.text ? 'text-cwhite' : ''}"
+								>
+									<SiMarkdown size={14} />
+									<span class="ml-2 truncate">{subItem.text}</span>
+								</button>
+							{/each}
+						{/if}
+					{/if}
+				{/each}
+			</div>
+		{:else if openMobileAccordion === 'contacts'}
+			<div class="border-bluegray absolute inset-x-0 top-full z-20 max-h-[50dvh] overflow-y-auto overscroll-contain border-b bg-[#011221]/95 shadow-xl backdrop-blur-lg">
+				{#each contactItems as contact (contact.value)}
+					<button
+						type="button"
+						onclick={() => selectContent('contacts')}
+						class="border-bluegray/50 hover:bg-bluegray/20 flex min-h-[44px] w-full items-center px-3 py-2.5 text-left"
+					>
+						{#if contact.type === 'email'}
+							<MailIcon class="mr-2 h-4 w-4 shrink-0" />
+						{/if}
+						{#if contact.type === 'phone'}
+							<PhoneIcon class="mr-2 h-4 w-4 shrink-0" />
+						{/if}
+						<span class="truncate text-xs">{contact.value}</span>
+					</button>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </div>
 
-<div class="flex flex-grow flex-col overflow-auto lg:flex-row">
+<div class="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
 	<div
-		class="border-bluegray flex w-full flex-col border-b p-0 lg:flex-grow lg:border-r lg:border-b-0"
+		class="border-bluegray flex min-h-0 w-full flex-1 flex-col p-0 lg:flex-grow lg:border-r lg:border-b-0"
 	>
+		<div class="border-bluegray flex h-8 flex-shrink-0 items-center gap-2 border-b px-3 text-xs lg:hidden">
+			<span class="text-midnight truncate">// {activeDesktopTab}</span>
+		</div>
 		<div class="border-bluegray hidden h-[42px] flex-shrink-0 border-b lg:flex">
 			<div
 				data-interactive-cursor="text"
@@ -395,7 +372,7 @@ onMount(async () => {
 		</div>
 		<div
 			data-interactive-cursor="content"
-			class="flex-grow overflow-y-auto p-6 text-sm leading-relaxed"
+			class="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain p-4 text-sm leading-relaxed break-words sm:p-6"
 		>
 			{#if showSkills}
 				<div class="skills-section">
@@ -403,7 +380,7 @@ onMount(async () => {
 						<div
 							class="rounded-lg border border-bluegray bg-[#011221] p-4 text-center"
 						>
-							<div class="text-cwhite text-3xl font-bold">
+							<div class="text-cwhite text-2xl font-bold sm:text-3xl">
 								<CountUp to={skills.length} duration={1.5} />
 							</div>
 							<div class="text-midnight text-xs">technical skills</div>
@@ -411,7 +388,7 @@ onMount(async () => {
 						<div
 							class="rounded-lg border border-bluegray bg-[#011221] p-4 text-center"
 						>
-							<div class="text-cwhite text-3xl font-bold">
+							<div class="text-cwhite text-2xl font-bold sm:text-3xl">
 								<CountUp to={projectsData.length} duration={1.5} />
 							</div>
 							<div class="text-midnight text-xs">shipped projects</div>
@@ -421,7 +398,7 @@ onMount(async () => {
 					{#each skillCategories as category}
 						<div class="mb-8">
 							<h3 class="text-cwhite text-lg mb-4">{category}</h3>
-							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+							<div class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
 								{#each skills.filter(s => s.category === category) as skill}
 									<SpotlightCard
 										spotlightColor="rgba(97, 95, 255, 0.3)"
@@ -555,7 +532,7 @@ onMount(async () => {
 			{:else}
 				{#key bioKey}
 					<FadeContent blur duration={700} threshold={0.2}>
-						<article bind:this={anima} class="prose prose-pinky anima">
+						<article bind:this={anima} class="prose prose-pinky anima max-w-full overflow-x-hidden break-words">
 							{@html renderedBio}
 						</article>
 					</FadeContent>
@@ -597,4 +574,5 @@ onMount(async () => {
 			</GlareHover>
 		{/each}
 	</div>
+</div>
 </div>

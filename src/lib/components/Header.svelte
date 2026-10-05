@@ -34,7 +34,7 @@ function toggleMobileMenu() {
 </script>
 
 <header
-	class="sticky top-0 z-50 border-b border-white/20 bg-black/20 backdrop-blur-lg"
+	class="sticky top-0 z-50 border-b border-white/20 bg-black/20 backdrop-blur-lg [@media(pointer:coarse)]:bg-[#011627]/95 [@media(pointer:coarse)]:backdrop-blur-none"
 >
 	<div class="flex">
 		<a

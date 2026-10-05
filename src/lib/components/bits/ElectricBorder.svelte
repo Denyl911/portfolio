@@ -44,6 +44,9 @@
 	$effect(() => {
 		if (!canvas || !container) return;
 		if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+		// Touch GPUs: skip the per-frame noise canvas entirely. The static
+		// blurred border layers below remain, so the look is preserved.
+		if (window.matchMedia?.('(pointer: coarse)').matches) return;
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 

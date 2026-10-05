@@ -100,11 +100,23 @@
 		if (props.opacity !== undefined) el.style.opacity = props.opacity;
 	}
 
+	const coarsePointer =
+		typeof window !== 'undefined' &&
+		!!window.matchMedia?.('(pointer: coarse)').matches;
+
+	function effectiveSnap(snap: AnimSnap): AnimSnap {
+		// Animating `filter` forces repaints on mobile GPUs; transform +
+		// opacity stay on the compositor.
+		if (!coarsePointer || snap.filter === undefined) return snap;
+		const { filter: _dropped, ...rest } = snap;
+		return rest;
+	}
+
 	// Set initial styles immediately on mount
 	$effect(() => {
 		// re-run when snapshots change
 		void fromSnapshot;
-		spanEls.forEach((el) => el && applyInitial(el, fromSnapshot));
+		spanEls.forEach((el) => el && applyInitial(el, effectiveSnap(fromSnapshot)));
 	});
 
 	$effect(() => {
@@ -114,7 +126,7 @@
 			spanEls.forEach((el) => {
 				if (!el) return;
 				const last = toSnapshots[toSnapshots.length - 1] ?? {};
-				const final = { ...fromSnapshot, ...last };
+				const final = effectiveSnap({ ...fromSnapshot, ...last });
 				for (const [k, v] of Object.entries(final)) {
 					if (k === 'y') el.style.transform = toCssValue(k, v);
 					else if (k === 'x')
@@ -141,8 +153,9 @@
 			// WAAPI keyframes: transform-only + opacity (composited). Filter
 			// animates on the compositor in Chromium but can fall back to
 			// paint; keep it to 2 steps to bound cost.
-			const frames: Keyframe[] = [{ ...mapSnap(fromSnapshot) }];
-			for (const snap of toSnapshots) frames.push(mapSnap({ ...fromSnapshot, ...snap }));
+			const frames: Keyframe[] = [{ ...mapSnap(effectiveSnap(fromSnapshot)) }];
+			for (const snap of toSnapshots)
+				frames.push(mapSnap(effectiveSnap({ ...fromSnapshot, ...snap })));
 
 			const anim = el.animate(frames, {
 				duration: totalDuration * 1000,

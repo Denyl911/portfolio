@@ -290,6 +290,7 @@ void main() {
 
 		let disposed = false;
 		let cleanup: (() => void) | undefined;
+		let setRunning: ((v: boolean) => void) | undefined;
 
 		const boot = () => {
 			if (disposed || cleanup || !currentContainer) return;
@@ -388,17 +389,23 @@ void main() {
 			};
 
 			const onVis = () => {
-				if (document.hidden) {
+				setRunning?.(!document.hidden);
+			};
+			document.addEventListener('visibilitychange', onVis);
+
+			setRunning = (v: boolean) => {
+				if (v) {
+					if (!running && !document.hidden) {
+						running = true;
+						lastT = 0;
+						raf = requestAnimationFrame(update);
+					}
+				} else {
 					running = false;
 					if (raf) cancelAnimationFrame(raf);
 					raf = 0;
-				} else if (!running) {
-					running = true;
-					lastT = 0;
-					raf = requestAnimationFrame(update);
 				}
 			};
-			document.addEventListener('visibilitychange', onVis);
 
 			raf = requestAnimationFrame(update);
 			currentContainer.appendChild(gl.canvas);
@@ -420,17 +427,26 @@ void main() {
 		};
 
 		// Defer WebGL boot until browser is idle and container is visible,
-		// so it never competes with FCP/LCP/TBT.
+		// so it never competes with FCP/LCP/TBT. The observer stays connected
+		// so the loop pauses whenever the canvas scrolls out of view.
+		let booted = false;
 		const io = new IntersectionObserver(
 			([entry]) => {
+				if (disposed) return;
 				if (entry.isIntersecting) {
-					io.disconnect();
-					const idle = (globalThis as unknown as { requestIdleCallback?: Function })
-						.requestIdleCallback as
-						| ((cb: () => void, opts?: { timeout: number }) => number)
-						| undefined;
-					if (typeof idle === 'function') idle(() => boot(), { timeout: 1500 });
-					else setTimeout(boot, 0);
+					if (!booted) {
+						booted = true;
+						const idle = (globalThis as unknown as { requestIdleCallback?: Function })
+							.requestIdleCallback as
+							| ((cb: () => void, opts?: { timeout: number }) => number)
+							| undefined;
+						if (typeof idle === 'function') idle(() => boot(), { timeout: 1500 });
+						else setTimeout(boot, 0);
+					} else {
+						setRunning?.(true);
+					}
+				} else {
+					setRunning?.(false);
 				}
 			},
 			{ threshold: 0 }

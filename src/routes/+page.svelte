@@ -84,7 +84,7 @@ onMount(() => {
 	class="relative flex w-full flex-grow flex-col md:overflow-hidden bg-gradient-to-br from-[#012133] to-[#001526]"
 >
 	<div class="absolute inset-0 z-0">
-		{#if showBg}
+		{#if showBg && !isMobile}
 			{#await import('$lib/components/bits/FaultyTerminal.svelte') then { default: FaultyTerminal }}
 				<FaultyTerminal
 			scale={isMobile ? 1.2 : 2}
@@ -100,6 +100,13 @@ onMount(() => {
 			brightness={0.6}
 				/>
 			{/await}
+		{:else}
+			<!-- Static poster for mobile / pre-hydration: zero GPU cost -->
+			<div
+				aria-hidden="true"
+				class="absolute inset-0"
+				style="background: radial-gradient(60% 50% at 50% 38%, rgba(26, 95, 180, 0.35), transparent 70%), radial-gradient(45% 35% at 18% 82%, rgba(26, 95, 180, 0.18), transparent 70%), radial-gradient(45% 35% at 82% 12%, rgba(67, 217, 173, 0.1), transparent 70%);"
+			></div>
 		{/if}
 	</div>
 	<!-- <Particles class="absolute inset-0 z-0" /> -->

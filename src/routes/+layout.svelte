@@ -1,16 +1,13 @@
 <script lang="ts">
-	import InteractiveCursor, {
-		type ActiveDataValue,
-		type ScaleOnActiveElement
+	import type {
+		ActiveDataValue,
+		ScaleOnActiveElement
 	} from '@lostisworld/svelte-interactive-cursor';
-	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { fade } from 'svelte/transition';
-	import { dev } from '$app/environment';
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { addMessages, init, locale } from 'svelte-i18n';
 	import { page } from '$app/state';
-	import ClickSpark from '$lib/components/bits/ClickSpark.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import en from '$lib/i18n/en.json';
@@ -18,7 +15,7 @@
 	import fr from '$lib/i18n/fr.json';
 
 	let { children } = $props();
-	injectAnalytics({ mode: dev ? 'development' : 'production' });
+	let showEffects = $state(false);
 
 	addMessages('en', en);
 	addMessages('es', es);
@@ -34,6 +31,22 @@
 		const smallScreen = window.matchMedia?.('(max-width: 1023px)').matches ?? false;
 		isCoarsePointer = coarse || smallScreen;
 		reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+		// Defer non-critical effects until idle: cursor, sparks, analytics.
+		if (!isCoarsePointer && !reducedMotion) {
+			const w = window as unknown as { requestIdleCallback?: typeof requestIdleCallback };
+			if (typeof w.requestIdleCallback === 'function')
+				w.requestIdleCallback(() => (showEffects = true), { timeout: 2500 });
+			else setTimeout(() => (showEffects = true), 1200);
+		}
+		// Defer Vercel analytics off the critical path.
+		const idle2 = (window as unknown as { requestIdleCallback?: typeof requestIdleCallback }).requestIdleCallback;
+		const loadAnalytics = () => {
+			import('@vercel/analytics/sveltekit').then(({ injectAnalytics }) => {
+				import('$app/environment').then(({ dev }) => injectAnalytics({ mode: dev ? 'development' : 'production' }));
+			});
+		};
+		if (typeof idle2 === 'function') idle2(() => loadAnalytics(), { timeout: 3000 });
+		else setTimeout(loadAnalytics, 2000);
 		const savedLocale = localStorage.getItem('locale');
 		console.log('Saved Locale: ', savedLocale);
 		if (savedLocale) {
@@ -114,19 +127,21 @@
 	>
 		<Header />
 		{#key page.url.pathname}
-			<main class="flex min-h-0 flex-grow flex-col overflow-x-hidden overflow-y-auto lg:flex-row" in:fade={{ duration: 500 }}>
-				{#if reducedMotion || isCoarsePointer}
+			<main class="flex min-h-0 flex-grow flex-col overflow-x-hidden overflow-y-auto lg:flex-row" in:fade={{ duration: 200 }}>
+				{#if reducedMotion || isCoarsePointer || !showEffects}
 					{@render children()}
 				{:else}
-					<ClickSpark
-						sparkColor="#ffb86a"
-						sparkCount={8}
-						sparkRadius={22}
-						duration={400}
-						class="flex flex-grow flex-col lg:flex-row"
-					>
-						{@render children()}
-					</ClickSpark>
+					{#await import('$lib/components/bits/ClickSpark.svelte') then { default: ClickSpark }}
+						<ClickSpark
+							sparkColor="#ffb86a"
+							sparkCount={8}
+							sparkRadius={22}
+							duration={400}
+							class="flex flex-grow flex-col lg:flex-row"
+						>
+							{@render children()}
+						</ClickSpark>
+					{/await}
 				{/if}
 			</main>
 		{/key}
@@ -135,10 +150,9 @@
 	</div>
 </div>
 
-{#if isCoarsePointer}
-	<!-- No custom cursor on touch devices -->
-{:else}
-<InteractiveCursor
+{#if showEffects && !isCoarsePointer && !reducedMotion}
+	{#await import('@lostisworld/svelte-interactive-cursor') then { default: InteractiveCursor }}
+		<InteractiveCursor
 	bind:activeDataValue={currentCursorState}
 	useDataElementRect={['input', 'btn']}
 	{scaleOnActive}
@@ -149,6 +163,7 @@
 		: customCursorProps.find((state) => state.data === currentCursorState.activeDataName)
 				?.cursorClass || 'bg-white text-black'}"
 ></InteractiveCursor>
+	{/await}
 {/if}
 
 <style></style>

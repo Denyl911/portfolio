@@ -286,101 +286,161 @@ void main() {
 	$effect(() => {
 		const currentContainer = container;
 		if (!currentContainer) return;
+		if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
 
-		const renderer = new Renderer({ dpr, alpha: true, premultipliedAlpha: false });
-		const gl = renderer.gl;
-		gl.clearColor(0, 0, 0, 0);
+		let disposed = false;
+		let cleanup: (() => void) | undefined;
 
-		const geometry = new Triangle(gl);
-		program = new Program(gl, {
-			vertex: vertexShader,
-			fragment: fragmentShader,
-			uniforms: {
-				iTime: { value: 0 },
-				iResolution: {
-					value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height)
-				},
-				uScale: { value: scale },
-				uGridMul: { value: new Float32Array(gridMul) },
-				uDigitSize: { value: digitSize },
-				uScanlineIntensity: { value: scanlineIntensity },
-				uGlitchAmount: { value: glitchAmount },
-				uFlickerAmount: { value: flickerAmount },
-				uNoiseAmp: { value: noiseAmp },
-				uChromaticAberration: { value: chromaticAberration },
-				uDither: { value: ditherValue },
-				uCurvature: { value: curvature },
-				uTint: { value: new Color(tintVec[0], tintVec[1], tintVec[2]) },
-				uMouse: { value: new Float32Array([smoothMouse.x, smoothMouse.y]) },
-				uMouseStrength: { value: mouseStrength },
-				uUseMouse: { value: mouseReact ? 1 : 0 },
-				uPageLoadProgress: { value: pageLoadAnimation ? 0 : 1 },
-				uUsePageLoadAnimation: { value: pageLoadAnimation ? 1 : 0 },
-				uBrightness: { value: brightness }
+		const boot = () => {
+			if (disposed || cleanup || !currentContainer) return;
+			// Cap DPR: WebGL at 2x is ~4x fragment cost. 1.25x is enough for bg.
+			const cappedDpr = Math.min(dpr, globalThis.devicePixelRatio || 1, 1.5);
+			const renderer = new Renderer({ dpr: cappedDpr, alpha: true, premultipliedAlpha: false });
+			const gl = renderer.gl;
+			gl.clearColor(0, 0, 0, 0);
+
+			const geometry = new Triangle(gl);
+			program = new Program(gl, {
+				vertex: vertexShader,
+				fragment: fragmentShader,
+				uniforms: {
+					iTime: { value: 0 },
+					iResolution: {
+						value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height)
+					},
+					uScale: { value: scale },
+					uGridMul: { value: new Float32Array(gridMul) },
+					uDigitSize: { value: digitSize },
+					uScanlineIntensity: { value: scanlineIntensity },
+					uGlitchAmount: { value: glitchAmount },
+					uFlickerAmount: { value: flickerAmount },
+					uNoiseAmp: { value: noiseAmp },
+					uChromaticAberration: { value: chromaticAberration },
+					uDither: { value: ditherValue },
+					uCurvature: { value: curvature },
+					uTint: { value: new Color(tintVec[0], tintVec[1], tintVec[2]) },
+					uMouse: { value: new Float32Array([smoothMouse.x, smoothMouse.y]) },
+					uMouseStrength: { value: mouseStrength },
+					uUseMouse: { value: mouseReact ? 1 : 0 },
+					uPageLoadProgress: { value: pageLoadAnimation ? 0 : 1 },
+					uUsePageLoadAnimation: { value: pageLoadAnimation ? 1 : 0 },
+					uBrightness: { value: brightness }
+				}
+			});
+
+			const mesh = new Mesh(gl, { geometry, program });
+
+			function resize() {
+				if (!program) return;
+				renderer.setSize(currentContainer.offsetWidth, currentContainer.offsetHeight);
+				program.uniforms.iResolution.value = new Color(
+					gl.canvas.width,
+					gl.canvas.height,
+					gl.canvas.width / gl.canvas.height
+				);
 			}
-		});
 
-		const mesh = new Mesh(gl, { geometry, program });
+			const resizeObserver = new ResizeObserver(() => resize());
+			resizeObserver.observe(currentContainer);
+			resize();
 
-		function resize() {
-			if (!program) return;
-			renderer.setSize(currentContainer.offsetWidth, currentContainer.offsetHeight);
-			program.uniforms.iResolution.value = new Color(
-				gl.canvas.width,
-				gl.canvas.height,
-				gl.canvas.width / gl.canvas.height
-			);
-		}
+			let running = true;
+			let lastT = 0;
+			const FRAME_GAP = 1000 / 30; // 30fps is plenty for a bg effect
 
-		const resizeObserver = new ResizeObserver(() => resize());
-		resizeObserver.observe(currentContainer);
-		resize();
+			const update = (t: number) => {
+				if (!running || document.hidden) {
+					raf = 0;
+					return;
+				}
+				raf = requestAnimationFrame(update);
+				if (t - lastT < FRAME_GAP) return;
+				// Compensate drift so animation speed stays constant at 30fps
+				lastT = t - ((t - lastT) % FRAME_GAP);
+				if (!program) return;
 
-		const update = (t: number) => {
+				if (pageLoadAnimation && loadAnimationStart === 0) loadAnimationStart = t;
+
+				if (!pause) {
+					const elapsed = (t * 0.001 + timeOffset) * timeScale;
+					program.uniforms.iTime.value = elapsed;
+					frozenTime = elapsed;
+				} else {
+					program.uniforms.iTime.value = frozenTime;
+				}
+
+				if (pageLoadAnimation && loadAnimationStart > 0) {
+					const animationDuration = 2000;
+					const animationElapsed = t - loadAnimationStart;
+					program.uniforms.uPageLoadProgress.value = Math.min(animationElapsed / animationDuration, 1);
+				}
+
+				if (mouseReact) {
+					const dampingFactor = 0.08;
+					smoothMouse.x += (mouse.x - smoothMouse.x) * dampingFactor;
+					smoothMouse.y += (mouse.y - smoothMouse.y) * dampingFactor;
+					const mouseUniform = program.uniforms.uMouse.value as Float32Array;
+					mouseUniform[0] = smoothMouse.x;
+					mouseUniform[1] = smoothMouse.y;
+				}
+
+				renderer.render({ scene: mesh });
+			};
+
+			const onVis = () => {
+				if (document.hidden) {
+					running = false;
+					if (raf) cancelAnimationFrame(raf);
+					raf = 0;
+				} else if (!running) {
+					running = true;
+					lastT = 0;
+					raf = requestAnimationFrame(update);
+				}
+			};
+			document.addEventListener('visibilitychange', onVis);
+
 			raf = requestAnimationFrame(update);
-			if (!program) return;
+			currentContainer.appendChild(gl.canvas);
+			if (mouseReact) currentContainer.addEventListener('mousemove', handleMouseMove);
 
-			if (pageLoadAnimation && loadAnimationStart === 0) loadAnimationStart = t;
-
-			if (!pause) {
-				const elapsed = (t * 0.001 + timeOffset) * timeScale;
-				program.uniforms.iTime.value = elapsed;
-				frozenTime = elapsed;
-			} else {
-				program.uniforms.iTime.value = frozenTime;
-			}
-
-			if (pageLoadAnimation && loadAnimationStart > 0) {
-				const animationDuration = 2000;
-				const animationElapsed = t - loadAnimationStart;
-				program.uniforms.uPageLoadProgress.value = Math.min(animationElapsed / animationDuration, 1);
-			}
-
-			if (mouseReact) {
-				const dampingFactor = 0.08;
-				smoothMouse.x += (mouse.x - smoothMouse.x) * dampingFactor;
-				smoothMouse.y += (mouse.y - smoothMouse.y) * dampingFactor;
-				const mouseUniform = program.uniforms.uMouse.value as Float32Array;
-				mouseUniform[0] = smoothMouse.x;
-				mouseUniform[1] = smoothMouse.y;
-			}
-
-			renderer.render({ scene: mesh });
+			cleanup = () => {
+				running = false;
+				cancelAnimationFrame(raf);
+				raf = 0;
+				resizeObserver.disconnect();
+				document.removeEventListener('visibilitychange', onVis);
+				if (mouseReact) currentContainer.removeEventListener('mousemove', handleMouseMove);
+				if (gl.canvas.parentElement === currentContainer) currentContainer.removeChild(gl.canvas);
+				gl.getExtension('WEBGL_lose_context')?.loseContext();
+				loadAnimationStart = 0;
+				timeOffset = Math.random() * 100;
+				program = null;
+			};
 		};
 
-		raf = requestAnimationFrame(update);
-		currentContainer.appendChild(gl.canvas);
-		if (mouseReact) currentContainer.addEventListener('mousemove', handleMouseMove);
+		// Defer WebGL boot until browser is idle and container is visible,
+		// so it never competes with FCP/LCP/TBT.
+		const io = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					io.disconnect();
+					const idle = (globalThis as unknown as { requestIdleCallback?: Function })
+						.requestIdleCallback as
+						| ((cb: () => void, opts?: { timeout: number }) => number)
+						| undefined;
+					if (typeof idle === 'function') idle(() => boot(), { timeout: 1500 });
+					else setTimeout(boot, 0);
+				}
+			},
+			{ threshold: 0 }
+		);
+		io.observe(currentContainer);
 
 		return () => {
-			cancelAnimationFrame(raf);
-			resizeObserver.disconnect();
-			if (mouseReact) currentContainer.removeEventListener('mousemove', handleMouseMove);
-			if (gl.canvas.parentElement === currentContainer) currentContainer.removeChild(gl.canvas);
-			gl.getExtension('WEBGL_lose_context')?.loseContext();
-			loadAnimationStart = 0;
-			timeOffset = Math.random() * 100;
-			program = null;
+			disposed = true;
+			io.disconnect();
+			cleanup?.();
 		};
 	});
 </script>

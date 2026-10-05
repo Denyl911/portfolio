@@ -66,6 +66,7 @@
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 		let raf = 0;
+		let running = false;
 		const draw = (timestamp: number) => {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			for (let i = sparks.length - 1; i >= 0; i--) {
@@ -90,14 +91,29 @@
 				ctx.lineTo(x2, y2);
 				ctx.stroke();
 			}
-			raf = requestAnimationFrame(draw);
+			// Stop the loop when idle: no permanent rAF burning main thread.
+			if (sparks.length > 0) {
+				raf = requestAnimationFrame(draw);
+			} else {
+				running = false;
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			}
 		};
-		raf = requestAnimationFrame(draw);
+		const kick = (now: number) => {
+			if (!running) {
+				running = true;
+				raf = requestAnimationFrame(draw);
+			}
+			void now;
+		};
+
+		(wrapper as HTMLElement & { __sparkKick?: (t: number) => void }).__sparkKick = kick;
 
 		return () => {
 			ro.disconnect();
 			clearTimeout(resizeTimeout);
 			cancelAnimationFrame(raf);
+			running = false;
 		};
 	});
 
@@ -110,6 +126,8 @@
 		for (let i = 0; i < sparkCount; i++) {
 			sparks.push({ x, y, angle: (2 * Math.PI * i) / sparkCount, startTime: now });
 		}
+		const kick = (wrapper as HTMLElement & { __sparkKick?: (t: number) => void }).__sparkKick;
+		kick?.(now);
 	}
 </script>
 

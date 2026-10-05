@@ -6,16 +6,13 @@ import {
 	SiTailwindcss,
 	SiTypescript,
 } from '@icons-pack/svelte-simple-icons';
-import { gsap } from 'gsap';
 import { onMount } from 'svelte';
 // biome-ignore lint/correctness/noUnusedImports: i18n translation
 import { _ } from 'svelte-i18n';
 import BlurText from '$lib/components/bits/BlurText.svelte';
 import DecryptedText from '$lib/components/bits/DecryptedText.svelte';
 import ElectricBorder from '$lib/components/bits/ElectricBorder.svelte';
-import FaultyTerminal from '$lib/components/bits/FaultyTerminal.svelte';
 import TextType from '$lib/components/bits/TextType.svelte';
-import SnakeGame from '$lib/components/SnakeGame.svelte';
 
 const githubLink = 'https://github.com/Denyl911/portfolio';
 
@@ -53,17 +50,33 @@ const techs = [
 ];
 
 let isMobile = $state(false);
+let showBg = $state(false);
+let showGame = $state(false);
+let gameWrap: HTMLElement | undefined = $state();
 
 onMount(() => {
 	isMobile = window.matchMedia?.('(pointer: coarse), (max-width: 1023px)').matches ?? false;
-	if (!isMobile) {
-		gsap.from('#game', {
-			opacity: 0,
-			scale: 0.8,
-			duration: 1,
-			ease: 'back.out(1.7)',
-		});
+	const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+	if (!reduced) {
+		const w = window as unknown as { requestIdleCallback?: typeof requestIdleCallback };
+		if (typeof w.requestIdleCallback === 'function') w.requestIdleCallback(() => (showBg = true), { timeout: 2000 });
+		else setTimeout(() => (showBg = true), 800);
 	}
+	if (!gameWrap) {
+		showGame = true;
+		return;
+	}
+	const io = new IntersectionObserver(
+		([entry]) => {
+			if (entry.isIntersecting) {
+				showGame = true;
+			io.disconnect();
+			}
+		},
+		{ rootMargin: '200px' }
+	);
+	io.observe(gameWrap);
+	return () => io.disconnect();
 });
 </script>
 
@@ -71,7 +84,9 @@ onMount(() => {
 	class="relative flex w-full flex-grow flex-col md:overflow-hidden bg-gradient-to-br from-[#012133] to-[#001526]"
 >
 	<div class="absolute inset-0 z-0">
-		<FaultyTerminal
+		{#if showBg}
+			{#await import('$lib/components/bits/FaultyTerminal.svelte') then { default: FaultyTerminal }}
+				<FaultyTerminal
 			scale={isMobile ? 1.2 : 2}
 			digitSize={isMobile ? 0.9 : 1.2}
 			timeScale={isMobile ? 0.25 : 0.5}
@@ -83,7 +98,9 @@ onMount(() => {
 			pageLoadAnimation={!isMobile}
 			noiseAmp={1}
 			brightness={0.6}
-		/>
+				/>
+			{/await}
+		{/if}
 	</div>
 	<!-- <Particles class="absolute inset-0 z-0" /> -->
 	<div
@@ -111,7 +128,7 @@ onMount(() => {
 					deletingSpeed={50}
 					showCursor={true}
 					cursorCharacter="█"
-					cursorBlinkDuration={0.5}
+					cursorBlinkDuration={0.9}
 				/>
 			</div>
 
@@ -174,15 +191,37 @@ onMount(() => {
 			</div>
 		</div>
 
-		<div id="game" class="relative z-10 flex w-full justify-center lg:w-auto">
-			<SnakeGame />
+		<div id="game" bind:this={gameWrap} class="game-enter relative z-10 flex w-full justify-center lg:w-auto">
+			{#if showGame}
+				{#await import('$lib/components/SnakeGame.svelte') then { default: SnakeGame }}
+					<SnakeGame />
+				{/await}
+			{/if}
 		</div>
 	</div>
 </div>
 
 <style>
+.game-enter {
+	animation: game-enter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	will-change: transform, opacity;
+}
+@keyframes game-enter {
+	from {
+		opacity: 0;
+		transform: scale(0.8) translateZ(0);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateZ(0);
+	}
+}
 .marquee-track {
 	animation: marquee 24s linear infinite;
+	will-change: transform;
+	transform: translateZ(0);
+	backface-visibility: hidden;
+	contain: layout style;
 }
 .marquee-track:hover {
 	animation-play-state: paused;
@@ -193,7 +232,8 @@ onMount(() => {
 	}
 }
 @media (prefers-reduced-motion: reduce) {
-	.marquee-track {
+	.marquee-track,
+	.game-enter {
 		animation: none;
 	}
 }

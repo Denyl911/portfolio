@@ -43,6 +43,7 @@
 
 	$effect(() => {
 		if (!canvas || !container) return;
+		if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
@@ -139,6 +140,10 @@
 		updateSize();
 
 		const draw = (now: number) => {
+			if (!visible || document.hidden) {
+				raf = null;
+				return;
+			}
 			const dt = (now - lastFrame) / 1000;
 			time += dt * speed;
 			lastFrame = now;
@@ -176,11 +181,38 @@
 
 		const ro = new ResizeObserver(updateSize);
 		ro.observe(container);
+		let visible = true;
+		const io = new IntersectionObserver(
+			([entry]) => {
+				const was = visible;
+				visible = entry.isIntersecting && document.visibilityState === 'visible';
+				if (visible && !was && raf == null) {
+					lastFrame = performance.now();
+					raf = requestAnimationFrame(draw);
+				}
+			},
+			{ threshold: 0 }
+		);
+		io.observe(container);
+		const onVis = () => {
+			if (document.hidden) {
+				if (raf) cancelAnimationFrame(raf);
+				raf = null;
+			} else if (visible && raf == null) {
+				lastFrame = performance.now();
+				raf = requestAnimationFrame(draw);
+			}
+		};
+		document.addEventListener('visibilitychange', onVis);
+		lastFrame = performance.now();
 		raf = requestAnimationFrame(draw);
 
 		return () => {
 			if (raf) cancelAnimationFrame(raf);
+			raf = null;
 			ro.disconnect();
+			io.disconnect();
+			document.removeEventListener('visibilitychange', onVis);
 		};
 	});
 </script>

@@ -1,6 +1,4 @@
 <script module lang="ts">
-	import { gsap } from 'gsap';
-
 	type TagName = 'div' | 'span' | 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 	type VariableSpeed = { min: number; max: number };
 </script>
@@ -92,18 +90,9 @@
 	});
 
 	$effect(() => {
+		// Cursor blink handled by CSS (cursor-blink keyframes) — no JS needed.
 		if (!showCursor || !cursorEl) return;
-		gsap.set(cursorEl, { opacity: 1 });
-		const tween = gsap.to(cursorEl, {
-			opacity: 0,
-			duration: cursorBlinkDuration,
-			repeat: -1,
-			yoyo: true,
-			ease: 'power2.inOut'
-		});
-		return () => {
-			tween.kill();
-		};
+		void cursorBlinkDuration;
 	});
 
 	$effect(() => {
@@ -183,9 +172,32 @@
 	{#if showCursor}
 		<span
 			bind:this={cursorEl}
-			class="ml-1 inline-block {cursorClassName} {shouldHideCursor ? 'hidden' : ''}"
+			class="text-type__cursor ml-1 inline-block {cursorClassName} {shouldHideCursor ? 'hidden' : ''}"
+			style:animation-duration="{cursorBlinkDuration}s"
 		>
 			{cursorCharacter}
 		</span>
 	{/if}
 </svelte:element>
+
+<style>
+	.text-type__cursor {
+		animation: text-type-blink 1s steps(1) infinite;
+		will-change: opacity;
+	}
+	@keyframes text-type-blink {
+		0%,
+		49% {
+			opacity: 1;
+		}
+		50%,
+		100% {
+			opacity: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.text-type__cursor {
+			animation: none;
+		}
+	}
+</style>

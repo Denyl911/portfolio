@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { animate } from 'motion';
-
 	type AnimSnap = Record<string, string | number>;
 
 	type Props = {
@@ -71,13 +69,15 @@
 	const fromSnapshot = $derived<AnimSnap>(animationFrom ?? defaultFrom);
 	const toSnapshots = $derived<AnimSnap[]>(animationTo ?? defaultTo);
 
-	function buildKeyframes(from: AnimSnap, steps: AnimSnap[]): Record<string, Array<string | number>> {
-		const keys = new Set<string>([...Object.keys(from), ...steps.flatMap((s) => Object.keys(s))]);
-		const out: Record<string, Array<string | number>> = {};
-		keys.forEach((k) => {
-			out[k] = [from[k], ...steps.map((s) => s[k])];
-		});
-		return out;
+	function toCssValue(prop: string, v: string | number): string {
+		if (prop === 'y') return `translateY(${typeof v === 'number' ? v + 'px' : v})`;
+		if (prop === 'x') return `translateX(${typeof v === 'number' ? v + 'px' : v})`;
+		return String(v);
+	}
+
+	function easeFn(t: number): number {
+		if (typeof easing === 'function') return (easing as (t: number) => number)(t);
+		return t;
 	}
 
 	function applyInitial(el: HTMLElement, snap: AnimSnap) {
@@ -109,6 +109,23 @@
 
 	$effect(() => {
 		if (!inView) return;
+		// Reduced motion: snap to final state, no animation.
+		if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+			spanEls.forEach((el) => {
+				if (!el) return;
+				const last = toSnapshots[toSnapshots.length - 1] ?? {};
+				const final = { ...fromSnapshot, ...last };
+				for (const [k, v] of Object.entries(final)) {
+					if (k === 'y') el.style.transform = toCssValue(k, v);
+					else if (k === 'x')
+						el.style.transform = `${el.style.transform ?? ''} ${toCssValue(k, v)}`.trim();
+					else if (k === 'filter') el.style.filter = String(v);
+					else if (k === 'opacity') el.style.opacity = String(v);
+				}
+			});
+			onAnimationComplete?.();
+			return;
+		}
 
 		const stepCount = toSnapshots.length + 1;
 		const totalDuration = stepDuration * (stepCount - 1);
@@ -116,52 +133,50 @@
 			stepCount === 1 ? 0 : i / (stepCount - 1)
 		);
 
-		const kf = buildKeyframes(fromSnapshot, toSnapshots);
-
-		// Build per-property keyframe arrays with `y` mapped to translateY transform
 		const animations: Array<{ stop: () => void }> = [];
 
 		spanEls.forEach((el, index) => {
 			if (!el) return;
 
-			const targetKeyframes: Record<string, Array<string | number>> = {};
-			for (const [k, frames] of Object.entries(kf)) {
-				if (k === 'y') {
-					targetKeyframes.transform = frames.map((v) =>
-						`translateY(${typeof v === 'number' ? v + 'px' : v})`
-					);
-				} else {
-					targetKeyframes[k] = frames;
-				}
-			}
+			// WAAPI keyframes: transform-only + opacity (composited). Filter
+			// animates on the compositor in Chromium but can fall back to
+			// paint; keep it to 2 steps to bound cost.
+			const frames: Keyframe[] = [{ ...mapSnap(fromSnapshot) }];
+			for (const snap of toSnapshots) frames.push(mapSnap({ ...fromSnapshot, ...snap }));
 
-			const controls = animate(el, targetKeyframes as never, {
-				duration: totalDuration,
-				times,
-				delay: (index * delay) / 1000,
-				ease: easing as never
+			const anim = el.animate(frames, {
+				duration: totalDuration * 1000,
+				delay: index * delay,
+				easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+				fill: 'both'
 			});
+
+			void easeFn;
+			void times;
 
 			if (index === elements.length - 1 && onAnimationComplete) {
-				const finished = (controls as unknown as { finished?: Promise<unknown> }).finished;
-				if (finished && typeof finished.then === 'function') {
-					finished.then(() => onAnimationComplete?.()).catch(() => {});
-				}
+				anim.finished.then(() => onAnimationComplete?.()).catch(() => {});
 			}
 
-			animations.push({
-				stop: () => {
-					const c = controls as unknown as { stop?: () => void; cancel?: () => void };
-					c.stop?.();
-					c.cancel?.();
-				}
-			});
+			animations.push({ stop: () => anim.cancel() });
 		});
 
 		return () => {
 			animations.forEach((a) => a.stop());
 		};
 	});
+
+	function mapSnap(snap: AnimSnap): Keyframe {
+		const out: Record<string, string> = {};
+		let transform = '';
+		for (const [k, v] of Object.entries(snap)) {
+			if (k === 'y' || k === 'x') transform += ` ${toCssValue(k, v)}`;
+			else if (k === 'filter') out.filter = String(v);
+			else if (k === 'opacity') out.opacity = String(v);
+		}
+		if (transform.trim()) out.transform = transform.trim();
+		return out;
+	}
 </script>
 
 <p bind:this={containerEl} class="blur-text {className} flex flex-wrap">

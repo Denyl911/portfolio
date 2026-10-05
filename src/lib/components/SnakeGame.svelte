@@ -251,17 +251,17 @@ $effect(() => {
 
 <svelte:window onkeydown={handleKeyPress} />
 <div class="items-center justify-center flex">
-	<div class="absolute overflow-hidden hidden lg:block">
-		<img src={bgBlur} alt="Background Blur">
+	<div class="absolute overflow-hidden hidden lg:block" aria-hidden="true">
+		<img src={bgBlur} alt="" width={1200} height={800} fetchpriority="low" decoding="async" />
 	</div>
 	<div
 		class="z-2 rounded-lg bg-gradient-to-r from-[#175553]/100 to-[#43d9ad]/13 p-1 shadow-2xl"
 	>
 		<div class="relative">
-			<img class="absolute top-1 left-1" src={bolt} alt="Background Blur">
+			<img class="absolute top-1 left-1" src={bolt} alt="" width={24} height={24} loading="lazy" decoding="async">
 		</div>
 		<div class="relative">
-			<img class="absolute top-1 right-1" src={bolt} alt="Background Blur">
+			<img class="absolute top-1 right-1" src={bolt} alt="" width={24} height={24} loading="lazy" decoding="async">
 		</div>
 
 		<div
@@ -335,9 +335,9 @@ $effect(() => {
 							<div class="grid grid-cols-5 gap-1">
 								{#each Array(10) as _, i}
 									{#if i <= score}
-										<img src={snakeFood} alt="Snake's food">
+										<img src={snakeFood} alt="Snake's food" width={20} height={20} loading="lazy" decoding="async">
 									{:else}
-										<img src={snakeFoodEmpty} alt="Snake's food empty">
+										<img src={snakeFoodEmpty} alt="" width={20} height={20} loading="lazy" decoding="async">
 									{/if}
 								{/each}
 							</div>
@@ -355,10 +355,10 @@ $effect(() => {
 			</div>
 		</div>
 		<div class="relative">
-			<img class="absolute bottom-1 left-1" src={bolt} alt="Background Blur">
+			<img class="absolute bottom-1 left-1" src={bolt} alt="" width={24} height={24} loading="lazy" decoding="async">
 		</div>
 		<div class="relative">
-			<img class="absolute right-1 bottom-1" src={bolt} alt="Background Blur">
+			<img class="absolute right-1 bottom-1" src={bolt} alt="" width={24} height={24} loading="lazy" decoding="async">
 		</div>
 	</div>
 </div>

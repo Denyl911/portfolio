@@ -1,5 +1,20 @@
-import { gsap } from 'gsap';
 import { writable } from 'svelte/store';
+
+// gsap is loaded lazily (dynamic import) so this store stays SSR-safe —
+// a static top-level `import { gsap }` can break the Vercel SSR build.
+async function animate(selector: string, vars: Record<string, unknown>) {
+	try {
+		if (typeof window === 'undefined') return;
+		if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+		const mod = await import('gsap');
+		const gsap =
+			(mod as unknown as { gsap?: typeof import('gsap').gsap }).gsap ??
+			(mod as unknown as { default: typeof import('gsap').gsap }).default;
+		gsap.fromTo(selector, vars.from as gsap.TweenVars, vars.to as gsap.TweenVars);
+	} catch {
+		// Animation is decorative; never break form submission.
+	}
+}
 
 export interface FormData {
 	name: string;
@@ -117,12 +132,11 @@ function createContactFormStore() {
 
 	const submitForm = async (submitFn: (data: FormData) => Promise<void>) => {
 		if (!validateAll()) {
-			// Animate errors
-			gsap.fromTo(
-				'.error-message',
-				{ opacity: 0, y: -10 },
-				{ opacity: 1, y: 0, duration: 0.3 },
-			);
+			// Animate errors (fire-and-forget, decorative only)
+			void animate('.error-message', {
+				from: { opacity: 0, y: -10 },
+				to: { opacity: 1, y: 0, duration: 0.3 },
+			});
 			return;
 		}
 
@@ -136,24 +150,22 @@ function createContactFormStore() {
 				successMessage: 'Message sent successfully!',
 				isSubmitting: false,
 			}));
-			// Animate success
-			gsap.fromTo(
-				'.success-message',
-				{ opacity: 0, scale: 0.8 },
-				{ opacity: 1, scale: 1, duration: 0.5 },
-			);
+			// Animate success (fire-and-forget, decorative only)
+			void animate('.success-message', {
+				from: { opacity: 0, scale: 0.8 },
+				to: { opacity: 1, scale: 1, duration: 0.5 },
+			});
 		} catch (error: any) {
 			update((state) => ({
 				...state,
 				errorMessage: error.error || error.message || 'Failed to send message',
 				isSubmitting: false,
 			}));
-			// Animate error
-			gsap.fromTo(
-				'.error-banner',
-				{ opacity: 0, x: -20 },
-				{ opacity: 1, x: 0, duration: 0.3 },
-			);
+			// Animate error (fire-and-forget, decorative only)
+			void animate('.error-banner', {
+				from: { opacity: 0, x: -20 },
+				to: { opacity: 1, x: 0, duration: 0.3 },
+			});
 		}
 	};
 

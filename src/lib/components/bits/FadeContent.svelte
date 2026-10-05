@@ -1,10 +1,10 @@
 <script lang="ts">
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { Snippet } from 'svelte';
 import { onMount } from 'svelte';
 
-gsap.registerPlugin(ScrollTrigger);
+// NOTE: gsap + ScrollTrigger are loaded via dynamic import inside onMount.
+// Static `import { ScrollTrigger } from 'gsap/ScrollTrigger'` breaks SSR on
+// Vercel (CJS named-export interop) and `registerPlugin` touches `window`.
 
 type Props = {
 	children: Snippet;
@@ -43,58 +43,81 @@ let {
 let el: HTMLDivElement;
 
 onMount(() => {
-	let scrollerTarget: Element | string | null =
-		container || document.getElementById('snap-main-container') || null;
-	if (typeof scrollerTarget === 'string') {
-		scrollerTarget = document.querySelector(scrollerTarget);
-	}
+	let cleanup: (() => void) | undefined;
+	let alive = true;
 
-	const startPct = (1 - threshold) * 100;
-	const getSeconds = (val: number) => (val > 10 ? val / 1000 : val);
+	(async () => {
+		// Dynamic import: client-only, avoids SSR CJS named-export error.
+		const gsapMod = await import('gsap');
+		const stMod = await import('gsap/ScrollTrigger');
+		if (!alive) return;
+		const gsap =
+			(gsapMod as unknown as { gsap?: typeof import('gsap').gsap }).gsap ??
+			(gsapMod as unknown as { default: typeof import('gsap').gsap }).default;
+		const ScrollTrigger =
+			(stMod as unknown as { ScrollTrigger?: typeof import('gsap/ScrollTrigger').ScrollTrigger })
+				.ScrollTrigger ??
+			(stMod as unknown as { default: typeof import('gsap/ScrollTrigger').ScrollTrigger }).default;
+		gsap.registerPlugin(ScrollTrigger);
 
-	gsap.set(el, {
-		autoAlpha: initialOpacity,
-		filter: blur ? 'blur(10px)' : 'blur(0px)',
-		willChange: 'opacity, filter, transform',
-	});
+		let scrollerTarget: Element | string | null =
+			container || document.getElementById('snap-main-container') || null;
+		if (typeof scrollerTarget === 'string') {
+			scrollerTarget = document.querySelector(scrollerTarget);
+		}
 
-	const tl = gsap.timeline({
-		paused: true,
-		delay: getSeconds(delay),
-		onComplete: () => {
-			onComplete?.();
-			if (disappearAfter > 0) {
-				gsap.to(el, {
-					autoAlpha: initialOpacity,
-					filter: blur ? 'blur(10px)' : 'blur(0px)',
-					delay: getSeconds(disappearAfter),
-					duration: getSeconds(disappearDuration),
-					ease: disappearEase,
-					onComplete: () => onDisappearanceComplete?.(),
-				});
-			}
-		},
-	});
+		const startPct = (1 - threshold) * 100;
+		const getSeconds = (val: number) => (val > 10 ? val / 1000 : val);
 
-	tl.to(el, {
-		autoAlpha: 1,
-		filter: 'blur(0px)',
-		duration: getSeconds(duration),
-		ease,
-	});
+		gsap.set(el, {
+			autoAlpha: initialOpacity,
+			filter: blur ? 'blur(10px)' : 'blur(0px)',
+			willChange: 'opacity, filter, transform',
+		});
 
-	const st = ScrollTrigger.create({
-		trigger: el,
-		scroller: (scrollerTarget as Element) || window,
-		start: `top ${startPct}%`,
-		once: true,
-		onEnter: () => tl.play(),
-	});
+		const tl = gsap.timeline({
+			paused: true,
+			delay: getSeconds(delay),
+			onComplete: () => {
+				onComplete?.();
+				if (disappearAfter > 0) {
+					gsap.to(el, {
+						autoAlpha: initialOpacity,
+						filter: blur ? 'blur(10px)' : 'blur(0px)',
+						delay: getSeconds(disappearAfter),
+						duration: getSeconds(disappearDuration),
+						ease: disappearEase,
+						onComplete: () => onDisappearanceComplete?.(),
+					});
+				}
+			},
+		});
+
+		tl.to(el, {
+			autoAlpha: 1,
+			filter: 'blur(0px)',
+			duration: getSeconds(duration),
+			ease,
+		});
+
+		const st = ScrollTrigger.create({
+			trigger: el,
+			scroller: (scrollerTarget as Element) || window,
+			start: `top ${startPct}%`,
+			once: true,
+			onEnter: () => tl.play(),
+		});
+
+		cleanup = () => {
+			st.kill();
+			tl.kill();
+			gsap.killTweensOf(el);
+		};
+	})();
 
 	return () => {
-		st.kill();
-		tl.kill();
-		gsap.killTweensOf(el);
+		alive = false;
+		cleanup?.();
 	};
 });
 </script>

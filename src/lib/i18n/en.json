@@ -26,6 +26,8 @@
 	"allProjects": "all-projects",
 	"selectAll": "select-all",
 	"clearAll": "clear-all",
+	"active": "active",
+	"showing": "showing",
 	"noProjects": "No projects match the selected filters.",
 	"technologies": "Technologies:",
 	"links": "Links:",

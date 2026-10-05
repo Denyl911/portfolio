@@ -26,6 +26,8 @@
 	"allProjects": "todos-los-proyectos",
 	"selectAll": "seleccionar-todo",
 	"clearAll": "limpiar-todo",
+	"active": "activos",
+	"showing": "mostrando",
 	"noProjects": "Ningún proyecto coincide con los filtros seleccionados.",
 	"technologies": "Tecnologías:",
 	"links": "Enlaces:",

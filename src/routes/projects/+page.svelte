@@ -14,8 +14,14 @@ import {
 import CheckSquare from 'lucide-svelte/icons/check-square';
 import ChevronDown from 'lucide-svelte/icons/chevron-down';
 import ChevronRight from 'lucide-svelte/icons/chevron-right';
+import Columns2 from 'lucide-svelte/icons/columns-2';
+import Globe from 'lucide-svelte/icons/globe';
+import LayoutGrid from 'lucide-svelte/icons/layout-grid';
+import Smartphone from 'lucide-svelte/icons/smartphone';
 import SparklesIcon from 'lucide-svelte/icons/sparkles';
 import Square from 'lucide-svelte/icons/square';
+import Star from 'lucide-svelte/icons/star';
+import Terminal from 'lucide-svelte/icons/terminal';
 import XIcon from 'lucide-svelte/icons/x';
 import { onMount } from 'svelte';
 // biome-ignore lint/correctness/noUnusedImports: translation
@@ -46,7 +52,17 @@ const categories = [
 	'AI',
 	'Stripe',
 	'HTML',
+	'Mobile',
+	'CLI',
+	'Scraper',
+	'Featured',
 ];
+
+// Card grid density (columns on large screens), toggled from the topbar.
+let density: 2 | 3 = $state(3);
+const gridCols = $derived(
+	density === 3 ? 'md:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2',
+);
 
 // Project filtering logic: start with everything visible so no project
 // is hidden on first load. Empty selection also means "show all".
@@ -166,6 +182,18 @@ $effect(() => {
 	{#if category === 'AI'}
 		<SparklesIcon size={16} />
 	{/if}
+	{#if category === 'Mobile'}
+		<Smartphone size={16} />
+	{/if}
+	{#if category === 'CLI'}
+		<Terminal size={16} />
+	{/if}
+	{#if category === 'Scraper'}
+		<Globe size={16} />
+	{/if}
+	{#if category === 'Featured'}
+		<Star size={16} />
+	{/if}
 {/snippet}
 
 <div
@@ -180,12 +208,14 @@ $effect(() => {
 		</div>
 	{/if}
 
-	<div class="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
+	<div
+		class="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row"
+	>
 		<div
 			class="max-h-[45%] w-full flex-shrink-0 overflow-y-auto overscroll-contain border-b border-white/20 bg-black/20 text-sm text-[#E5E9F0] backdrop-blur-lg lg:max-h-none lg:w-1/7 lg:border-r lg:border-b-0"
 		>
-			<div class="hidden h-full lg:block">
-				<div class="mb-4">
+			<div class="hidden h-full lg:flex lg:flex-col">
+				<div class="mb-4 min-h-0 flex-1 overflow-y-auto">
 					<button
 						type="button"
 						data-interactive-cursor="dropdown"
@@ -204,6 +234,9 @@ $effect(() => {
 							/>
 						{/if}
 						{$_('_technologies')}
+						<span class="ml-auto pr-4 text-xs text-[#607B96]">
+							{selectedCategories.length} {$_('active')}
+						</span>
 					</button>
 					{#if personalInfoOpenDesktop}
 						<div class="pt-2 pl-4">
@@ -238,11 +271,14 @@ $effect(() => {
 								onclick={toggleAll}
 								class="mt-2 cursor-pointer pr-4 text-xs text-[#607B96] hover:text-cwhite"
 							>
-								{allSelected ? $_('clearAll') : $_('selectAll')}
+								{allSelected ? `⦾ ${$_('clearAll')} ` : $_('selectAll')}
 							</button>
 						</div>
 					{/if}
 				</div>
+				<!-- <div class="mt-auto border-t border-[#1E2D3D] px-4 py-3 text-xs text-[#607B96]">
+					<span class="float-right">v0.0.2</span>
+				</div> -->
 			</div>
 
 			<div class="lg:hidden">
@@ -294,7 +330,7 @@ $effect(() => {
 								onclick={toggleAll}
 								class="w-full py-2 pr-4 text-left text-xs text-[#607B96] hover:text-[#C5C5C5]"
 							>
-								{allSelected ? $_('clearAll') : $_('selectAll')}
+								{allSelected ? `⦾ ${$_('clearAll')} ` : $_('selectAll')}
 							</button>
 						</div>
 					{/if}
@@ -304,7 +340,7 @@ $effect(() => {
 
 		<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
 			<div
-				class="hidden h-[42px] flex-shrink-0 border-b border-[#1E2D3D] lg:flex"
+				class="hidden h-[42px] flex-shrink-0 items-center border-b border-[#1E2D3D] lg:flex"
 			>
 				{#if selectedCategories.length > 0 && !allSelected}
 					<div
@@ -328,20 +364,36 @@ $effect(() => {
 						{$_('allProjects')}
 					</div>
 				{/if}
+				<div
+					class="ml-auto flex items-center gap-4 px-4 text-xs text-[#607B96]"
+				>
+					<span class="hidden xl:inline">workspace / production / repos</span>
+					<span>{$_('showing')}: {filteredProjects.length}</span>
+					<button
+						type="button"
+						onclick={() => (density = density === 3 ? 2 : 3)}
+						class="flex min-h-[32px] min-w-[32px] cursor-pointer items-center justify-center rounded hover:text-cwhite"
+						aria-pressed={density === 3}
+						title={density === 3 ? '3 columns' : '2 columns'}
+						data-interactive-cursor="btn"
+					>
+						{#if density === 3}
+							<LayoutGrid size={16} />
+						{:else}
+							<Columns2 size={16} />
+						{/if}
+					</button>
+				</div>
 			</div>
 
-			<div
-				class="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 lg:p-6"
-			>
+			<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 lg:p-6">
 				{#key filteredKey}
 					{#if filteredProjects.length === 0}
 						<p class="text-center text-sm text-[#607B96]">
 							{$_('noProjects')}
 						</p>
 					{:else}
-						<div
-							class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3"
-						>
+						<div class="grid grid-cols-1 gap-4 sm:gap-6 {gridCols}">
 							{#each filteredProjects as project, i (project.id)}
 								<div
 									class="card-enter h-full"

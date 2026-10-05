@@ -89,7 +89,7 @@ export const projectsData: Project[] = [
 		id: 4,
 		imageUrl: kidcash,
 		icon: 'ionic',
-		categories: ['Vue', 'HTML'],
+		categories: ['Vue', 'HTML', 'Mobile'],
 		technologies: ['Vue.js', 'Maz-UI', 'Nuxt', 'Ionic', 'Capacitor'],
 		githubLink: 'https://github.com/Denyl911/kidcash-web',
 		galleryImages: [kidcash, kid4, kid3, kid2, kid1],
@@ -114,7 +114,7 @@ export const projectsData: Project[] = [
 		id: 7,
 		imageUrl: portfolio,
 		icon: 'svelte',
-		categories: ['Svelte', 'HTML'],
+		categories: ['Svelte', 'HTML', 'Featured'],
 		technologies: ['Svelte', 'SvelteKit', 'Tailwindcss', 'TypeScript'],
 		galleryImages: [portfolio, port2, port3, port1],
 		githubLink: 'https://github.com/Denyl911/portfolio',
@@ -124,7 +124,7 @@ export const projectsData: Project[] = [
 		id: 8,
 		imageUrl: gosth,
 		icon: 'bunjs',
-		categories: ['BunJs', 'Stripe'],
+		categories: ['BunJs', 'Stripe', 'CLI'],
 		technologies: ['Bun.js', 'Stripe API', 'TypeScript'],
 		githubLink: 'https://github.com/Denyl911/stripe-copy-products-to-sandbox',
 		galleryImages: [gosth],
@@ -133,7 +133,7 @@ export const projectsData: Project[] = [
 		id: 9,
 		imageUrl: gosth,
 		icon: 'bunjs',
-		categories: ['BunJs', 'AI'],
+		categories: ['BunJs', 'AI', 'Scraper'],
 		technologies: [
 			'Bun.js',
 			'Elysia',
@@ -233,6 +233,37 @@ export const projectsData: Project[] = [
 		galleryImages: [gosth],
 	},
 ];
+
+export type ProjectBadge =
+	| 'Mobile'
+	| 'API'
+	| 'Backend'
+	| 'Featured'
+	| 'CLI'
+	| 'Scraper'
+	| 'Desktop'
+	| 'Web';
+
+// Badge shown on the card image, derived from categories (first match wins).
+const badgePriority: Array<{ category: string; badge: ProjectBadge }> = [
+	{ category: 'Featured', badge: 'Featured' },
+	{ category: 'React Native', badge: 'Mobile' },
+	{ category: 'Mobile', badge: 'Mobile' },
+	{ category: 'CLI', badge: 'CLI' },
+	{ category: 'Scraper', badge: 'Scraper' },
+	{ category: 'Tauri', badge: 'Desktop' },
+	{ category: 'BunJs', badge: 'API' },
+	{ category: 'NodeJs', badge: 'Backend' },
+	{ category: 'Stripe', badge: 'API' },
+	{ category: 'Solid', badge: 'Web' },
+];
+
+export function getProjectBadge(project: Project): ProjectBadge | null {
+	for (const { category, badge } of badgePriority) {
+		if (project.categories.includes(category)) return badge;
+	}
+	return null;
+}
 
 export async function loadProjectsTranslations() {
 	let lang = 'en';

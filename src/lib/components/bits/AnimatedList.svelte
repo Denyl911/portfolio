@@ -108,7 +108,7 @@
 <div class="relative w-[500px] {className}">
 	<div
 		bind:this={listRef}
-		class="al-scroll max-h-[400px] overflow-y-auto p-4 {displayScrollbar ? 'al-scrollbar' : 'al-scrollbar-hide'}"
+		class="al-scroll max-h-[400px] overflow-y-auto p-4 {displayScrollbar ? 'scrollbar-thin' : 'scrollbar-hide'}"
 		onscroll={handleScroll}
 	>
 		{#each items as item, index (index)}
@@ -156,26 +156,6 @@
 </div>
 
 <style>
-	.al-scrollbar {
-		scrollbar-width: thin;
-		scrollbar-color: #222 #14110e;
-	}
-	.al-scrollbar::-webkit-scrollbar {
-		width: 8px;
-	}
-	.al-scrollbar::-webkit-scrollbar-track {
-		background: #14110e;
-	}
-	.al-scrollbar::-webkit-scrollbar-thumb {
-		background: #222;
-		border-radius: 4px;
-	}
-	.al-scrollbar-hide {
-		scrollbar-width: none;
-	}
-	.al-scrollbar-hide::-webkit-scrollbar {
-		display: none;
-	}
 	.al-selected {
 		background: #222 !important;
 	}

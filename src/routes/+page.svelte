@@ -51,31 +51,37 @@ const techs = [
 
 let isMobile = $state(false);
 let showBg = $state(false);
-let showGame = $state(false);
-let gameWrap: HTMLElement | undefined = $state();
+let showPhone = $state(false);
+let phoneWrap: HTMLElement | undefined = $state();
 
 onMount(() => {
-	isMobile = window.matchMedia?.('(pointer: coarse), (max-width: 1023px)').matches ?? false;
-	const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+	isMobile =
+		window.matchMedia?.('(pointer: coarse), (max-width: 1023px)').matches ??
+		false;
+	const reduced =
+		window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 	if (!reduced) {
-		const w = window as unknown as { requestIdleCallback?: typeof requestIdleCallback };
-		if (typeof w.requestIdleCallback === 'function') w.requestIdleCallback(() => (showBg = true), { timeout: 2000 });
+		const w = window as unknown as {
+			requestIdleCallback?: typeof requestIdleCallback;
+		};
+		if (typeof w.requestIdleCallback === 'function')
+			w.requestIdleCallback(() => (showBg = true), { timeout: 2000 });
 		else setTimeout(() => (showBg = true), 800);
 	}
-	if (!gameWrap) {
-		showGame = true;
+	if (!phoneWrap) {
+		showPhone = true;
 		return;
 	}
 	const io = new IntersectionObserver(
 		([entry]) => {
 			if (entry.isIntersecting) {
-				showGame = true;
-			io.disconnect();
+				showPhone = true;
+				io.disconnect();
 			}
 		},
-		{ rootMargin: '200px' }
+		{ rootMargin: '200px' },
 	);
-	io.observe(gameWrap);
+	io.observe(phoneWrap);
 	return () => io.disconnect();
 });
 </script>
@@ -87,17 +93,17 @@ onMount(() => {
 		{#if showBg && !isMobile}
 			{#await import('$lib/components/bits/FaultyTerminal.svelte') then { default: FaultyTerminal }}
 				<FaultyTerminal
-			scale={isMobile ? 1.2 : 2}
-			digitSize={isMobile ? 0.9 : 1.2}
-			timeScale={isMobile ? 0.25 : 0.5}
-			scanlineIntensity={0.3}
-			curvature={0.3}
-			tint="#1a5fb4"
-			mouseReact={!isMobile}
-			mouseStrength={0.5}
-			pageLoadAnimation={!isMobile}
-			noiseAmp={1}
-			brightness={0.6}
+					scale={isMobile ? 1.2 : 2}
+					digitSize={isMobile ? 0.9 : 1.2}
+					timeScale={isMobile ? 0.25 : 0.5}
+					scanlineIntensity={0.3}
+					curvature={0.3}
+					tint="#1a5fb4"
+					mouseReact={!isMobile}
+					mouseStrength={0.5}
+					pageLoadAnimation={!isMobile}
+					noiseAmp={1}
+					brightness={0.6}
 				/>
 			{/await}
 		{:else}
@@ -126,7 +132,9 @@ onMount(() => {
 					class="my-2 justify-center text-4xl font-bold break-words text-[#fea55f] sm:text-5xl lg:justify-start"
 				/>
 			</div>
-			<div class="mt-1 min-h-[2.5rem] text-xl font-medium break-words text-[#43d9ad] sm:text-2xl lg:mx-0">
+			<div
+				class="mt-1 min-h-[2.5rem] text-xl font-medium break-words text-[#43d9ad] sm:text-2xl lg:mx-0"
+			>
 				<span data-interactive-cursor="code"> &gt; </span>
 				<TextType
 					text={[$_('fullStackDeveloper'), $_('degree'), $_('phrase')]}
@@ -162,7 +170,7 @@ onMount(() => {
 			<div
 				class="text-midnight mt-8 w-full max-w-full rounded-md bg-[#011221] p-3 text-left text-xs sm:text-sm lg:mt-10"
 			>
-				<p class="mb-1">{$_('completeTheGame')}</p>
+				<p class="mb-1">{$_('os.heroKicker')}</p>
 				<p class="mb-1">{$_('findOnGithub')}</p>
 				<div
 					class="block max-w-full overflow-x-auto rounded-md bg-[#011221] p-3 break-all"
@@ -198,10 +206,14 @@ onMount(() => {
 			</div>
 		</div>
 
-		<div id="game" bind:this={gameWrap} class="game-enter relative z-10 flex w-full justify-center lg:w-auto">
-			{#if showGame}
-				{#await import('$lib/components/SnakeGame.svelte') then { default: SnakeGame }}
-					<SnakeGame />
+		<div
+			id="os-anchor"
+			bind:this={phoneWrap}
+			class="game-enter relative z-10 flex w-full justify-center lg:w-auto lg:mr-13"
+		>
+			{#if showPhone}
+				{#await import('$lib/os/components/Phone.svelte') then { default: Phone }}
+					<Phone compact={isMobile} />
 				{/await}
 			{/if}
 		</div>

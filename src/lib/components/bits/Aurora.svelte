@@ -1,36 +1,36 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
+import { onMount } from 'svelte';
+import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 
-	type Props = {
-		colorStops?: string[];
-		amplitude?: number;
-		blend?: number;
-		time?: number;
-		speed?: number;
-	};
+type Props = {
+	colorStops?: string[];
+	amplitude?: number;
+	blend?: number;
+	time?: number;
+	speed?: number;
+};
 
-	let {
-		colorStops = ['#FF3E00', '#FF8A4C', '#FF3E00'],
-		amplitude = 1.0,
-		blend = 0.5,
-		time,
-		speed = 1.0
-	}: Props = $props();
+let {
+	colorStops = ['#FF3E00', '#FF8A4C', '#FF3E00'],
+	amplitude = 1.0,
+	blend = 0.5,
+	time,
+	speed = 1.0,
+}: Props = $props();
 
-	// Reactive ref the rAF loop reads from.
-	let current = $derived({ colorStops, amplitude, blend, time, speed });
+// Reactive ref the rAF loop reads from.
+let current = $derived({ colorStops, amplitude, blend, time, speed });
 
-	let ctn: HTMLDivElement;
+let ctn: HTMLDivElement;
 
-	const VERT = `#version 300 es
+const VERT = `#version 300 es
 in vec2 position;
 void main() {
   gl_Position = vec4(position, 0.0, 1.0);
 }
 `;
 
-	const FRAG = `#version 300 es
+const FRAG = `#version 300 es
 precision highp float;
 
 uniform float uTime;
@@ -129,87 +129,89 @@ void main() {
 }
 `;
 
-	onMount(() => {
-		const renderer = new Renderer({
-			alpha: true,
-			premultipliedAlpha: true,
-			antialias: true
-		});
-		const gl = renderer.gl;
-		gl.clearColor(0, 0, 0, 0);
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-		(gl.canvas as HTMLCanvasElement).style.backgroundColor = 'transparent';
-
-		const geometry = new Triangle(gl);
-		// Mirror upstream: drop default uv attribute since the shader doesn't use it.
-		const geomAttrs = (geometry as unknown as { attributes: Record<string, unknown> }).attributes;
-		if (geomAttrs.uv) delete geomAttrs.uv;
-
-		const initialStops = current.colorStops.map((hex) => {
-			const c = new Color(hex);
-			return [c.r, c.g, c.b];
-		});
-
-		const program = new Program(gl, {
-			vertex: VERT,
-			fragment: FRAG,
-			uniforms: {
-				uTime: { value: 0 },
-				uAmplitude: { value: current.amplitude },
-				uColorStops: { value: initialStops },
-				uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
-				uBlend: { value: current.blend }
-			}
-		});
-
-		const mesh = new Mesh(gl, { geometry, program });
-		// OGL owns the canvas; attach it imperatively to keep the copy-paste component single-file.
-		(gl.canvas as HTMLCanvasElement).style.display = 'block';
-		// eslint-disable-next-line svelte/no-dom-manipulating
-		ctn.appendChild(gl.canvas);
-
-		function resize() {
-			const width = ctn.offsetWidth;
-			const height = ctn.offsetHeight;
-			// Guard against zero-size measurements during initial layout (fonts/i18n/gsap).
-			if (!width || !height) return;
-			renderer.setSize(width, height);
-			program.uniforms.uResolution.value = [width, height];
-		}
-		window.addEventListener('resize', resize);
-		// The container can change size without a window resize (content load, animations),
-		// so observe it directly to avoid a stale/cropped canvas.
-		const ro = new ResizeObserver(resize);
-		ro.observe(ctn);
-		resize();
-
-		let raf = 0;
-		const update = (t: number) => {
-			raf = requestAnimationFrame(update);
-			const c = current;
-			const tt = c.time ?? t * 0.01;
-			const sp = c.speed ?? 1.0;
-			program.uniforms.uTime.value = tt * sp * 0.1;
-			program.uniforms.uAmplitude.value = c.amplitude;
-			program.uniforms.uBlend.value = c.blend;
-			program.uniforms.uColorStops.value = c.colorStops.map((hex: string) => {
-				const col = new Color(hex);
-				return [col.r, col.g, col.b];
-			});
-			renderer.render({ scene: mesh });
-		};
-		raf = requestAnimationFrame(update);
-
-		return () => {
-			cancelAnimationFrame(raf);
-			window.removeEventListener('resize', resize);
-			ro.disconnect();
-			// eslint-disable-next-line svelte/no-dom-manipulating
-			if (gl.canvas.parentNode === ctn) ctn.removeChild(gl.canvas);
-			gl.getExtension('WEBGL_lose_context')?.loseContext();
-		};
+onMount(() => {
+	const renderer = new Renderer({
+		alpha: true,
+		premultipliedAlpha: true,
+		antialias: true,
 	});
+	const gl = renderer.gl;
+	gl.clearColor(0, 0, 0, 0);
+	gl.enable(gl.BLEND);
+	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+	(gl.canvas as HTMLCanvasElement).style.backgroundColor = 'transparent';
+
+	const geometry = new Triangle(gl);
+	// Mirror upstream: drop default uv attribute since the shader doesn't use it.
+	const geomAttrs = (
+		geometry as unknown as { attributes: Record<string, unknown> }
+	).attributes;
+	if (geomAttrs.uv) delete geomAttrs.uv;
+
+	const initialStops = current.colorStops.map((hex) => {
+		const c = new Color(hex);
+		return [c.r, c.g, c.b];
+	});
+
+	const program = new Program(gl, {
+		vertex: VERT,
+		fragment: FRAG,
+		uniforms: {
+			uTime: { value: 0 },
+			uAmplitude: { value: current.amplitude },
+			uColorStops: { value: initialStops },
+			uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
+			uBlend: { value: current.blend },
+		},
+	});
+
+	const mesh = new Mesh(gl, { geometry, program });
+	// OGL owns the canvas; attach it imperatively to keep the copy-paste component single-file.
+	(gl.canvas as HTMLCanvasElement).style.display = 'block';
+	// eslint-disable-next-line svelte/no-dom-manipulating
+	ctn.appendChild(gl.canvas);
+
+	function resize() {
+		const width = ctn.offsetWidth;
+		const height = ctn.offsetHeight;
+		// Guard against zero-size measurements during initial layout (fonts/i18n/gsap).
+		if (!width || !height) return;
+		renderer.setSize(width, height);
+		program.uniforms.uResolution.value = [width, height];
+	}
+	window.addEventListener('resize', resize);
+	// The container can change size without a window resize (content load, animations),
+	// so observe it directly to avoid a stale/cropped canvas.
+	const ro = new ResizeObserver(resize);
+	ro.observe(ctn);
+	resize();
+
+	let raf = 0;
+	const update = (t: number) => {
+		raf = requestAnimationFrame(update);
+		const c = current;
+		const tt = c.time ?? t * 0.01;
+		const sp = c.speed ?? 1.0;
+		program.uniforms.uTime.value = tt * sp * 0.1;
+		program.uniforms.uAmplitude.value = c.amplitude;
+		program.uniforms.uBlend.value = c.blend;
+		program.uniforms.uColorStops.value = c.colorStops.map((hex: string) => {
+			const col = new Color(hex);
+			return [col.r, col.g, col.b];
+		});
+		renderer.render({ scene: mesh });
+	};
+	raf = requestAnimationFrame(update);
+
+	return () => {
+		cancelAnimationFrame(raf);
+		window.removeEventListener('resize', resize);
+		ro.disconnect();
+		// eslint-disable-next-line svelte/no-dom-manipulating
+		if (gl.canvas.parentNode === ctn) ctn.removeChild(gl.canvas);
+		gl.getExtension('WEBGL_lose_context')?.loseContext();
+	};
+});
 </script>
 
 <div bind:this={ctn} class="w-full h-full"></div>

@@ -144,6 +144,18 @@ body {
 	display: none;
 }
 
+/* ---- OS phone scrollareas: sin barra (cero espacio reservado, contenido
+   siempre centrado). La affordance de scroll la dan los degradados
+   superior/inferior que cada vista muestra solo cuando hay contenido
+   en esa dirección. El scroll táctil, rueda y teclado sigue intacto. ---- */
+.os-scroll {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+.os-scroll::-webkit-scrollbar {
+	display: none;
+}
+
 /* Hide the custom cursor while a native <dialog> is open: the dialog lives in
    the top layer, above the cursor's z-index, so the system cursor takes over.
    The extra [aria-hidden] attribute outranks the library's scoped .active rule. */

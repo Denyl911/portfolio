@@ -1,38 +1,45 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import * as THREE from 'three';
+import { onMount } from 'svelte';
+import * as THREE from 'three';
 
-	type Props = {
-		waveSpeed?: number;
-		waveFrequency?: number;
-		waveAmplitude?: number;
-		waveColor?: [number, number, number];
-		colorNum?: number;
-		pixelSize?: number;
-		disableAnimation?: boolean;
-		enableMouseInteraction?: boolean;
-		mouseRadius?: number;
-	};
+type Props = {
+	waveSpeed?: number;
+	waveFrequency?: number;
+	waveAmplitude?: number;
+	waveColor?: [number, number, number];
+	colorNum?: number;
+	pixelSize?: number;
+	disableAnimation?: boolean;
+	enableMouseInteraction?: boolean;
+	mouseRadius?: number;
+};
 
-	let {
-		waveSpeed = 0.05,
-		waveFrequency = 3,
-		waveAmplitude = 0.3,
-		waveColor = [0.5, 0.5, 0.5] as [number, number, number],
-		colorNum = 4,
-		pixelSize = 2,
-		disableAnimation = false,
-		enableMouseInteraction = true,
-		mouseRadius = 1
-	}: Props = $props();
+let {
+	waveSpeed = 0.05,
+	waveFrequency = 3,
+	waveAmplitude = 0.3,
+	waveColor = [0.5, 0.5, 0.5] as [number, number, number],
+	colorNum = 4,
+	pixelSize = 2,
+	disableAnimation = false,
+	enableMouseInteraction = true,
+	mouseRadius = 1,
+}: Props = $props();
 
-	let containerRef: HTMLDivElement;
-	const current = $derived({
-		waveSpeed, waveFrequency, waveAmplitude, waveColor, colorNum, pixelSize,
-		disableAnimation, enableMouseInteraction, mouseRadius
-	});
+let containerRef: HTMLDivElement;
+const current = $derived({
+	waveSpeed,
+	waveFrequency,
+	waveAmplitude,
+	waveColor,
+	colorNum,
+	pixelSize,
+	disableAnimation,
+	enableMouseInteraction,
+	mouseRadius,
+});
 
-	const waveVertexShader = `
+const waveVertexShader = `
 precision highp float;
 varying vec2 vUv;
 void main() {
@@ -40,7 +47,7 @@ void main() {
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }`;
 
-	const waveFragmentShader = `
+const waveFragmentShader = `
 precision highp float;
 uniform vec2 resolution;
 uniform float time;
@@ -114,7 +121,7 @@ void main() {
   gl_FragColor = vec4(col, max(max(col.r, col.g), col.b));
 }`;
 
-	const ditherFragmentShader = `
+const ditherFragmentShader = `
 precision highp float;
 uniform sampler2D inputBuffer;
 uniform vec2 resolution;
@@ -150,135 +157,152 @@ void main() {
   gl_FragColor = color;
 }`;
 
-	const compositeVertexShader = `
+const compositeVertexShader = `
 varying vec2 vUv;
 void main() { vUv = uv; gl_Position = vec4(position, 1.0); }`;
 
-	onMount(() => {
-		const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: true });
-		renderer.setPixelRatio(1);
-		renderer.setClearColor(0x000000, 0);
-		renderer.setSize(containerRef.clientWidth, containerRef.clientHeight);
-		renderer.domElement.style.position = 'absolute';
-		renderer.domElement.style.inset = '0';
-		renderer.domElement.style.width = '100%';
-		renderer.domElement.style.height = '100%';
-		// eslint-disable-next-line svelte/no-dom-manipulating
-		containerRef.appendChild(renderer.domElement);
-
-		const waveScene = new THREE.Scene();
-		const waveCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 100);
-		waveCamera.position.set(0, 0, 6);
-
-		const waveUniforms = {
-			time: { value: 0 },
-			resolution: { value: new THREE.Vector2(0, 0) },
-			waveSpeed: { value: waveSpeed },
-			waveFrequency: { value: waveFrequency },
-			waveAmplitude: { value: waveAmplitude },
-			waveColor: { value: new THREE.Color(...waveColor) },
-			mousePos: { value: new THREE.Vector2(0, 0) },
-			enableMouseInteraction: { value: enableMouseInteraction ? 1 : 0 },
-			mouseRadius: { value: mouseRadius }
-		};
-		const waveMat = new THREE.ShaderMaterial({
-			vertexShader: waveVertexShader,
-			fragmentShader: waveFragmentShader,
-			uniforms: waveUniforms
-		});
-		const waveMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), waveMat);
-		waveScene.add(waveMesh);
-
-		// Render target
-		const rt = new THREE.WebGLRenderTarget(1, 1, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
-
-		// Composite (dither) scene
-		const compScene = new THREE.Scene();
-		const compCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-		const compUniforms = {
-			inputBuffer: { value: rt.texture },
-			resolution: { value: new THREE.Vector2(0, 0) },
-			colorNum: { value: colorNum },
-			pixelSize: { value: pixelSize }
-		};
-		const compMat = new THREE.ShaderMaterial({
-			vertexShader: compositeVertexShader,
-			fragmentShader: ditherFragmentShader,
-			uniforms: compUniforms
-		});
-		const compMesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), compMat);
-		compScene.add(compMesh);
-
-		const computeViewportScale = () => {
-			const fov = (waveCamera.fov * Math.PI) / 180;
-			const h = 2 * Math.tan(fov / 2) * Math.abs(waveCamera.position.z);
-			const w = h * waveCamera.aspect;
-			waveMesh.scale.set(w, h, 1);
-		};
-
-		const resize = () => {
-			const w = containerRef.clientWidth || 1;
-			const h = containerRef.clientHeight || 1;
-			renderer.setSize(w, h);
-			waveCamera.aspect = w / h;
-			waveCamera.updateProjectionMatrix();
-			computeViewportScale();
-			const dpr = renderer.getPixelRatio();
-			const pxW = Math.floor(w * dpr);
-			const pxH = Math.floor(h * dpr);
-			rt.setSize(pxW, pxH);
-			waveUniforms.resolution.value.set(pxW, pxH);
-			compUniforms.resolution.value.set(pxW, pxH);
-		};
-		const ro = new ResizeObserver(resize);
-		ro.observe(containerRef);
-		resize();
-
-		const mouse = new THREE.Vector2();
-		const onPointerMove = (e: PointerEvent) => {
-			if (!current.enableMouseInteraction) return;
-			const rect = renderer.domElement.getBoundingClientRect();
-			const dpr = renderer.getPixelRatio();
-			mouse.set((e.clientX - rect.left) * dpr, (e.clientY - rect.top) * dpr);
-		};
-		renderer.domElement.addEventListener('pointermove', onPointerMove, { passive: true });
-
-		const clock = new THREE.Clock();
-		let raf = 0;
-		const render = () => {
-			if (!current.disableAnimation) waveUniforms.time.value = clock.getElapsedTime();
-			else clock.getElapsedTime();
-			waveUniforms.waveSpeed.value = current.waveSpeed;
-			waveUniforms.waveFrequency.value = current.waveFrequency;
-			waveUniforms.waveAmplitude.value = current.waveAmplitude;
-			waveUniforms.waveColor.value.setRGB(current.waveColor[0], current.waveColor[1], current.waveColor[2]);
-			waveUniforms.enableMouseInteraction.value = current.enableMouseInteraction ? 1 : 0;
-			waveUniforms.mouseRadius.value = current.mouseRadius;
-			if (current.enableMouseInteraction) waveUniforms.mousePos.value.copy(mouse);
-			compUniforms.colorNum.value = current.colorNum;
-			compUniforms.pixelSize.value = current.pixelSize;
-
-			renderer.setRenderTarget(rt);
-			renderer.render(waveScene, waveCamera);
-			renderer.setRenderTarget(null);
-			renderer.render(compScene, compCamera);
-			raf = requestAnimationFrame(render);
-		};
-		raf = requestAnimationFrame(render);
-
-		return () => {
-			cancelAnimationFrame(raf);
-			ro.disconnect();
-			renderer.domElement.removeEventListener('pointermove', onPointerMove);
-			rt.dispose();
-			waveMat.dispose();
-			compMat.dispose();
-			waveMesh.geometry.dispose();
-			compMesh.geometry.dispose();
-			renderer.dispose();
-			if (renderer.domElement.parentElement === containerRef) containerRef.removeChild(renderer.domElement);
-		};
+onMount(() => {
+	const renderer = new THREE.WebGLRenderer({
+		antialias: true,
+		preserveDrawingBuffer: true,
+		alpha: true,
 	});
+	renderer.setPixelRatio(1);
+	renderer.setClearColor(0x000000, 0);
+	renderer.setSize(containerRef.clientWidth, containerRef.clientHeight);
+	renderer.domElement.style.position = 'absolute';
+	renderer.domElement.style.inset = '0';
+	renderer.domElement.style.width = '100%';
+	renderer.domElement.style.height = '100%';
+	// eslint-disable-next-line svelte/no-dom-manipulating
+	containerRef.appendChild(renderer.domElement);
+
+	const waveScene = new THREE.Scene();
+	const waveCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 100);
+	waveCamera.position.set(0, 0, 6);
+
+	const waveUniforms = {
+		time: { value: 0 },
+		resolution: { value: new THREE.Vector2(0, 0) },
+		waveSpeed: { value: waveSpeed },
+		waveFrequency: { value: waveFrequency },
+		waveAmplitude: { value: waveAmplitude },
+		waveColor: { value: new THREE.Color(...waveColor) },
+		mousePos: { value: new THREE.Vector2(0, 0) },
+		enableMouseInteraction: { value: enableMouseInteraction ? 1 : 0 },
+		mouseRadius: { value: mouseRadius },
+	};
+	const waveMat = new THREE.ShaderMaterial({
+		vertexShader: waveVertexShader,
+		fragmentShader: waveFragmentShader,
+		uniforms: waveUniforms,
+	});
+	const waveMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), waveMat);
+	waveScene.add(waveMesh);
+
+	// Render target
+	const rt = new THREE.WebGLRenderTarget(1, 1, {
+		minFilter: THREE.NearestFilter,
+		magFilter: THREE.NearestFilter,
+	});
+
+	// Composite (dither) scene
+	const compScene = new THREE.Scene();
+	const compCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+	const compUniforms = {
+		inputBuffer: { value: rt.texture },
+		resolution: { value: new THREE.Vector2(0, 0) },
+		colorNum: { value: colorNum },
+		pixelSize: { value: pixelSize },
+	};
+	const compMat = new THREE.ShaderMaterial({
+		vertexShader: compositeVertexShader,
+		fragmentShader: ditherFragmentShader,
+		uniforms: compUniforms,
+	});
+	const compMesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), compMat);
+	compScene.add(compMesh);
+
+	const computeViewportScale = () => {
+		const fov = (waveCamera.fov * Math.PI) / 180;
+		const h = 2 * Math.tan(fov / 2) * Math.abs(waveCamera.position.z);
+		const w = h * waveCamera.aspect;
+		waveMesh.scale.set(w, h, 1);
+	};
+
+	const resize = () => {
+		const w = containerRef.clientWidth || 1;
+		const h = containerRef.clientHeight || 1;
+		renderer.setSize(w, h);
+		waveCamera.aspect = w / h;
+		waveCamera.updateProjectionMatrix();
+		computeViewportScale();
+		const dpr = renderer.getPixelRatio();
+		const pxW = Math.floor(w * dpr);
+		const pxH = Math.floor(h * dpr);
+		rt.setSize(pxW, pxH);
+		waveUniforms.resolution.value.set(pxW, pxH);
+		compUniforms.resolution.value.set(pxW, pxH);
+	};
+	const ro = new ResizeObserver(resize);
+	ro.observe(containerRef);
+	resize();
+
+	const mouse = new THREE.Vector2();
+	const onPointerMove = (e: PointerEvent) => {
+		if (!current.enableMouseInteraction) return;
+		const rect = renderer.domElement.getBoundingClientRect();
+		const dpr = renderer.getPixelRatio();
+		mouse.set((e.clientX - rect.left) * dpr, (e.clientY - rect.top) * dpr);
+	};
+	renderer.domElement.addEventListener('pointermove', onPointerMove, {
+		passive: true,
+	});
+
+	const clock = new THREE.Clock();
+	let raf = 0;
+	const render = () => {
+		if (!current.disableAnimation)
+			waveUniforms.time.value = clock.getElapsedTime();
+		else clock.getElapsedTime();
+		waveUniforms.waveSpeed.value = current.waveSpeed;
+		waveUniforms.waveFrequency.value = current.waveFrequency;
+		waveUniforms.waveAmplitude.value = current.waveAmplitude;
+		waveUniforms.waveColor.value.setRGB(
+			current.waveColor[0],
+			current.waveColor[1],
+			current.waveColor[2],
+		);
+		waveUniforms.enableMouseInteraction.value = current.enableMouseInteraction
+			? 1
+			: 0;
+		waveUniforms.mouseRadius.value = current.mouseRadius;
+		if (current.enableMouseInteraction) waveUniforms.mousePos.value.copy(mouse);
+		compUniforms.colorNum.value = current.colorNum;
+		compUniforms.pixelSize.value = current.pixelSize;
+
+		renderer.setRenderTarget(rt);
+		renderer.render(waveScene, waveCamera);
+		renderer.setRenderTarget(null);
+		renderer.render(compScene, compCamera);
+		raf = requestAnimationFrame(render);
+	};
+	raf = requestAnimationFrame(render);
+
+	return () => {
+		cancelAnimationFrame(raf);
+		ro.disconnect();
+		renderer.domElement.removeEventListener('pointermove', onPointerMove);
+		rt.dispose();
+		waveMat.dispose();
+		compMat.dispose();
+		waveMesh.geometry.dispose();
+		compMesh.geometry.dispose();
+		renderer.dispose();
+		if (renderer.domElement.parentElement === containerRef)
+			containerRef.removeChild(renderer.domElement);
+	};
+});
 </script>
 
 <div bind:this={containerRef} class="relative h-full w-full"></div>

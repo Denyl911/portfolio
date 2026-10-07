@@ -55,9 +55,16 @@ onMount(() => {
 			(gsapMod as unknown as { gsap?: typeof import('gsap').gsap }).gsap ??
 			(gsapMod as unknown as { default: typeof import('gsap').gsap }).default;
 		const ScrollTrigger =
-			(stMod as unknown as { ScrollTrigger?: typeof import('gsap/ScrollTrigger').ScrollTrigger })
-				.ScrollTrigger ??
-			(stMod as unknown as { default: typeof import('gsap/ScrollTrigger').ScrollTrigger }).default;
+			(
+				stMod as unknown as {
+					ScrollTrigger?: typeof import('gsap/ScrollTrigger').ScrollTrigger;
+				}
+			).ScrollTrigger ??
+			(
+				stMod as unknown as {
+					default: typeof import('gsap/ScrollTrigger').ScrollTrigger;
+				}
+			).default;
 		gsap.registerPlugin(ScrollTrigger);
 
 		let scrollerTarget: Element | string | null =

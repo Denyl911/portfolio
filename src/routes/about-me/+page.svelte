@@ -43,6 +43,7 @@ import CountUp from '$lib/components/bits/CountUp.svelte';
 import FadeContent from '$lib/components/bits/FadeContent.svelte';
 import SpotlightCard from '$lib/components/bits/SpotlightCard.svelte';
 import CodeSnippetCard from '$lib/components/CodeSnippetCard.svelte';
+import MiniPlayer from '$lib/os/components/MiniPlayer.svelte';
 import {
 	type CodeSnippet,
 	codeSnippets,
@@ -169,9 +170,9 @@ onMount(async () => {
 
 <div class="flex h-full min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
 	<div
-		class="border-bluegray text-midnight flex-shrink-0 text-sm lg:w-1/6 lg:border-r"
+		class="border-bluegray text-midnight flex-shrink-0 text-sm lg:flex lg:w-1/6 lg:flex-col lg:border-r"
 	>
-		<div class="hidden h-full overflow-y-auto lg:block">
+		<div class="hidden min-h-0 flex-1 overflow-y-auto lg:block">
 			<div class="mb-4">
 				<button
 					type="button"
@@ -276,6 +277,7 @@ onMount(async () => {
 				{/if}
 			</div>
 		</div>
+		<MiniPlayer variant="dock" visible />
 
 		<div class="relative flex-shrink-0 lg:hidden">
 			<div class="border-bluegray flex h-11 border-b text-sm">

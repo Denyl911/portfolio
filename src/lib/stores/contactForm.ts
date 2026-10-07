@@ -10,7 +10,11 @@ async function animate(selector: string, vars: Record<string, unknown>) {
 		const gsap =
 			(mod as unknown as { gsap?: typeof import('gsap').gsap }).gsap ??
 			(mod as unknown as { default: typeof import('gsap').gsap }).default;
-		gsap.fromTo(selector, vars.from as gsap.TweenVars, vars.to as gsap.TweenVars);
+		gsap.fromTo(
+			selector,
+			vars.from as gsap.TweenVars,
+			vars.to as gsap.TweenVars,
+		);
 	} catch {
 		// Animation is decorative; never break form submission.
 	}

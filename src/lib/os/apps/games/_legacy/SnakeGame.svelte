@@ -244,6 +244,7 @@ onDestroy(() => {
 
 // Efecto para dibujar cuando cambia el estado del juego (snake, food, etc.)
 $effect(() => {
+	// biome-ignore lint/style/noNonNullAssertion: canvas 2d siempre disponible (código archivado)
 	ctx = canvas.getContext('2d')!;
 	drawGame();
 });
@@ -252,23 +253,50 @@ $effect(() => {
 <svelte:window onkeydown={handleKeyPress} />
 <div class="items-center justify-center flex">
 	<div class="absolute overflow-hidden hidden lg:block" aria-hidden="true">
-		<img src={bgBlur} alt="" width={1200} height={800} fetchpriority="low" decoding="async" />
+		<img
+			src={bgBlur}
+			alt=""
+			width={1200}
+			height={800}
+			fetchpriority="low"
+			decoding="async"
+		>
 	</div>
 	<div
 		class="z-2 rounded-lg bg-gradient-to-r from-[#175553]/100 to-[#43d9ad]/13 p-1 shadow-2xl"
 	>
 		<div class="relative">
-			<img class="absolute top-1 left-1" src={bolt} alt="" width={24} height={24} loading="lazy" decoding="async">
+			<img
+				class="absolute top-1 left-1"
+				src={bolt}
+				alt=""
+				width={24}
+				height={24}
+				loading="lazy"
+				decoding="async"
+			>
 		</div>
 		<div class="relative">
-			<img class="absolute top-1 right-1" src={bolt} alt="" width={24} height={24} loading="lazy" decoding="async">
+			<img
+				class="absolute top-1 right-1"
+				src={bolt}
+				alt=""
+				width={24}
+				height={24}
+				loading="lazy"
+				decoding="async"
+			>
 		</div>
 
 		<div
 			class="flex w-full h-110 max-w-[340px] flex-col justify-between rounded-md px-4 sm:max-w-[420px] sm:px-6 md:w-150 lg:w-120"
 		>
 			<div class="flex flex-grow items-center justify-between space-x-4">
-				<div class="h-[90%]" ontouchstart={handleTouchStart} ontouchend={handleTouchEnd}>
+				<div
+					class="h-[90%]"
+					ontouchstart={handleTouchStart}
+					ontouchend={handleTouchEnd}
+				>
 					<canvas
 						width="420"
 						height="800"
@@ -296,7 +324,9 @@ $effect(() => {
 						<div class="rounded-md bg-[#1d293d] p-4">
 							<p class="mb-2">{$_('useKeyboard')}</p>
 							<p class="mb-4">{$_('arrowsToPlay')}</p>
-							<div class="mx-auto grid w-[148px] grid-cols-3 place-items-center gap-1">
+							<div
+								class="mx-auto grid w-[148px] grid-cols-3 place-items-center gap-1"
+							>
 								<div></div>
 								<button
 									type="button"
@@ -335,9 +365,23 @@ $effect(() => {
 							<div class="grid grid-cols-5 gap-1">
 								{#each Array(10) as _, i}
 									{#if i <= score}
-										<img src={snakeFood} alt="Snake's food" width={20} height={20} loading="lazy" decoding="async">
+										<img
+											src={snakeFood}
+											alt="Snake's food"
+											width={20}
+											height={20}
+											loading="lazy"
+											decoding="async"
+										>
 									{:else}
-										<img src={snakeFoodEmpty} alt="" width={20} height={20} loading="lazy" decoding="async">
+										<img
+											src={snakeFoodEmpty}
+											alt=""
+											width={20}
+											height={20}
+											loading="lazy"
+											decoding="async"
+										>
 									{/if}
 								{/each}
 							</div>
@@ -355,10 +399,26 @@ $effect(() => {
 			</div>
 		</div>
 		<div class="relative">
-			<img class="absolute bottom-1 left-1" src={bolt} alt="" width={24} height={24} loading="lazy" decoding="async">
+			<img
+				class="absolute bottom-1 left-1"
+				src={bolt}
+				alt=""
+				width={24}
+				height={24}
+				loading="lazy"
+				decoding="async"
+			>
 		</div>
 		<div class="relative">
-			<img class="absolute right-1 bottom-1" src={bolt} alt="" width={24} height={24} loading="lazy" decoding="async">
+			<img
+				class="absolute right-1 bottom-1"
+				src={bolt}
+				alt=""
+				width={24}
+				height={24}
+				loading="lazy"
+				decoding="async"
+			>
 		</div>
 	</div>
 </div>

@@ -1,30 +1,44 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+import type { Snippet } from 'svelte';
 
-	type Props = {
-		class?: string;
-		spotlightColor?: string;
-		children?: Snippet;
-	};
+type Props = {
+	class?: string;
+	spotlightColor?: string;
+	children?: Snippet;
+};
 
-	let { class: className = '', spotlightColor = 'rgba(255, 255, 255, 0.25)', children }: Props = $props();
+let {
+	class: className = '',
+	spotlightColor = 'rgba(255, 255, 255, 0.25)',
+	children,
+}: Props = $props();
 
-	let divRef: HTMLDivElement;
-	let isFocused = $state(false);
-	let posX = $state(0);
-	let posY = $state(0);
-	let opacity = $state(0);
+let divRef: HTMLDivElement;
+let isFocused = $state(false);
+let posX = $state(0);
+let posY = $state(0);
+let opacity = $state(0);
 
-	function handleMouseMove(e: MouseEvent) {
-		if (!divRef || isFocused) return;
-		const rect = divRef.getBoundingClientRect();
-		posX = e.clientX - rect.left;
-		posY = e.clientY - rect.top;
-	}
-	function handleFocus() { isFocused = true; opacity = 0.6; }
-	function handleBlur() { isFocused = false; opacity = 0; }
-	function handleMouseEnter() { opacity = 0.6; }
-	function handleMouseLeave() { opacity = 0; }
+function handleMouseMove(e: MouseEvent) {
+	if (!divRef || isFocused) return;
+	const rect = divRef.getBoundingClientRect();
+	posX = e.clientX - rect.left;
+	posY = e.clientY - rect.top;
+}
+function handleFocus() {
+	isFocused = true;
+	opacity = 0.6;
+}
+function handleBlur() {
+	isFocused = false;
+	opacity = 0;
+}
+function handleMouseEnter() {
+	opacity = 0.6;
+}
+function handleMouseLeave() {
+	opacity = 0;
+}
 </script>
 
 <div

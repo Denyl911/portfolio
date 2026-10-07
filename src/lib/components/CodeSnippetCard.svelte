@@ -14,7 +14,6 @@ let {
 	createdTime = 'some time ago',
 	lang = 'typescript',
 } = $props();
-
 </script>
 
 <div class="w-full rounded-lg border border-[#1E2D3D] bg-[#011221] p-4 text-sm">

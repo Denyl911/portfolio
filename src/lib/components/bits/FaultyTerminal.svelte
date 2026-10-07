@@ -1,9 +1,9 @@
 <script module lang="ts">
-	import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
+import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 
-	type Vec2 = [number, number];
+type Vec2 = [number, number];
 
-	const vertexShader = `
+const vertexShader = `
 attribute vec2 position;
 attribute vec2 uv;
 varying vec2 vUv;
@@ -13,7 +13,7 @@ void main() {
 }
 `;
 
-	const fragmentShader = `
+const fragmentShader = `
 precision mediump float;
 
 varying vec2 vUv;
@@ -209,256 +209,287 @@ void main() {
 }
 `;
 
-	function hexToRgb(hex: string): [number, number, number] {
-		let h = hex.replace('#', '').trim();
-		if (h.length === 3) h = h.split('').map((c) => c + c).join('');
-		const num = parseInt(h, 16);
-		return [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255];
-	}
+function hexToRgb(hex: string): [number, number, number] {
+	let h = hex.replace('#', '').trim();
+	if (h.length === 3)
+		h = h
+			.split('')
+			.map((c) => c + c)
+			.join('');
+	const num = parseInt(h, 16);
+	return [
+		((num >> 16) & 255) / 255,
+		((num >> 8) & 255) / 255,
+		(num & 255) / 255,
+	];
+}
 </script>
 
 <script lang="ts">
-	type Props = {
-		scale?: number;
-		gridMul?: Vec2;
-		digitSize?: number;
-		timeScale?: number;
-		pause?: boolean;
-		scanlineIntensity?: number;
-		glitchAmount?: number;
-		flickerAmount?: number;
-		noiseAmp?: number;
-		chromaticAberration?: number;
-		dither?: number | boolean;
-		curvature?: number;
-		tint?: string;
-		mouseReact?: boolean;
-		mouseStrength?: number;
-		dpr?: number;
-		pageLoadAnimation?: boolean;
-		brightness?: number;
-		class?: string;
+type Props = {
+	scale?: number;
+	gridMul?: Vec2;
+	digitSize?: number;
+	timeScale?: number;
+	pause?: boolean;
+	scanlineIntensity?: number;
+	glitchAmount?: number;
+	flickerAmount?: number;
+	noiseAmp?: number;
+	chromaticAberration?: number;
+	dither?: number | boolean;
+	curvature?: number;
+	tint?: string;
+	mouseReact?: boolean;
+	mouseStrength?: number;
+	dpr?: number;
+	pageLoadAnimation?: boolean;
+	brightness?: number;
+	class?: string;
+};
+
+let {
+	scale = 1,
+	gridMul = [2, 1],
+	digitSize = 1.5,
+	timeScale = 0.3,
+	pause = false,
+	scanlineIntensity = 0.3,
+	glitchAmount = 1,
+	flickerAmount = 1,
+	noiseAmp = 1,
+	chromaticAberration = 0,
+	dither = 0,
+	curvature = 0.2,
+	tint = '#ffffff',
+	mouseReact = true,
+	mouseStrength = 0.2,
+	dpr = Math.min(globalThis.devicePixelRatio || 1, 2),
+	pageLoadAnimation = true,
+	brightness = 1,
+	class: className = '',
+}: Props = $props();
+
+let container: HTMLDivElement;
+let program: Program | null = null;
+let raf = 0;
+let mouse = { x: 0.5, y: 0.5 };
+let smoothMouse = { x: 0.5, y: 0.5 };
+let frozenTime = 0;
+let loadAnimationStart = 0;
+let timeOffset = Math.random() * 100;
+
+const ditherValue = $derived(
+	typeof dither === 'boolean' ? (dither ? 1 : 0) : dither,
+);
+const tintVec = $derived(hexToRgb(tint));
+
+function handleMouseMove(e: MouseEvent) {
+	if (!container) return;
+	const rect = container.getBoundingClientRect();
+	mouse = {
+		x: (e.clientX - rect.left) / rect.width,
+		y: 1 - (e.clientY - rect.top) / rect.height,
 	};
+}
 
-	let {
-		scale = 1,
-		gridMul = [2, 1],
-		digitSize = 1.5,
-		timeScale = 0.3,
-		pause = false,
-		scanlineIntensity = 0.3,
-		glitchAmount = 1,
-		flickerAmount = 1,
-		noiseAmp = 1,
-		chromaticAberration = 0,
-		dither = 0,
-		curvature = 0.2,
-		tint = '#ffffff',
-		mouseReact = true,
-		mouseStrength = 0.2,
-		dpr = Math.min(globalThis.devicePixelRatio || 1, 2),
-		pageLoadAnimation = true,
-		brightness = 1,
-		class: className = ''
-	}: Props = $props();
+$effect(() => {
+	const currentContainer = container;
+	if (!currentContainer) return;
+	if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
 
-	let container: HTMLDivElement;
-	let program: Program | null = null;
-	let raf = 0;
-	let mouse = { x: 0.5, y: 0.5 };
-	let smoothMouse = { x: 0.5, y: 0.5 };
-	let frozenTime = 0;
-	let loadAnimationStart = 0;
-	let timeOffset = Math.random() * 100;
+	let disposed = false;
+	let cleanup: (() => void) | undefined;
+	let setRunning: ((v: boolean) => void) | undefined;
 
-	const ditherValue = $derived(typeof dither === 'boolean' ? (dither ? 1 : 0) : dither);
-	const tintVec = $derived(hexToRgb(tint));
+	const boot = () => {
+		if (disposed || cleanup || !currentContainer) return;
+		// Cap DPR: WebGL at 2x is ~4x fragment cost. 1.25x is enough for bg.
+		const cappedDpr = Math.min(dpr, globalThis.devicePixelRatio || 1, 1.5);
+		const renderer = new Renderer({
+			dpr: cappedDpr,
+			alpha: true,
+			premultipliedAlpha: false,
+		});
+		const gl = renderer.gl;
+		gl.clearColor(0, 0, 0, 0);
 
-	function handleMouseMove(e: MouseEvent) {
-		if (!container) return;
-		const rect = container.getBoundingClientRect();
-		mouse = {
-			x: (e.clientX - rect.left) / rect.width,
-			y: 1 - (e.clientY - rect.top) / rect.height
-		};
-	}
+		const geometry = new Triangle(gl);
+		program = new Program(gl, {
+			vertex: vertexShader,
+			fragment: fragmentShader,
+			uniforms: {
+				iTime: { value: 0 },
+				iResolution: {
+					value: new Color(
+						gl.canvas.width,
+						gl.canvas.height,
+						gl.canvas.width / gl.canvas.height,
+					),
+				},
+				uScale: { value: scale },
+				uGridMul: { value: new Float32Array(gridMul) },
+				uDigitSize: { value: digitSize },
+				uScanlineIntensity: { value: scanlineIntensity },
+				uGlitchAmount: { value: glitchAmount },
+				uFlickerAmount: { value: flickerAmount },
+				uNoiseAmp: { value: noiseAmp },
+				uChromaticAberration: { value: chromaticAberration },
+				uDither: { value: ditherValue },
+				uCurvature: { value: curvature },
+				uTint: { value: new Color(tintVec[0], tintVec[1], tintVec[2]) },
+				uMouse: { value: new Float32Array([smoothMouse.x, smoothMouse.y]) },
+				uMouseStrength: { value: mouseStrength },
+				uUseMouse: { value: mouseReact ? 1 : 0 },
+				uPageLoadProgress: { value: pageLoadAnimation ? 0 : 1 },
+				uUsePageLoadAnimation: { value: pageLoadAnimation ? 1 : 0 },
+				uBrightness: { value: brightness },
+			},
+		});
 
-	$effect(() => {
-		const currentContainer = container;
-		if (!currentContainer) return;
-		if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+		const mesh = new Mesh(gl, { geometry, program });
 
-		let disposed = false;
-		let cleanup: (() => void) | undefined;
-		let setRunning: ((v: boolean) => void) | undefined;
+		function resize() {
+			if (!program) return;
+			renderer.setSize(
+				currentContainer.offsetWidth,
+				currentContainer.offsetHeight,
+			);
+			program.uniforms.iResolution.value = new Color(
+				gl.canvas.width,
+				gl.canvas.height,
+				gl.canvas.width / gl.canvas.height,
+			);
+		}
 
-		const boot = () => {
-			if (disposed || cleanup || !currentContainer) return;
-			// Cap DPR: WebGL at 2x is ~4x fragment cost. 1.25x is enough for bg.
-			const cappedDpr = Math.min(dpr, globalThis.devicePixelRatio || 1, 1.5);
-			const renderer = new Renderer({ dpr: cappedDpr, alpha: true, premultipliedAlpha: false });
-			const gl = renderer.gl;
-			gl.clearColor(0, 0, 0, 0);
+		const resizeObserver = new ResizeObserver(() => resize());
+		resizeObserver.observe(currentContainer);
+		resize();
 
-			const geometry = new Triangle(gl);
-			program = new Program(gl, {
-				vertex: vertexShader,
-				fragment: fragmentShader,
-				uniforms: {
-					iTime: { value: 0 },
-					iResolution: {
-						value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height)
-					},
-					uScale: { value: scale },
-					uGridMul: { value: new Float32Array(gridMul) },
-					uDigitSize: { value: digitSize },
-					uScanlineIntensity: { value: scanlineIntensity },
-					uGlitchAmount: { value: glitchAmount },
-					uFlickerAmount: { value: flickerAmount },
-					uNoiseAmp: { value: noiseAmp },
-					uChromaticAberration: { value: chromaticAberration },
-					uDither: { value: ditherValue },
-					uCurvature: { value: curvature },
-					uTint: { value: new Color(tintVec[0], tintVec[1], tintVec[2]) },
-					uMouse: { value: new Float32Array([smoothMouse.x, smoothMouse.y]) },
-					uMouseStrength: { value: mouseStrength },
-					uUseMouse: { value: mouseReact ? 1 : 0 },
-					uPageLoadProgress: { value: pageLoadAnimation ? 0 : 1 },
-					uUsePageLoadAnimation: { value: pageLoadAnimation ? 1 : 0 },
-					uBrightness: { value: brightness }
-				}
-			});
+		let running = true;
+		let lastT = 0;
+		const FRAME_GAP = 1000 / 30; // 30fps is plenty for a bg effect
 
-			const mesh = new Mesh(gl, { geometry, program });
+		const update = (t: number) => {
+			if (!running || document.hidden) {
+				raf = 0;
+				return;
+			}
+			raf = requestAnimationFrame(update);
+			if (t - lastT < FRAME_GAP) return;
+			// Compensate drift so animation speed stays constant at 30fps
+			lastT = t - ((t - lastT) % FRAME_GAP);
+			if (!program) return;
 
-			function resize() {
-				if (!program) return;
-				renderer.setSize(currentContainer.offsetWidth, currentContainer.offsetHeight);
-				program.uniforms.iResolution.value = new Color(
-					gl.canvas.width,
-					gl.canvas.height,
-					gl.canvas.width / gl.canvas.height
+			if (pageLoadAnimation && loadAnimationStart === 0) loadAnimationStart = t;
+
+			if (!pause) {
+				const elapsed = (t * 0.001 + timeOffset) * timeScale;
+				program.uniforms.iTime.value = elapsed;
+				frozenTime = elapsed;
+			} else {
+				program.uniforms.iTime.value = frozenTime;
+			}
+
+			if (pageLoadAnimation && loadAnimationStart > 0) {
+				const animationDuration = 2000;
+				const animationElapsed = t - loadAnimationStart;
+				program.uniforms.uPageLoadProgress.value = Math.min(
+					animationElapsed / animationDuration,
+					1,
 				);
 			}
 
-			const resizeObserver = new ResizeObserver(() => resize());
-			resizeObserver.observe(currentContainer);
-			resize();
+			if (mouseReact) {
+				const dampingFactor = 0.08;
+				smoothMouse.x += (mouse.x - smoothMouse.x) * dampingFactor;
+				smoothMouse.y += (mouse.y - smoothMouse.y) * dampingFactor;
+				const mouseUniform = program.uniforms.uMouse.value as Float32Array;
+				mouseUniform[0] = smoothMouse.x;
+				mouseUniform[1] = smoothMouse.y;
+			}
 
-			let running = true;
-			let lastT = 0;
-			const FRAME_GAP = 1000 / 30; // 30fps is plenty for a bg effect
+			renderer.render({ scene: mesh });
+		};
 
-			const update = (t: number) => {
-				if (!running || document.hidden) {
-					raf = 0;
-					return;
+		const onVis = () => {
+			setRunning?.(!document.hidden);
+		};
+		document.addEventListener('visibilitychange', onVis);
+
+		setRunning = (v: boolean) => {
+			if (v) {
+				if (!running && !document.hidden) {
+					running = true;
+					lastT = 0;
+					raf = requestAnimationFrame(update);
 				}
-				raf = requestAnimationFrame(update);
-				if (t - lastT < FRAME_GAP) return;
-				// Compensate drift so animation speed stays constant at 30fps
-				lastT = t - ((t - lastT) % FRAME_GAP);
-				if (!program) return;
-
-				if (pageLoadAnimation && loadAnimationStart === 0) loadAnimationStart = t;
-
-				if (!pause) {
-					const elapsed = (t * 0.001 + timeOffset) * timeScale;
-					program.uniforms.iTime.value = elapsed;
-					frozenTime = elapsed;
-				} else {
-					program.uniforms.iTime.value = frozenTime;
-				}
-
-				if (pageLoadAnimation && loadAnimationStart > 0) {
-					const animationDuration = 2000;
-					const animationElapsed = t - loadAnimationStart;
-					program.uniforms.uPageLoadProgress.value = Math.min(animationElapsed / animationDuration, 1);
-				}
-
-				if (mouseReact) {
-					const dampingFactor = 0.08;
-					smoothMouse.x += (mouse.x - smoothMouse.x) * dampingFactor;
-					smoothMouse.y += (mouse.y - smoothMouse.y) * dampingFactor;
-					const mouseUniform = program.uniforms.uMouse.value as Float32Array;
-					mouseUniform[0] = smoothMouse.x;
-					mouseUniform[1] = smoothMouse.y;
-				}
-
-				renderer.render({ scene: mesh });
-			};
-
-			const onVis = () => {
-				setRunning?.(!document.hidden);
-			};
-			document.addEventListener('visibilitychange', onVis);
-
-			setRunning = (v: boolean) => {
-				if (v) {
-					if (!running && !document.hidden) {
-						running = true;
-						lastT = 0;
-						raf = requestAnimationFrame(update);
-					}
-				} else {
-					running = false;
-					if (raf) cancelAnimationFrame(raf);
-					raf = 0;
-				}
-			};
-
-			raf = requestAnimationFrame(update);
-			currentContainer.appendChild(gl.canvas);
-			if (mouseReact) currentContainer.addEventListener('mousemove', handleMouseMove);
-
-			cleanup = () => {
+			} else {
 				running = false;
-				cancelAnimationFrame(raf);
+				if (raf) cancelAnimationFrame(raf);
 				raf = 0;
-				resizeObserver.disconnect();
-				document.removeEventListener('visibilitychange', onVis);
-				if (mouseReact) currentContainer.removeEventListener('mousemove', handleMouseMove);
-				if (gl.canvas.parentElement === currentContainer) currentContainer.removeChild(gl.canvas);
-				gl.getExtension('WEBGL_lose_context')?.loseContext();
-				loadAnimationStart = 0;
-				timeOffset = Math.random() * 100;
-				program = null;
-			};
+			}
 		};
 
-		// Defer WebGL boot until browser is idle and container is visible,
-		// so it never competes with FCP/LCP/TBT. The observer stays connected
-		// so the loop pauses whenever the canvas scrolls out of view.
-		let booted = false;
-		const io = new IntersectionObserver(
-			([entry]) => {
-				if (disposed) return;
-				if (entry.isIntersecting) {
-					if (!booted) {
-						booted = true;
-						const idle = (globalThis as unknown as { requestIdleCallback?: Function })
-							.requestIdleCallback as
-							| ((cb: () => void, opts?: { timeout: number }) => number)
-							| undefined;
-						if (typeof idle === 'function') idle(() => boot(), { timeout: 1500 });
-						else setTimeout(boot, 0);
-					} else {
-						setRunning?.(true);
-					}
+		raf = requestAnimationFrame(update);
+		currentContainer.appendChild(gl.canvas);
+		if (mouseReact)
+			currentContainer.addEventListener('mousemove', handleMouseMove);
+
+		cleanup = () => {
+			running = false;
+			cancelAnimationFrame(raf);
+			raf = 0;
+			resizeObserver.disconnect();
+			document.removeEventListener('visibilitychange', onVis);
+			if (mouseReact)
+				currentContainer.removeEventListener('mousemove', handleMouseMove);
+			if (gl.canvas.parentElement === currentContainer)
+				currentContainer.removeChild(gl.canvas);
+			gl.getExtension('WEBGL_lose_context')?.loseContext();
+			loadAnimationStart = 0;
+			timeOffset = Math.random() * 100;
+			program = null;
+		};
+	};
+
+	// Defer WebGL boot until browser is idle and container is visible,
+	// so it never competes with FCP/LCP/TBT. The observer stays connected
+	// so the loop pauses whenever the canvas scrolls out of view.
+	let booted = false;
+	const io = new IntersectionObserver(
+		([entry]) => {
+			if (disposed) return;
+			if (entry.isIntersecting) {
+				if (!booted) {
+					booted = true;
+					const idle = (
+						globalThis as unknown as { requestIdleCallback?: Function }
+					).requestIdleCallback as
+						| ((cb: () => void, opts?: { timeout: number }) => number)
+						| undefined;
+					if (typeof idle === 'function') idle(() => boot(), { timeout: 1500 });
+					else setTimeout(boot, 0);
 				} else {
-					setRunning?.(false);
+					setRunning?.(true);
 				}
-			},
-			{ threshold: 0 }
-		);
-		io.observe(currentContainer);
+			} else {
+				setRunning?.(false);
+			}
+		},
+		{ threshold: 0 },
+	);
+	io.observe(currentContainer);
 
-		return () => {
-			disposed = true;
-			io.disconnect();
-			cleanup?.();
-		};
-	});
+	return () => {
+		disposed = true;
+		io.disconnect();
+		cleanup?.();
+	};
+});
 </script>
 
-<div bind:this={container} class="relative h-full w-full overflow-hidden {className}"></div>
+<div
+	bind:this={container}
+	class="relative h-full w-full overflow-hidden {className}"
+></div>

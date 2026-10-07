@@ -1,108 +1,124 @@
 <script lang="ts">
-	import { onMount, untrack } from 'svelte';
+import { onMount, untrack } from 'svelte';
 
-	type Props = {
-		items?: string[];
-		onItemSelect?: (item: string, index: number) => void;
-		showGradients?: boolean;
-		enableArrowNavigation?: boolean;
-		class?: string;
-		itemClass?: string;
-		displayScrollbar?: boolean;
-		initialSelectedIndex?: number;
+type Props = {
+	items?: string[];
+	onItemSelect?: (item: string, index: number) => void;
+	showGradients?: boolean;
+	enableArrowNavigation?: boolean;
+	class?: string;
+	itemClass?: string;
+	displayScrollbar?: boolean;
+	initialSelectedIndex?: number;
+};
+
+let {
+	items = [
+		'Item 1',
+		'Item 2',
+		'Item 3',
+		'Item 4',
+		'Item 5',
+		'Item 6',
+		'Item 7',
+		'Item 8',
+		'Item 9',
+		'Item 10',
+		'Item 11',
+		'Item 12',
+		'Item 13',
+		'Item 14',
+		'Item 15',
+	],
+	onItemSelect,
+	showGradients = true,
+	enableArrowNavigation = true,
+	class: className = '',
+	itemClass = '',
+	displayScrollbar = true,
+	initialSelectedIndex = -1,
+}: Props = $props();
+
+let listRef: HTMLDivElement;
+let selectedIndex = $state(initialSelectedIndex);
+let keyboardNav = $state(false);
+let topGradientOpacity = $state(0);
+let bottomGradientOpacity = $state(1);
+let inView = $state<boolean[]>([]);
+
+$effect(() => {
+	if (inView.length !== items.length) {
+		untrack(() => (inView = items.map(() => false)));
+	}
+});
+
+function handleScroll(e: Event) {
+	const t = e.currentTarget as HTMLDivElement;
+	topGradientOpacity = Math.min(t.scrollTop / 50, 1);
+	const bottomDistance = t.scrollHeight - (t.scrollTop + t.clientHeight);
+	bottomGradientOpacity =
+		t.scrollHeight <= t.clientHeight ? 0 : Math.min(bottomDistance / 50, 1);
+}
+
+function inViewAction(node: HTMLElement, index: number) {
+	const io = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				inView[index] = entry.intersectionRatio >= 0.5;
+			}
+		},
+		{ root: listRef, threshold: [0, 0.5, 1] },
+	);
+	io.observe(node);
+	return { destroy: () => io.disconnect() };
+}
+
+onMount(() => {
+	if (!enableArrowNavigation) return;
+	const handler = (e: KeyboardEvent) => {
+		if (e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey)) {
+			e.preventDefault();
+			keyboardNav = true;
+			selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+		} else if (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) {
+			e.preventDefault();
+			keyboardNav = true;
+			selectedIndex = Math.max(selectedIndex - 1, 0);
+		} else if (e.key === 'Enter') {
+			if (selectedIndex >= 0 && selectedIndex < items.length) {
+				e.preventDefault();
+				onItemSelect?.(items[selectedIndex], selectedIndex);
+			}
+		}
 	};
+	window.addEventListener('keydown', handler);
+	return () => window.removeEventListener('keydown', handler);
+});
 
-	let {
-		items = [
-			'Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5',
-			'Item 6', 'Item 7', 'Item 8', 'Item 9', 'Item 10',
-			'Item 11', 'Item 12', 'Item 13', 'Item 14', 'Item 15'
-		],
-		onItemSelect,
-		showGradients = true,
-		enableArrowNavigation = true,
-		class: className = '',
-		itemClass = '',
-		displayScrollbar = true,
-		initialSelectedIndex = -1
-	}: Props = $props();
-
-	let listRef: HTMLDivElement;
-	let selectedIndex = $state(initialSelectedIndex);
-	let keyboardNav = $state(false);
-	let topGradientOpacity = $state(0);
-	let bottomGradientOpacity = $state(1);
-	let inView = $state<boolean[]>([]);
-
-	$effect(() => {
-		if (inView.length !== items.length) {
-			untrack(() => (inView = items.map(() => false)));
+$effect(() => {
+	if (!keyboardNav || selectedIndex < 0 || !listRef) return;
+	const container = listRef;
+	const selectedItem = container.querySelector(
+		`[data-index="${selectedIndex}"]`,
+	) as HTMLElement | null;
+	if (selectedItem) {
+		const extraMargin = 50;
+		const itemTop = selectedItem.offsetTop;
+		const itemBottom = itemTop + selectedItem.offsetHeight;
+		if (itemTop < container.scrollTop + extraMargin) {
+			container.scrollTo({ top: itemTop - extraMargin, behavior: 'smooth' });
+		} else if (
+			itemBottom >
+			container.scrollTop + container.clientHeight - extraMargin
+		) {
+			container.scrollTo({
+				top: itemBottom - container.clientHeight + extraMargin,
+				behavior: 'smooth',
+			});
 		}
-	});
-
-	function handleScroll(e: Event) {
-		const t = e.currentTarget as HTMLDivElement;
-		topGradientOpacity = Math.min(t.scrollTop / 50, 1);
-		const bottomDistance = t.scrollHeight - (t.scrollTop + t.clientHeight);
-		bottomGradientOpacity = t.scrollHeight <= t.clientHeight ? 0 : Math.min(bottomDistance / 50, 1);
 	}
-
-	function inViewAction(node: HTMLElement, index: number) {
-		const io = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					inView[index] = entry.intersectionRatio >= 0.5;
-				}
-			},
-			{ root: listRef, threshold: [0, 0.5, 1] }
-		);
-		io.observe(node);
-		return { destroy: () => io.disconnect() };
-	}
-
-	onMount(() => {
-		if (!enableArrowNavigation) return;
-		const handler = (e: KeyboardEvent) => {
-			if (e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey)) {
-				e.preventDefault();
-				keyboardNav = true;
-				selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-			} else if (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) {
-				e.preventDefault();
-				keyboardNav = true;
-				selectedIndex = Math.max(selectedIndex - 1, 0);
-			} else if (e.key === 'Enter') {
-				if (selectedIndex >= 0 && selectedIndex < items.length) {
-					e.preventDefault();
-					onItemSelect?.(items[selectedIndex], selectedIndex);
-				}
-			}
-		};
-		window.addEventListener('keydown', handler);
-		return () => window.removeEventListener('keydown', handler);
-	});
-
-	$effect(() => {
-		if (!keyboardNav || selectedIndex < 0 || !listRef) return;
-		const container = listRef;
-		const selectedItem = container.querySelector(
-			`[data-index="${selectedIndex}"]`
-		) as HTMLElement | null;
-		if (selectedItem) {
-			const extraMargin = 50;
-			const itemTop = selectedItem.offsetTop;
-			const itemBottom = itemTop + selectedItem.offsetHeight;
-			if (itemTop < container.scrollTop + extraMargin) {
-				container.scrollTo({ top: itemTop - extraMargin, behavior: 'smooth' });
-			} else if (itemBottom > container.scrollTop + container.clientHeight - extraMargin) {
-				container.scrollTo({
-					top: itemBottom - container.clientHeight + extraMargin,
-					behavior: 'smooth'
-				});
-			}
-		}
-		untrack(() => (keyboardNav = false));
-	});
+	untrack(() => (keyboardNav = false));
+});
 </script>
 
 <div class="relative w-[500px] {className}">
@@ -156,7 +172,7 @@
 </div>
 
 <style>
-	.al-selected {
-		background: #222 !important;
-	}
+.al-selected {
+	background: #222 !important;
+}
 </style>

@@ -123,7 +123,8 @@ function toggleMobileMenu() {
 			<button
 				type="button"
 				onclick={toggleMobileMenu}
-				aria-label="Toggle menu" aria-expanded={mobileMenuOpen}
+				aria-label="Toggle menu"
+				aria-expanded={mobileMenuOpen}
 				class="flex min-h-[44px] min-w-[44px] items-center justify-center text-[#607B96] focus:outline focus:outline-2 focus:outline-indigo-500"
 			>
 				{#if mobileMenuOpen}
@@ -139,7 +140,9 @@ function toggleMobileMenu() {
 {#if mobileMenuOpen}
 	<div
 		class="fixed inset-0 z-40 flex flex-col items-start overflow-y-auto bg-[#011627]/95 p-1 pt-20 backdrop-blur-lg md:hidden"
-		role="dialog" aria-modal="true" aria-label="Menu"
+		role="dialog"
+		aria-modal="true"
+		aria-label="Menu"
 	>
 		<p
 			class="text-midnight mt-6 w-full border-b border-[#1E2D3D] p-4 text-xl hover:text-[#4D5BCE]"

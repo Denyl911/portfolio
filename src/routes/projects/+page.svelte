@@ -29,6 +29,7 @@ import { _, locale } from 'svelte-i18n';
 import Particles from '$lib/components/Particles.svelte';
 import ProjectCard from '$lib/components/ProjectCard.svelte';
 import ProjectModal from '$lib/components/ProjectModal.svelte';
+import MiniPlayer from '$lib/os/components/MiniPlayer.svelte';
 import { loadProjectsTranslations, type Project } from '$lib/data/projects';
 
 let showProjectModal: boolean = $state(false);
@@ -212,9 +213,9 @@ $effect(() => {
 		class="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row"
 	>
 		<div
-			class="max-h-[45%] w-full flex-shrink-0 overflow-y-auto overscroll-contain border-b border-white/20 bg-black/20 text-sm text-[#E5E9F0] backdrop-blur-lg lg:max-h-none lg:w-1/7 lg:border-r lg:border-b-0"
+			class="max-h-[45%] w-full flex-shrink-0 overflow-y-auto overscroll-contain border-b border-white/20 bg-black/20 text-sm text-[#E5E9F0] backdrop-blur-lg lg:flex lg:max-h-none lg:w-1/7 lg:flex-col lg:border-r lg:border-b-0"
 		>
-			<div class="hidden h-full lg:flex lg:flex-col">
+			<div class="hidden min-h-0 flex-1 overflow-y-auto lg:flex lg:flex-col">
 				<div class="mb-4 min-h-0 flex-1 overflow-y-auto">
 					<button
 						type="button"
@@ -280,6 +281,7 @@ $effect(() => {
 					<span class="float-right">v0.0.2</span>
 				</div> -->
 			</div>
+			<MiniPlayer variant="dock" visible />
 
 			<div class="lg:hidden">
 				<div>

@@ -1,5 +1,6 @@
 <script>
 import { SiGithub, SiX } from '@icons-pack/svelte-simple-icons';
+// biome-ignore lint/correctness/noUnusedImports: translations
 import { _ } from 'svelte-i18n';
 import GlareHover from '$lib/components/bits/GlareHover.svelte';
 </script>
@@ -7,9 +8,15 @@ import GlareHover from '$lib/components/bits/GlareHover.svelte';
 <footer
 	class="border-white/20 sticky bottom-0 z-50 border-t bg-black/20 backdrop-blur-lg"
 >
-	<div class="mx-auto flex w-full max-w-full items-center justify-between gap-2 px-2 md:flex-row">
-		<div class="flex min-w-0 items-center gap-1 sm:gap-2 sm:space-x-4 sm:pl-1 md:pl-6 lg:pl-8">
-			<span class="text-midnight hidden truncate min-[400px]:inline" data-interactive-cursor="text"
+	<div
+		class="mx-auto flex w-full max-w-full items-center justify-between gap-2 px-2 md:flex-row"
+	>
+		<div
+			class="flex min-w-0 items-center gap-1 sm:gap-2 sm:space-x-4 sm:pl-1 md:pl-6 lg:pl-8"
+		>
+			<span
+				class="text-midnight hidden truncate min-[400px]:inline"
+				data-interactive-cursor="text"
 				>{$_('findMeIn')}</span
 			>
 			<a

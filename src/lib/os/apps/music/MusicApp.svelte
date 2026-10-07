@@ -104,7 +104,7 @@ $effect(() => {
 >
 	<div
 		aria-hidden="true"
-		class="pointer-events-none sticky top-0 z-10 -mb-8 h-8 shrink-0 bg-gradient-to-b from-[#011627] to-transparent transition-opacity duration-200"
+		class="pointer-events-none sticky -top-3 z-10 -mb-8 h-8 shrink-0 bg-gradient-to-b from-[#011627] to-transparent transition-opacity duration-200"
 		style="opacity: {canUp ? 1 : 0}"
 	></div>
 	<p class="sr-only" role="status" aria-live="polite">
@@ -349,7 +349,7 @@ $effect(() => {
 	{/if}
 	<div
 		aria-hidden="true"
-		class="pointer-events-none sticky bottom-0 z-10 -mt-8 h-8 shrink-0 bg-gradient-to-t from-[#011627] to-transparent transition-opacity duration-200"
+		class="pointer-events-none sticky -bottom-3 z-10 -mt-8 h-8 shrink-0 bg-gradient-to-t from-[#011627] to-transparent transition-opacity duration-200"
 		style="opacity: {canDown ? 1 : 0}"
 	></div>
 </div>

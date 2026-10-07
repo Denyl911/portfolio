@@ -1,5 +1,12 @@
 <script lang="ts">
-import { BatteryMedium, ChevronLeft, Home, Signal, Wifi } from 'lucide-svelte';
+import {
+	BatteryMedium,
+	ChevronLeft,
+	Home,
+	Lock,
+	Signal,
+	Wifi,
+} from 'lucide-svelte';
 // biome-ignore lint/correctness/noUnusedImports: i18n translation
 import { _ } from 'svelte-i18n';
 import { getApp } from '../apps/registry';
@@ -34,7 +41,7 @@ const effectClass = $derived(
 <section
 	class={compact
 		? 'mx-auto w-full max-w-[340px]'
-		: 'w-[300px] shrink-0 rounded-[2.6rem] border border-[#1E2D3D] bg-[#020810] p-2.5 shadow-[0_24px_70px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)]'}
+		: 'relative w-[300px] shrink-0 rounded-[2.6rem] border border-[#1E2D3D] bg-[#020810] p-2.5 shadow-[0_24px_70px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)]'}
 	aria-label={$_('os.phoneLabel')}
 >
 	<!-- Pantalla con relación de aspecto fija 9:19.5: idéntica en todas las apps -->
@@ -67,36 +74,47 @@ const effectClass = $derived(
 		</div>
 		{#if !os.unlocked}
 			<LockScreen />
-		{:else if activeApp}
-			<!-- Barra de la app -->
-			<div
-				class="flex shrink-0 items-center gap-1 border-b border-white/10 px-2"
-			>
-				<button
-					type="button"
-					onclick={() => os.goHome()}
-					aria-label={$_('os.home')}
-					class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-300 hover:bg-white/10 hover:text-white"
+		{:else}
+			{#if activeApp}
+				<!-- Barra de la app -->
+				<div
+					class="flex shrink-0 items-center gap-1 border-b border-white/10 px-2"
 				>
-					<ChevronLeft size={18} />
-				</button>
-				<p
-					class="flex-1 truncate text-center text-xs font-medium text-slate-200"
-				>
-					{activeApp.name}
-				</p>
-				<span class="w-9" aria-hidden="true"></span>
-			</div>
-			<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
-				{#await activeApp.component() then { default: App }}
-					<App />
-				{:catch}
-					<p class="p-4 text-center text-xs text-red-300">
-						{$_('os.loadError')}
+					<button
+						type="button"
+						onclick={() => os.goHome()}
+						aria-label={$_('os.home')}
+						class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-300 hover:bg-white/10 hover:text-white"
+					>
+						<ChevronLeft size={18} />
+					</button>
+					<p
+						class="flex-1 truncate text-center text-xs font-medium text-slate-200"
+					>
+						{activeApp.name}
 					</p>
-				{/await}
-			</div>
-			<div class="flex shrink-0 justify-center border-t border-white/10 py-1.5">
+					<span class="w-9" aria-hidden="true"></span>
+				</div>
+				<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+					{#await activeApp.component() then { default: App }}
+						<App />
+					{:catch}
+						<p class="p-4 text-center text-xs text-red-300">
+							{$_('os.loadError')}
+						</p>
+					{/await}
+				</div>
+			{:else}
+				<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+					{#await import('./HomeScreen.svelte') then { default: HomeScreen }}
+						<HomeScreen />
+					{/await}
+				</div>
+			{/if}
+			<!-- Barra inferior: inicio -->
+			<div
+				class="flex shrink-0 justify-center border-t border-white/10 py-1.5"
+			>
 				<button
 					type="button"
 					onclick={() => os.goHome()}
@@ -106,14 +124,32 @@ const effectClass = $derived(
 					<Home size={15} />
 				</button>
 			</div>
-		{:else}
-			<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
-				{#await import('./HomeScreen.svelte') then { default: HomeScreen }}
-					<HomeScreen />
-				{/await}
-			</div>
 		{/if}
 	</div>
+	{#if !compact && os.unlocked}
+		<!-- Botón discreto fuera del teléfono, abajo a la derecha.
+			Solo bloquea: para desbloquear se usa la pantalla de bloqueo. -->
+		<button
+			type="button"
+			onclick={() => os.lock()}
+			aria-label={$_('os.lock')}
+			title={$_('os.lock')}
+			class="absolute -right-12 bottom-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/10 text-slate-500 transition-colors hover:border-white/25 hover:text-white focus-visible:outline-2 focus-visible:outline-[#43d9ad]"
+		>
+			<Lock size={15} />
+		</button>
+	{:else if os.unlocked}
+		<!-- Modo compacto (sin marco): botón fantasma bajo el teléfono -->
+		<button
+			type="button"
+			onclick={() => os.lock()}
+			aria-label={$_('os.lock')}
+			class="mx-auto mt-2 flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-slate-400 transition-colors hover:border-white/25 hover:text-white"
+		>
+			<Lock size={12} />
+			{$_('os.lock')}
+		</button>
+	{/if}
 </section>
 
 <style>

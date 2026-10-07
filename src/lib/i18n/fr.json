@@ -98,5 +98,6 @@
 	"os.playbackControls": "Contrôles de lecture",
 	"os.soon": "Bientôt",
 	"os.soonHint": "Cette app est en route",
-	"os.appsLabel": "Applications"
+	"os.appsLabel": "Applications",
+	"os.lock": "Verrouiller l’écran"
 }

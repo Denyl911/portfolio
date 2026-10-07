@@ -98,5 +98,6 @@
 	"os.playbackControls": "Controles de reproducción",
 	"os.soon": "Pronto",
 	"os.soonHint": "Esta app está en camino",
-	"os.appsLabel": "Aplicaciones"
+	"os.appsLabel": "Aplicaciones",
+	"os.lock": "Bloquear pantalla"
 }

@@ -78,13 +78,12 @@ const date = $derived(
 					<li class="min-w-0">
 						<button
 							type="button"
-							disabled={!app.enabled}
 							onclick={() => os.openApp(app.id)}
 							aria-label={app.enabled ? `${$_('os.openApp')}: ${app.name}` : `${app.name}: ${$_('os.soon')}`}
 							aria-disabled={!app.enabled}
 							class="group flex w-full flex-col items-center gap-1 rounded-2xl p-1 transition-transform {app.enabled
 								? 'hover:scale-105 active:scale-95'
-								: 'cursor-not-allowed opacity-40'}"
+								: 'opacity-50'}"
 						>
 							<span
 								class="flex h-12 w-12 items-center justify-center rounded-[14px] border border-white/15 bg-white/10 text-slate-100 shadow-lg backdrop-blur transition-colors {app.enabled

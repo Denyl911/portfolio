@@ -42,6 +42,13 @@ class OsState {
 		this.activeApp = null;
 	}
 
+	lock(): void {
+		// Solo baja la pantalla de bloqueo: la música sigue sonando,
+		// como en un teléfono real.
+		this.unlocked = false;
+		savePersisted({ unlocked: false });
+	}
+
 	dismissMiniplayer(): void {
 		this.miniplayerDismissed = true;
 	}

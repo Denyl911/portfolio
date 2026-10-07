@@ -98,5 +98,6 @@
 	"os.playbackControls": "Playback controls",
 	"os.soon": "Soon",
 	"os.soonHint": "This app is on the way",
-	"os.appsLabel": "Applications"
+	"os.appsLabel": "Applications",
+	"os.lock": "Lock screen"
 }

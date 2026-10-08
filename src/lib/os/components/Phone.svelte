@@ -52,7 +52,7 @@ const effectClass = $derived(
 	>
 		<!-- Isla dinámica superpuesta: no ocupa espacio en el layout -->
 		<div
-			class="absolute top-1.5 left-1/2 z-10 h-[22px] w-24 -translate-x-1/2 rounded-full bg-black"
+			class="absolute top-1 left-1/2 z-10 h-[22px] w-24 -translate-x-1/2 rounded-full bg-black"
 			aria-hidden="true"
 		>
 			<div
@@ -112,9 +112,7 @@ const effectClass = $derived(
 				</div>
 			{/if}
 			<!-- Barra inferior: inicio -->
-			<div
-				class="flex shrink-0 justify-center border-t border-white/10 py-1.5"
-			>
+			<div class="flex shrink-0 justify-center border-t border-white/10 py-1.5">
 				<button
 					type="button"
 					onclick={() => os.goHome()}

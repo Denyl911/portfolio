@@ -2,7 +2,7 @@
 import { Gamepad2, MessageCircle, Music, SquareTerminal } from 'lucide-svelte';
 // biome-ignore lint/correctness/noUnusedImports: i18n translation
 import { _ } from 'svelte-i18n';
-import wallpaper from '$lib/assets/la-creacion.png';
+import wallpaper from '$lib/assets/la-creacion-dithered.png';
 import { apps } from '../apps/registry';
 import { os } from '../state/os.svelte';
 

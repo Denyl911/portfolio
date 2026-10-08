@@ -35,6 +35,11 @@ Pistas MVP: WAV procedurales CC0 en `static/audio/` + carátulas SVG en
 conseguir licencias externas reales). Ver `scripts/generate-os-audio.py`
 (el script vive en `/tmp`, no en el repo).
 
+Fondos `src/lib/assets/`: `creation-hands.webp` (La Creación de Miguel Ángel,
+dominio público vía Wikimedia Commons) y `ada-lock.webp` (retrato de Ada
+Lovelace adaptado al navy `#011627`), ambos en monocromo dithered Bayer.
+El lock suma scanlines y un aura teñida con el acento del tema musical.
+
 ## Añadir una app nueva en 5 pasos
 
 1. Crear `src/lib/os/apps/<nombre>/<Nombre>App.svelte`.

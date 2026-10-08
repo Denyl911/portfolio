@@ -11,6 +11,8 @@ export type PersistedOs = {
 	trackId: string | null;
 	time: number;
 	unlocked: boolean;
+	welcomed: boolean;
+	appId: string | null;
 };
 
 const defaults: PersistedOs = {
@@ -21,6 +23,8 @@ const defaults: PersistedOs = {
 	trackId: null,
 	time: 0,
 	unlocked: false,
+	welcomed: false,
+	appId: null,
 };
 
 export function loadPersisted(): PersistedOs {
@@ -47,6 +51,8 @@ export function loadPersisted(): PersistedOs {
 					? Math.max(0, parsed.time)
 					: 0,
 			unlocked: parsed.unlocked === true,
+			welcomed: parsed.welcomed === true,
+			appId: typeof parsed.appId === 'string' ? parsed.appId : null,
 		};
 	} catch {
 		return { ...defaults };

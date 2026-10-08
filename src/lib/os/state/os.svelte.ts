@@ -12,14 +12,20 @@ class OsState {
 	/** Interruptor manual "Reducir efectos" (además de la media query). */
 	reduceMotion = $state(false);
 	restored = $state(false);
+	/**
+	 * Bienvenida: solo el primer desbloqueo abre Música y reproduce.
+	 * Los siguientes desbloqueos vuelven a donde estaba el usuario.
+	 */
+	welcomed = $state(false);
 
 	constructor() {
 		if (typeof window !== 'undefined') {
 			const saved = loadPersisted();
 			this.unlocked = saved.unlocked;
-			// Sin autoplay: si ya se desbloqueó antes, se muestra la home/app
-			// pero el audio solo arranca con gesto.
-			this.activeApp = saved.unlocked ? 'music' : null;
+			this.welcomed = saved.welcomed;
+			// Sin autoplay tras recarga: se restaura la vista pero el audio
+			// solo arranca con gesto.
+			this.activeApp = saved.unlocked ? (saved.appId ?? 'music') : null;
 			this.restored = true;
 		}
 	}
@@ -27,19 +33,28 @@ class OsState {
 	async unlock(): Promise<void> {
 		this.unlocked = true;
 		this.miniplayerDismissed = false;
-		this.activeApp = 'music';
-		savePersisted({ unlocked: true });
-		await audio.unlock();
-		await audio.play();
+		if (!this.welcomed) {
+			// Primera vez: abrir Música y reproducir (gesto válido).
+			this.welcomed = true;
+			this.activeApp = 'music';
+			savePersisted({ unlocked: true, welcomed: true, appId: 'music' });
+			await audio.unlock();
+			await audio.play();
+		} else {
+			// Vuelve a la pantalla/app donde se bloqueó, sin tocar el audio.
+			savePersisted({ unlocked: true });
+		}
 	}
 
 	openApp(id: string): void {
 		this.activeApp = id;
 		this.miniplayerDismissed = false;
+		savePersisted({ appId: id });
 	}
 
 	goHome(): void {
 		this.activeApp = null;
+		savePersisted({ appId: null });
 	}
 
 	lock(): void {

@@ -4,7 +4,7 @@ import 'prismjs/themes/prism-okaidia.css';
 import 'prismjs/components/prism-typescript.js';
 import 'prismjs/components/prism-sql';
 import 'prismjs/components/prism-jsx';
-import myAvatar from '$lib/assets/me.webp';
+import myAvatar from '$lib/assets/me-dither.webp';
 
 let {
 	code,

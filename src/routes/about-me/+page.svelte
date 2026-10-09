@@ -38,12 +38,11 @@ import { marked } from 'marked';
 import { onMount } from 'svelte';
 import { get } from 'svelte/store';
 import { _, locale } from 'svelte-i18n';
-import avatar from '$lib/assets/me.webp';
+import avatar from '$lib/assets/me-dither.webp';
 import CountUp from '$lib/components/bits/CountUp.svelte';
 import FadeContent from '$lib/components/bits/FadeContent.svelte';
 import SpotlightCard from '$lib/components/bits/SpotlightCard.svelte';
 import CodeSnippetCard from '$lib/components/CodeSnippetCard.svelte';
-import MiniPlayer from '$lib/os/components/MiniPlayer.svelte';
 import {
 	type CodeSnippet,
 	codeSnippets,
@@ -52,6 +51,7 @@ import {
 } from '$lib/data/personalInfo';
 import { projectsData } from '$lib/data/projects';
 import { skillCategories, skills } from '$lib/data/skills';
+import MiniPlayer from '$lib/os/components/MiniPlayer.svelte';
 
 let anima = $state<HTMLElement>();
 // Display label of the open tab (translated). Selection identity lives in
